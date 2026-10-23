@@ -2,11 +2,863 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rotura - Torneo</title>
-  <link rel="stylesheet" href="css/estilos.css">
+  <title>Rotura - Combate Total</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      font-family: sans-serif;
+      color: white;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .titulo-rotura {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: #39ff14;
+      text-shadow: 0 0 8px #39ff14;
+    }
+
+    .competidor-info {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .pdr-info {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #bbdefb;
+    }
+
+    .promedio-box {
+      width: 300px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      font-weight: bold;
+      color: white;
+      border: 3px solid #000;
+      text-shadow: 0 0 10px white;
+      box-shadow: 0 0 25px rgba(255,255,255,0.1);
+      border-radius: 0;
+      background-color: #2c3e50;
+      text-shadow: 0 0 10px #bbdefb, 0 0 20px #2196f3;
+      margin-bottom: 2rem;
+    }
+
+    .juez-box {
+      position: absolute;
+      width: 70px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .juez-icono {
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+    }
+
+    .puntos {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .punto {
+      width: 60px;
+      padding: 4px 0;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      border: 1px solid #000;
+    }
+
+    .punto.principal {
+      background-color: #2c3e50;
+    }
+
+    /* Posiciones en las esquinas */
+    .esquina-izq-arriba {
+      top: 10px;
+      left: 10px;
+    }
+
+    .esquina-der-arriba {
+      top: 10px;
+      right: 10px;
+    }
+
+    .esquina-izq-abajo {
+      bottom: 10px;
+      left: 10px;
+    }
+
+    .esquina-der-abajo {
+      bottom: 10px;
+      right: 10px;
+    }
+
+    .juez-icono.seleccionando {
+      position: relative;
+      z-index: 1;
+    }
+
+    .juez-icono.seleccionando::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -2px;
+      background: #39ff14;
+      border: 3px solid #39ff14;
+      box-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14;
+      animation: parpadeo-verdoso 1s infinite;
+      z-index: -1;
+    }
+
+    .juez-icono.seleccionado {
+      position: relative;
+      z-index: 1;
+    }
+
+    .juez-icono.seleccionado::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -2px;
+      background: #39ff14;
+      border: 3px solid #39ff14;
+      box-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14;
+      z-index: -1;
+    }
+
+    .juez-icono.seleccionado::after {
+      content: attr(data-label);
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: white;
+      background: transparent;
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-shadow: 0 0 3px #000;
+      z-index: 3;
+    }
+
+    @keyframes parpadeo-verdoso {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* Fondos animados para selección */
+    .fondo-joystick1 {
+      background: #00ff00;
+      animation: parpadeo-neon-verde 1s infinite;
+    }
+
+    .fondo-joystick2 {
+      background: #ff0000;
+      animation: parpadeo-neon-rojo 1s infinite;
+    }
+
+    .fondo-joystick3 {
+      background: #00bfff;
+      animation: parpadeo-neon-azul 1s infinite;
+    }
+
+    .fondo-joystick4 {
+      background: #ffff00;
+      animation: parpadeo-neon-amarillo 1s infinite;
+    }
+
+    /* Fondos fijos para selección confirmada */
+    .fijo-joystick1 { background: #00ff00; }
+    .fijo-joystick2 { background: #ff0000; }
+    .fijo-joystick3 { background: #00bfff; }
+    .fijo-joystick4 { background: #ffff00; }
+
+    @keyframes parpadeo-neon-verde {
+      0%, 100% { box-shadow: 0 0 10px #00ff00; }
+      50% { box-shadow: 0 0 30px #00ff00; }
+    }
+    @keyframes parpadeo-neon-rojo {
+      0%, 100% { box-shadow: 0 0 10px #ff0000; }
+      50% { box-shadow: 0 0 30px #ff0000; }
+    }
+    @keyframes parpadeo-neon-azul {
+      0%, 100% { box-shadow: 0 0 10px #00bfff; }
+      50% { box-shadow: 0 0 30px #00bfff; }
+    }
+    @keyframes parpadeo-neon-amarillo {
+      0%, 100% { box-shadow: 0 0 10px #ffff00; }
+      50% { box-shadow: 0 0 30px #ffff00; }
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .overlay.hidden { display: none; }
+
+    .menu {
+      background: #111;
+      padding: 20px 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 0 20px #39ff14;
+      position: relative;
+    }
+
+    .menu h3 {
+      margin-bottom: 16px;
+      font-size: 1.5rem;
+      color: #39ff14;
+      text-shadow: 0 0 10px #39ff14;
+    }
+
+    .menu-btn {
+      display: block;
+      width: 250px;
+      margin: 8px auto;
+      padding: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #222;
+      color: #fff;
+      text-transform: uppercase;
+      transition: 0.2s;
+    }
+
+    .menu-btn:hover {
+      background: #39ff14;
+      color: #000;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+
+    .close-btn:hover {
+      color: #f44336;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+
+    .back-btn:hover {
+      color: #39ff14;
+    }
+
+    #resultMenu .menu {
+      max-width: 500px;
+      width: 90%;
+      padding: 25px;
+    }
+
+    #resultDetails {
+      font-size: 1.1em;
+      color: #ddd;
+    }
+
+    #resultDetails h4 {
+      margin: 0;
+      padding: 5px 0;
+      text-shadow: 0 0 5px currentColor;
+    }
+
+    #resultDetails strong {
+      color: #fff;
+    }
+
+    #resultDetails div > div {
+      flex: 1;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+    }
+
+    #confirmationMenu .menu {
+      max-width: 500px;
+      width: 90%;
+      padding: 25px;
+    }
+  </style>
 </head>
 <body>
-  <h1 style="color: #00bfff;">🏅 Modalidad: Rotura</h1>
-  <p>Acá se mostrará la tabla de participantes y resultados de salto.</p>
+  <div class="titulo-rotura">ROTURA</div>
+  <div class="competidor-info" id="competidor-info"></div>
+  <div class="pdr-info" id="pdr-info">PDR inicial: 0.000</div>
+
+  <div class="promedio-box" id="promedio">0.000</div>
+
+  <!-- JUEZ esquina superior izquierda -->
+  <div class="juez-box esquina-izq-arriba" data-id="0">
+    <div class="juez-icono" id="juez-0">👨‍⚖️</div>
+    <div class="puntos">
+      <div class="punto principal" id="puntos-0">0.0</div>
+    </div>
+  </div>
+
+  <!-- JUEZ esquina superior derecha -->
+  <div class="juez-box esquina-der-arriba" data-id="1">
+    <div class="juez-icono" id="juez-1">👨‍⚖️</div>
+    <div class="puntos">
+      <div class="punto principal" id="puntos-1">0.0</div>
+    </div>
+  </div>
+
+  <!-- JUEZ esquina inferior izquierda -->
+  <div class="juez-box esquina-izq-abajo" data-id="2">
+    <div class="juez-icono" id="juez-2">👨‍⚖️</div>
+    <div class="puntos">
+      <div class="punto principal" id="puntos-2">0.0</div>
+    </div>
+  </div>
+
+  <!-- JUEZ esquina inferior derecha -->
+  <div class="juez-box esquina-der-abajo" data-id="3">
+    <div class="juez-icono" id="juez-3">👨‍⚖️</div>
+    <div class="puntos">
+      <div class="punto principal" id="puntos-3">0.0</div>
+    </div>
+  </div>
+
+  <!-- Overlay de resultado de ejecución -->
+  <div id="resultMenu" class="overlay hidden">
+    <div class="menu">
+      <button class="close-btn" id="closeResultMenu">×</button>
+      <h3 id="resultTitle">RESULTADO DE EJECUCIÓN</h3>
+      <div id="resultDetails" style="text-align: left; margin: 20px 0; line-height: 1.6;"></div>
+      <button class="menu-btn" data-action="nula">NULA</button>
+      <button class="menu-btn" data-action="doblada">DOBLADA</button>
+      <button class="menu-btn" data-action="rota">ROTA</button>
+    </div>
+  </div>
+
+  <!-- Overlay de puntaje final -->
+  <div id="confirmationMenu" class="overlay hidden">
+    <div class="menu">
+      <button class="back-btn" id="backConfirmationMenu">←</button>
+      <h3>PUNTAJE FINAL</h3>
+      <div id="confirmationDetails" style="text-align: center; margin: 20px 0; line-height: 1.6;"></div>
+      <button class="menu-btn" data-action="finalizar">FINALIZAR</button>
+    </div>
+  </div>
+
+  <script>
+    // Variables
+    const params = new URLSearchParams(location.search);
+    const area = params.get("area");
+    const compId = Number(params.get("id"));
+    const nombre = params.get("nombre") || "Competidor";
+    
+    const STORAGE_KEY = "ct_acreditaciones_v1";
+    const RESULT_SYNC_KEY = (a) => `ct_results_sync_v1_${a || '?'}`;
+    
+    let puntosJueces = [0, 0, 0, 0];
+    let pdrInicial = 0; // Puntaje de Rotura inicial
+    let historial = [];
+    let cursorHistorial = -1;
+    
+    // Estado de joysticks
+    const joystickState = Array(4).fill().map(() => ({
+      modo: "inactivo",
+      juez: null,
+      lastPressed: {}
+    }));
+    
+    const colores = ["verde", "rojo", "azul", "amarillo"];
+    const clasesParpadeo = [
+      "seleccionando-verde",
+      "seleccionando-rojo",
+      "seleccionando-azul",
+      "seleccionando-amarillo"
+    ];
+    const clasesFondo = [
+      "fondo-joystick1",
+      "fondo-joystick2",
+      "fondo-joystick3",
+      "fondo-joystick4"
+    ];
+    
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById("competidor-info").textContent = `${nombre} - Área ${area}`;
+      
+      // Obtener PDR inicial del competidor
+      const competidores = leerCompetidores();
+      const competidor = competidores.find(c => c.id === compId);
+      pdrInicial = parseFloat(competidor?.pdr || 0);
+      
+      document.getElementById("pdr-info").textContent = `PDR inicial: ${pdrInicial.toFixed(3)}`;
+      
+      actualizarPromedio();
+      
+      // Event listeners para botones de cierre y retroceso
+      document.getElementById("closeResultMenu").addEventListener("click", () => {
+        document.getElementById("resultMenu").classList.add("hidden");
+      });
+      
+      document.getElementById("backConfirmationMenu").addEventListener("click", () => {
+        document.getElementById("confirmationMenu").classList.add("hidden");
+        document.getElementById("resultMenu").classList.remove("hidden");
+      });
+      
+      // Iniciar loops
+      requestAnimationFrame(loopJoysticks);
+      requestAnimationFrame(procesarPuntosJoysticks);
+      requestAnimationFrame(loopPromedios);
+    });
+    
+    // Función para leer datos del competidor
+    function leerCompetidores() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        return JSON.parse(raw) || [];
+      } catch(e) {
+        console.error(e);
+        return [];
+      }
+    }
+    
+    // Actualizar promedio (PDR + 10 - descuentos)
+    function actualizarPromedio() {
+      const descuentos = puntosJueces.reduce((sum, puntos) => sum + puntos, 0) / 4;
+      const puntajeFinal = Math.max(0, pdrInicial + 10 - descuentos); // No menor a 0
+      document.getElementById("promedio").textContent = puntajeFinal.toFixed(3);
+      return {puntajeFinal, descuentos};
+    }
+    
+    // Guardar historial
+    const guardarHistorial = () => {
+      historial = historial.slice(0, cursorHistorial + 1);
+      historial.push([...puntosJueces]);
+      cursorHistorial++;
+    };
+    
+    // Deshacer
+    const deshacer = () => {
+      if (cursorHistorial > 0) {
+        cursorHistorial--;
+        puntosJueces = [...historial[cursorHistorial]];
+        actualizarPuntosDisplay();
+        actualizarPromedio();
+      }
+    };
+    
+    // Rehacer
+    const rehacer = () => {
+      if (cursorHistorial < historial.length - 1) {
+        cursorHistorial++;
+        puntosJueces = [...historial[cursorHistorial]];
+        actualizarPuntosDisplay();
+        actualizarPromedio();
+      }
+    };
+    
+    // Actualizar display de puntos
+    function actualizarPuntosDisplay() {
+      for (let i = 0; i < 4; i++) {
+        const elemento = document.getElementById(`puntos-${i}`);
+        if (elemento) {
+          elemento.textContent = puntosJueces[i].toFixed(1);
+        }
+      }
+    }
+    
+    // Sumar puntos
+    function sumarPunto(juez, cantidad) {
+      guardarHistorial();
+      puntosJueces[juez] += cantidad;
+      if (puntosJueces[juez] < 0) puntosJueces[juez] = 0;
+      if (puntosJueces[juez] > 10) puntosJueces[juez] = 10;
+      
+      actualizarPuntosDisplay();
+      actualizarPromedio();
+    }
+    
+    // Loop de joysticks para selección
+    function loopJoysticks() {
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    
+      pads.forEach((pad, index) => {
+        if (!pad) return;
+    
+        const state = joystickState[index];
+        const botones = pad.buttons;
+        const ejes = pad.axes;
+        const pressed = (i) => botones[i]?.pressed;
+        const justPressed = (i) => pressed(i) && !state.lastPressed[i];
+        const updatePressed = (i) => (state.lastPressed[i] = pressed(i));
+    
+        // START → entrar a selección
+        if (justPressed(9) && state.modo === "inactivo") {
+          const libre = primerJuezLibre();
+          if (libre !== null) {
+            state.modo = "seleccionando";
+            state.juez = libre;
+            aplicarParpadeo(index, libre);
+          }
+        }
+    
+        // SELECT → confirmar o cancelar
+        if (justPressed(8)) {
+          if (state.modo === "seleccionando") {
+            state.modo = "confirmado";
+            aplicarFondo(index, state.juez);
+          } else if (state.modo === "confirmado") {
+            removerFondo(index, state.juez);
+            state.modo = "seleccionando";
+            aplicarParpadeo(index, state.juez);
+          }
+        }
+    
+        // Movimiento entre jueces por ejes (← → en axis 0)
+        if (state.modo === "seleccionando") {
+          const now = Date.now();
+          const moveCooldown = 250; // milisegundos
+          state.lastMoveTime ??= 0;
+    
+          if (now - state.lastMoveTime > moveCooldown) {
+            if (ejes[0] <= -0.9) {
+              mover(index, -1); // ←
+              state.lastMoveTime = now;
+            }
+            if (ejes[0] >= 0.9) {
+              mover(index, 1);  // →
+              state.lastMoveTime = now;
+            }
+          }
+        }
+    
+        // Actualizar botones
+        for (let i = 0; i < botones.length; i++) updatePressed(i);
+      });
+    
+      requestAnimationFrame(loopJoysticks);
+    }
+    
+    // Procesar puntos de joysticks
+    function procesarPuntosJoysticks() {
+      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    
+      pads.forEach((pad, index) => {
+        if (!pad) return;
+    
+        const state = joystickState[index];
+        if (state.modo !== "confirmado") return;
+    
+        const juez = state.juez;
+        const botones = pad.buttons;
+        const axes = pad.axes;
+    
+        // Multiplicador si R1 (B5) o L1 (B4) está presionado
+        const mult = (botones[4]?.pressed || botones[5]?.pressed) ? 1 : 0.1;
+    
+        // Evitar múltiples registros por mantener presionado
+        if (!state.puntosLastFrame) state.puntosLastFrame = {};
+    
+        // Aumentar puntos (flecha arriba)
+        if (axes[1] === -1 && !state.puntosLastFrame["aumentar"]) {
+          sumarPunto(juez, mult);
+          state.puntosLastFrame["aumentar"] = true;
+        } else if (axes[1] !== -1) {
+          state.puntosLastFrame["aumentar"] = false;
+        }
+    
+        // Disminuir puntos (flecha abajo)
+        if (axes[1] === 1 && !state.puntosLastFrame["disminuir"]) {
+          sumarPunto(juez, -mult);
+          state.puntosLastFrame["disminuir"] = true;
+        } else if (axes[1] !== 1) {
+          state.puntosLastFrame["disminuir"] = false;
+        }
+    
+        // Deshacer (L2 - botón 6)
+        if (botones[6]?.pressed && !state.puntosLastFrame["deshacer"]) {
+          deshacer();
+          state.puntosLastFrame["deshacer"] = true;
+        } else if (!botones[6]?.pressed) {
+          state.puntosLastFrame["deshacer"] = false;
+        }
+    
+        // Rehacer (R2 - B7)
+        if (botones[7]?.pressed && !state.puntosLastFrame["rehacer"]) {
+          rehacer();
+          state.puntosLastFrame["rehacer"] = true;
+        } else if (!botones[7]?.pressed) {
+          state.puntosLastFrame["rehacer"] = false;
+        }
+    
+        // Finalizar rotura (START + SELECT)
+        if (botones[8]?.pressed && botones[9]?.pressed && !state.puntosLastFrame["finalizar"]) {
+          mostrarMenuResultado();
+          state.puntosLastFrame["finalizar"] = true;
+        } else if (!(botones[8]?.pressed && botones[9]?.pressed)) {
+          state.puntosLastFrame["finalizar"] = false;
+        }
+      });
+    
+      requestAnimationFrame(procesarPuntosJoysticks);
+    }
+    
+    // Loop de promedios
+    function loopPromedios() {
+      actualizarPromedio();
+      requestAnimationFrame(loopPromedios);
+    }
+    
+    // Funciones auxiliares para joysticks
+    function primerJuezLibre() {
+      const usados = joystickState
+        .filter(js => js.modo === "confirmado")
+        .map(js => js.juez);
+      for (let i = 0; i < 4; i++) {
+        if (!usados.includes(i)) return i;
+      }
+      return null;
+    }
+    
+    function mover(joy, direccion) {
+      const state = joystickState[joy];
+      const usados = joystickState
+        .filter(js => js.modo === "confirmado")
+        .map(js => js.juez);
+      let nuevo = state.juez;
+      for (let i = 0; i < 4; i++) {
+        nuevo = (nuevo + direccion + 4) % 4;
+        if (!usados.includes(nuevo)) {
+          removerParpadeo(joy, state.juez);
+          state.juez = nuevo;
+          aplicarParpadeo(joy, nuevo);
+          break;
+        }
+      }
+    }
+    
+    function aplicarParpadeo(joy, juez) {
+      const el = document.getElementById(`juez-${juez}`);
+      if (el) {
+        el.classList.add(clasesParpadeo[joy]);
+        el.classList.remove(clasesFondo[joy]);
+      }
+    }
+    
+    function removerParpadeo(joy, juez) {
+      const el = document.getElementById(`juez-${juez}`);
+      if (el) el.classList.remove(clasesParpadeo[joy]);
+    }
+    
+    function aplicarFondo(joy, juez) {
+      const el = document.getElementById(`juez-${juez}`);
+      if (el) {
+        el.classList.remove(clasesParpadeo[joy]);
+        el.classList.add(clasesFondo[joy]);
+      }
+    }
+    
+    function removerFondo(joy, juez) {
+      const el = document.getElementById(`juez-${juez}`);
+      if (el) el.classList.remove(clasesFondo[joy]);
+    }
+    
+    // Mostrar menú de resultado
+    function mostrarMenuResultado() {
+      const {puntajeFinal, descuentos} = actualizarPromedio();
+      
+      document.getElementById("resultTitle").textContent = "RESULTADO DE EJECUCIÓN";
+      document.getElementById("resultDetails").innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h4>${nombre}</h4>
+          <p><strong>PDR inicial:</strong> ${pdrInicial.toFixed(3)}</p>
+          <p><strong>Puntaje base:</strong> 10.000</p>
+          <p><strong>Descuentos:</strong> ${descuentos.toFixed(3)}</p>
+          <p><strong>Puntaje de Ejecución:</strong> ${puntajeFinal.toFixed(3)}</p>
+        </div>
+        <div style="text-align: center;">
+          <p>Seleccione el resultado de la rotura:</p>
+        </div>
+      `;
+      
+      document.getElementById("resultMenu").classList.remove("hidden");
+    }
+    
+    // Manejar eventos del menú de resultado
+    document.getElementById("resultMenu").addEventListener("click", (e) => {
+      const btn = e.target.closest(".menu-btn");
+      if (!btn) return;
+      const action = btn.dataset.action;
+      
+      const {puntajeFinal, descuentos} = actualizarPromedio();
+      let resultado = "";
+      let bonus = 0;
+      
+      if (action === "nula") {
+        resultado = "NULA";
+        bonus = 0;
+      } else if (action === "doblada") {
+        resultado = "DOBLADA";
+        bonus = 3;
+      } else if (action === "rota") {
+        resultado = "ROTA";
+        bonus = 5;
+      }
+      
+      // Calcular puntaje final con bonus
+      const puntajeConBonus = Math.max(0, puntajeFinal + bonus);
+      
+      // Guardar resultado
+      guardarResultado(puntajeConBonus, resultado, bonus);
+      
+      // Mostrar confirmación
+      document.getElementById("confirmationDetails").innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h4>${nombre}</h4>
+          <p><strong>PDR inicial:</strong> ${pdrInicial.toFixed(3)}</p>
+          <p><strong>Puntaje base:</strong> 10.000</p>
+          <p><strong>Descuentos:</strong> ${descuentos.toFixed(3)}</p>
+          <p><strong>Puntaje de Ejecución:</strong> ${puntajeFinal.toFixed(3)}</p>
+          <p><strong>Bonus por ${resultado.toLowerCase()}:</strong> +${bonus.toFixed(1)}</p>
+          <p><strong>Puntaje final:</strong> ${puntajeConBonus.toFixed(3)}</p>
+        </div>
+      `;
+      
+      // Ocultar menú de resultado y mostrar confirmación
+      document.getElementById("resultMenu").classList.add("hidden");
+      document.getElementById("confirmationMenu").classList.remove("hidden");
+    });
+    
+    // Manejar evento del menú de confirmación
+    document.getElementById("confirmationMenu").addEventListener("click", (e) => {
+      const btn = e.target.closest(".menu-btn");
+      if (!btn) return;
+      
+      if (btn.dataset.action === "finalizar") {
+        // Volver a la página start-games.html
+        window.location.href = `start-games.html?area=${encodeURIComponent(area)}`;
+      }
+    });
+    
+    // Guardar resultado en localStorage
+    function guardarResultado(puntaje, resultado, bonus) {
+      try {
+        // Obtener estado actual
+        const STATE_KEY = (a) => `ct_games_state_v1_${a || '?'}`;
+        const raw = localStorage.getItem(STATE_KEY(area));
+        const estado = raw ? JSON.parse(raw) : {};
+        
+        // Actualizar estado del competidor
+        if (!estado[compId]) estado[compId] = {};
+        estado[compId].roturaPuntaje = puntaje;
+        estado[compId].roturaResultado = resultado;
+        estado[compId].roturaBonus = bonus;
+        
+        // Guardar estado
+        localStorage.setItem(STATE_KEY(area), JSON.stringify(estado));
+        
+        // También guardar en resultados de sync
+        // IMPORTANTE: conservar resultados existentes de Salto, Lucha y Combate
+        const syncRaw = localStorage.getItem(RESULT_SYNC_KEY(area));
+        const syncData = syncRaw ? JSON.parse(syncRaw) : {};
+
+        // Si el competidor todavía no existe, creamos su objeto
+        if (!syncData[compId]) {
+          syncData[compId] = {};
+        }
+
+        // Actualizamos SOLAMENTE los datos de Rotura
+        syncData[compId].roturaPuntaje = puntaje;
+        syncData[compId].roturaResultado = resultado;
+        syncData[compId].roturaBonus = bonus;
+
+        // Guardamos nuevamente todo el objeto
+        localStorage.setItem(
+          RESULT_SYNC_KEY(area),
+          JSON.stringify(syncData)
+        );
+        
+      } catch(e) {
+        console.error("Error al guardar resultado:", e);
+      }
+    }
+    
+    // Manejar teclado
+    window.addEventListener("keydown", (e) => {
+      const ctrl = e.ctrlKey;
+      
+      if (ctrl && e.key.toLowerCase() === "z") {
+        deshacer();
+        e.preventDefault();
+        return;
+      }
+      
+      if (ctrl && e.key.toLowerCase() === "y") {
+        rehacer();
+        e.preventDefault();
+        return;
+      }
+      
+      if (e.key === "Enter") {
+        mostrarMenuResultado();
+        e.preventDefault();
+        return;
+      }
+      
+      if (e.key === "Escape") {
+        document.getElementById("resultMenu").classList.add("hidden");
+        document.getElementById("confirmationMenu").classList.add("hidden");
+        e.preventDefault();
+        return;
+      }
+    });
+    
+    // Iniciar loops
+    requestAnimationFrame(loopJoysticks);
+    requestAnimationFrame(procesarPuntosJoysticks);
+    requestAnimationFrame(loopPromedios);
+  </script>
 </body>
 </html>

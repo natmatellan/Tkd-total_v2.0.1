@@ -398,55 +398,57 @@
   50% { box-shadow: 0 0 30px #ffff00; }
 }
 
-#vs-title { 
-  position: absolute;
-  top: 20px; /* arriba de todo */ 
-  left: 0; 
-  width: 100%; /* ocupa todo el ancho */ 
-  text-align: center; 
-  font-size: 3rem; 
-  font-weight: 700; 
-  letter-spacing: 2px; 
-  text-transform: uppercase; 
-  z-index: 1000; 
-  white-space: nowrap; /* evita que se parta en varias líneas */ 
-  overflow: hidden; 
-  text-overflow: ellipsis; /* si fuera demasiado largo, pone … */ 
-  color: #fff; 
-  text-shadow: 
-    0 0 10px #39ff14,
-    0 0 20px #39ff14, 
-    0 0 30px #39ff14; 
-  }
-
-
-
-#nameA {
-  margin-right: 40px;
-  color: #black; /* azul */
-  text-shadow:
-    0 0 8px #00bfff,
-    0 0 16px #00bfff,
-    0 0 24px #00bfff;
+#vs-title {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 75px;
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 1000;
+}
+#vs-title span {
+  white-space: nowrap;
 }
 
-#vs-title span:nth-child(2) { /* el “VS” */
-  margin: 0 40px;
+#nameA {
+  color: #ffffff;
+  text-shadow: 0 0 8px #00bfff, 0 0 16px #00bfff, 0 0 24px #00bfff;
+  text-align: right; /* alinea hacia el VS */
+  font-size: 2.5rem;
+  flex: 1;
+}
+
+#vs-title .vs {
+  flex: 0;
   font-size: 2rem;
-  font-weight: 900;
-  color: #39ff14; /* verde neón */
-  text-shadow:
-    0 0 8px #39ff14,
-    0 0 16px #39ff14;
+  color: #ffffff;
+  text-shadow: 0 0 8px #39ff14, 0 0 16px #39ff14;
 }
 
 #nameB {
-  margin-left: 40px;
-  color: #ff1744; /* rojo */
-  text-shadow:
-    0 0 8px #ff1744,
-    0 0 16px #ff1744,
-    0 0 24px #ff1744;
+  color: #ffffff;
+  text-shadow: 0 0 8px #ff1744, 0 0 16px #ff1744, 0 0 24px #ff1744;
+  text-align: left; /* alinea hacia el VS */
+  font-size: 2.5rem;
+  flex: 1;
+}
+
+
+#area-number {
+    position: absolute;
+    text-align: center;
+    display: flex;
+    margin-top: 75px;
+    font-size: 1.2rem;
+    color: #39ff14;
+    font-weight: bold;
+    text-shadow: 0 0 8px #39ff14, 0 0 16px #39ff14, 0 0 24px #39ff14;
 }
 
 
@@ -549,7 +551,7 @@
 
 <h2 id="vs-title">
   <span id="nameA"></span>
-  <span>VS</span>
+  <span class="vs">VS</span>
   <span id="nameB"></span>
   <span id="area-number"></span>
 </h2>
@@ -675,17 +677,32 @@ const bId = Number(params.get("b"));
 
 const STORAGE_KEY = "ct_acreditaciones_v2";
 function leerCompetidores(){
-  const raw = localStorage.getItem(STORAGE_KEY);
+  const raw = localStorage.getItem("ct_acreditaciones_v1");
   if(!raw) return [];
   return JSON.parse(raw) || [];
 }
-const competidores = leerCompetidores();
-const A = competidores.find(c => c.id === aId);
-const B = competidores.find(c => c.id === bId);
-document.getElementById("vs-title").textContent =
-  `${A?.nombre || "—"}  VS  ${B?.nombre || "—"}`;
-document.getElementById("nameA").textContent = A?.nombre || "—";
-document.getElementById("nameB").textContent = B?.nombre || "—";
+
+document.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(location.search);
+  const area = params.get("area") || '1';
+  const aId = Number(params.get("a"));
+  const bId = Number(params.get("b"));
+  
+  // Usar la función leerCompetidores del scope global (definida más abajo)
+  const competidores = leerCompetidores();
+  const A = competidores.find(c => c.id === aId);
+  const B = competidores.find(c => c.id === bId);
+  
+  const nameA = document.getElementById("nameA");
+  const nameB = document.getElementById("nameB");
+  const areaNumber = document.getElementById("area-number");
+  
+  if (nameA && nameB && areaNumber) {
+    nameA.textContent = A?.nombre || "—";
+    nameB.textContent = B?.nombre || "—";
+    areaNumber.textContent = `Área ${area}`;
+  }
+});
 
 </script>
 
@@ -719,6 +736,76 @@ const actualizarHover = () => {
     if (activo) activo.classList.add("activo");
   }
 };
+
+
+// === Persistencia hacia Start-Games ===
+const RESULT_SYNC_KEY = (a)=>`ct_results_sync_v1_${a||'?'}`;
+
+// Guarda (merge) los resultados por competidor para que Start-Games los lea
+function pushResultadosCombate({ area, aId, bId, puntajeAzul, puntajeRojo, tiempoFin }) {
+  try {
+    const raw = localStorage.getItem(RESULT_SYNC_KEY(area));
+    const prev = raw ? JSON.parse(raw) : {};
+
+    // armamos el merge por id
+    const up = {
+      [aId]: { combatePuntaje: Number(puntajeAzul||0), combateTiempoFin: tiempoFin },
+      [bId]: { combatePuntaje: Number(puntajeRojo||0), combateTiempoFin: tiempoFin },
+    };
+
+    const merged = { ...prev, ...up };
+    localStorage.setItem(RESULT_SYNC_KEY(area), JSON.stringify(merged));
+
+    // Disparamos el evento 'storage' para otras pestañas (por compatibilidad algunos navegadores solo lo disparan entre tabs)
+    try {
+      window.dispatchEvent(new StorageEvent('storage', { key: RESULT_SYNC_KEY(area), newValue: JSON.stringify(merged) }));
+    } catch(_) {}
+  } catch(e){ console.error('pushResultadosCombate error', e); }
+}
+
+// Formatea ms -> "MM:SS"
+function fmtMMSS(ms){
+  const total = Math.max(0, Math.floor(ms/1000));
+  const mm = String(Math.floor(total/60)).padStart(2,'0');
+  const ss = String(total%60).padStart(2,'0');
+  return `${mm}:${ss}`;
+}
+
+
+// Guarda resultados por competidor (permite tiempos distintos)
+function pushResultadosCombatePorLuchador({ area, data }) {
+  try {
+    const key = `ct_results_sync_v1_${area || '?'}`;
+    const raw = localStorage.getItem(key);
+    const prev = raw ? JSON.parse(raw) : {};
+
+    // 🔴 MERGE PROFUNDO POR COMPETIDOR
+    const merged = { ...prev };
+    for (const [id, parcial] of Object.entries(data)) {
+      merged[id] = {
+        ...(prev[id] || {}),
+        ...parcial
+      };
+    }
+
+    localStorage.setItem(key, JSON.stringify(merged));
+
+    try {
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key,
+          newValue: JSON.stringify(merged)
+        })
+      );
+    } catch (_) {}
+  } catch (e) {
+    console.error("pushResultadosCombatePorLuchador error", e);
+  }
+}
+
+
+
+
 </script>
 
 <!-- Otros bloques irán luego: cronómetro, controles, puntajes, etc. -->
@@ -823,6 +910,7 @@ const iniciar = async () => {
 
         reproducirSonido(sonidoFinPelea);
         document.getElementById("titulo-round").textContent = "FIN DE PELEA";
+        mostrarResultadoFinalPorTiempo();
       }
       return;
     }
@@ -1131,20 +1219,40 @@ victoryMenu.addEventListener("click", (e) => {
       </div>
     `;
     
+
+
+       // tiempo transcurrido al declarar la victoria (en ms)
+      const elapsedMs = (duracion * 60 * 1000) - tiempoRestante;
+
+      // 👉 tiempos en SEGUNDOS con 3 decimales
+      const tiempoGanadorSeg = (elapsedMs / 1000).toFixed(3);      // ej: "11.605"
+      const tiempoRoundSeg   = (duracion * 60).toFixed(3);         // ej: "60.000" si duracion=1
+
+      // Armamos estructura per-luchador (tiempos distintos)
+      window.__combateResultadoPendiente = {
+        tipo: 'victoria',
+        area,
+        aId, bId,
+        perLuchador: {
+          [aId]: {
+            combatePuntaje: puntajeFinalAzul,
+            // Azul ganador -> tiempo real, si no -> tiempo completo
+            combateTiempoFin: esVictoriaAzul ? tiempoGanadorSeg : tiempoRoundSeg
+          },
+          [bId]: {
+            combatePuntaje: puntajeFinalRojo,
+            // Rojo ganador -> tiempo real, si no -> tiempo completo
+            combateTiempoFin: esVictoriaAzul ? tiempoRoundSeg : tiempoGanadorSeg
+          }
+        }
+      };
+
+
     // Mostrar menú de resultados y ocultar los demás
     victoryMenu.classList.add("hidden");
     pauseMenu.classList.add("hidden");
     document.getElementById("resultMenu").classList.remove("hidden");
     
-
-    // Prueba desl menu
-document.getElementById("resultMenu").addEventListener("click", (e) => {
-  const btn = e.target.closest(".menu-btn");
-  if (btn && btn.dataset.action === "finalizar") {
-    // Redirigir a start-games.html con el área original
-    window.location.href = `start-games.html?area=${area}`;
-  }
-});
 
 // Y actualiza la creación dinámica del menú (si la tienes en tu código):
 if (!document.getElementById("resultMenu")) {
@@ -1169,8 +1277,97 @@ if (!document.getElementById("resultMenu")) {
     }
   }
 });
+
+function mostrarResultadoFinalPorTiempo() {
+  const resultMenu = document.getElementById("resultMenu");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultDetails = document.getElementById("resultDetails");
+
+  const puntajeAzul = parseFloat(document.getElementById("promedio-azul")?.textContent || "0");
+  const puntajeRojo = parseFloat(document.getElementById("promedio-rojo")?.textContent || "0");
+  const ganador = puntajeAzul > puntajeRojo ? "Azul" : (puntajeRojo > puntajeAzul ? "Rojo" : "Empate");
+
+  // tiempo total del round (por defecto usás 1 round)
+  const durMs = duracion * 60 * 1000;
+  const durTexto = fmtMMSS(durMs); // para mostrar (MM:SS)
+  const durSegundos = (durMs / 1000).toFixed(3); // para guardar (sss.sss)
+  // Pintamos menú
+  resultTitle.textContent = "RESULTADO FINAL";
+  resultDetails.innerHTML = `
+    <div style="display:flex; justify-content:space-between; gap:20px; margin-bottom:20px;">
+      <div style="text-align:center;">
+        <h4 style="color:#2196F3; margin-bottom:5px;">Esquina Azul</h4>
+        <p><strong>Puntaje:</strong> ${puntajeAzul.toFixed(3)}</p>
+      </div>
+      <div style="text-align:center;">
+        <h4 style="color:#F44336; margin-bottom:5px;">Esquina Roja</h4>
+        <p><strong>Puntaje:</strong> ${puntajeRojo.toFixed(3)}</p>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:15px;">
+      <p><strong>Método:</strong> Tiempo cumplido</p>
+      <p><strong>Duración:</strong> ${(durMs / 1000).toFixed(3)} segundos</p>
+      <p><strong>Bonus por tiempo:</strong> 0 puntos</p>
+      <p><strong>Ganador por puntos:</strong> ${ganador}</p>
+    </div>
+  `;
+
+  // Guardamos en una variable global lo que vamos a persistir al tocar FINALIZAR
+      window.__combateResultadoPendiente = {
+        tipo: 'tiempo',
+        area,
+        aId, bId,
+        perLuchador: {
+          [aId]: { combatePuntaje: puntajeAzul, combateTiempoFin: durSegundos },
+          [bId]: { combatePuntaje: puntajeRojo, combateTiempoFin: durSegundos }
+        }
+      };
+
+  // Mostrar overlay
+  document.getElementById("victoryMenu")?.classList.add("hidden");
+  document.getElementById("pauseMenu")?.classList.add("hidden");
+  resultMenu.classList.remove("hidden");
+
+  // Por si quedó algo corriendo
+  if (corriendo) pausar();
+  if (enDescanso) { clearInterval(intervaloDescanso); enDescanso = false; }
+}
+
+
 actualizarDisplay();
 actualizarHover();
+
+
+// Listener GLOBAL para el botón "FINALIZAR" del menú de resultado
+const resultMenuEl = document.getElementById("resultMenu");
+if (resultMenuEl) {
+  resultMenuEl.addEventListener("click", (e) => {
+    const btn = e.target.closest('.menu-btn[data-action="finalizar"]');
+    if (!btn) return;
+
+    const pending = window.__combateResultadoPendiente;
+    if (pending?.perLuchador) {
+      // Guardado con tiempos por competidor
+      pushResultadosCombatePorLuchador({ area: pending.area, data: pending.perLuchador });
+    } else if (pending) {
+      // Fallback a tu helper anterior (si existiera)
+      pushResultadosCombate({
+        area: pending.area,
+        aId: pending.aId, bId: pending.bId,
+        puntajeAzul: pending.puntajeAzul,
+        puntajeRojo: pending.puntajeRojo,
+        tiempoFin: pending.tiempoFin
+      });
+    }
+
+    window.location.href = `start-games.html?area=${encodeURIComponent(area)}`;
+  });
+}
+
+
+
+
+
 </script>
 
 <!-- SCRIPT DE CRONOMETRO END   -->

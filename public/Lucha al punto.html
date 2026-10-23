@@ -2,11 +2,1653 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Lucha al punto - Torneo</title>
-  <link rel="stylesheet" href="css/estilos.css">
+  <title>Combate Total</title>
+  <style>
+	body {
+	  margin: 0;
+	  background: #111;
+	  font-family: sans-serif;
+	  color: white;
+	  overflow: hidden;
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  height: 100vh;
+	  flex-direction: column;
+	}
+
+.cronometro {
+  width: 180px;
+  height: 80px; /* menor altura */
+  background: #ffeb3b;
+  color: #000;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #000;
+  border-radius: 0; /* sin bordes redondeados */
+  box-shadow: 0 0 15px rgba(255, 255, 0, 0.4);
+  z-index: 1;
+}
+
+
+.menu-config {
+  position: absolute;
+  top: 20%;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #39ff14;
+  padding: 30px 60px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 0 20px #39ff14;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.menu-config.oculto {
+  display: none;
+}
+
+.menu-config .campo {
+  font-size: 1.4rem;
+  margin: 15px 0;
+}
+
+.menu-config .activo {
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+}
+
+
+    .config {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .config p {
+      font-size: 1.5rem;
+      margin: 10px;
+    }
+
+    .activo {
+      color: #39ff14;
+      text-shadow: 0 0 10px #39ff14;
+    }
+
+.juez-box {
+  position: absolute;
+  width: 70px;
+  text-align: center;
+  z-index: 10;
+}
+
+.juez-icono {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.puntos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.punto {
+  width: 60px;
+  padding: 4px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  border: 1px solid #000;
+}
+
+.punto.rojo {
+  background-color: #c62828;
+}
+
+.punto.azul {
+  background-color: #1565c0;
+}
+
+/* Posiciones en las esquinas */
+.esquina-izq-arriba {
+  top: 10px;
+  left: 10px;
+}
+
+.esquina-der-arriba {
+  top: 10px;
+  right: 10px;
+}
+
+.esquina-izq-abajo {
+  bottom: 10px;
+  left: 10px;
+}
+
+.esquina-der-abajo {
+  bottom: 10px;
+  right: 10px;
+}
+
+.juez-icono.seleccionando {
+  position: relative;
+  z-index: 1;
+}
+
+.juez-icono.seleccionando::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -2px;
+  background: #39ff14;
+  border: 3px solid #39ff14;
+  box-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14;
+  animation: parpadeo-verdoso 1s infinite;
+  z-index: -1;
+}
+
+
+
+
+.juez-icono.seleccionado {
+  position: relative;
+  z-index: 1;
+}
+
+.juez-icono.seleccionado::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -2px;
+  background: #39ff14;
+  border: 3px solid #39ff14;
+  box-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14;
+  z-index: -1;
+}
+
+.juez-icono.seleccionado::after {
+  content: attr(data-label);
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+  background: transparent;
+  padding: 1px 5px;
+  border-radius: 4px;
+  text-shadow: 0 0 3px #000;
+  z-index: 3;
+}
+
+
+
+
+@keyframes parpadeo {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@keyframes parpadeo-verdoso {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+
+.promedios {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 200px;
+  pointer-events: none;
+}
+
+.promedio-box {
+  width: 240px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  font-weight: bold;
+  color: white;
+  border: 3px solid #000;
+  text-shadow: 0 0 10px white;
+  box-shadow: 0 0 25px rgba(255,255,255,0.1);
+  border-radius: 0; /* sin redondeo */
+}
+
+.azul-neon {
+  background-color: #1565c0;
+  text-shadow: 0 0 10px #bbdefb, 0 0 20px #2196f3;
+}
+
+.rojo-neon {
+  background-color: #c62828;
+  text-shadow: 0 0 10px #ef9a9a, 0 0 20px #f44336;
+}
+
+
+.titulo-round {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+}
+
+.cronometro.descanso {
+  margin-top: 1rem;
+  width: 160px;
+  height: 60px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: #2c2c2c; /* gris oscuro */
+  color: #ffcc80; /* cobrizo suave */
+  border: 2px solid #8d6e63;
+  text-shadow: 0 0 6px #ffcc80, 0 0 12px #ffb74d;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(-30px);
+  animation: slideIn 0.5s forwards;
+}
+
+
+.oculto {
+  display: none;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.fondo-joystick1 {
+  background: rgba(57, 255, 20, 0.2); /* verde neón translúcido */
+  box-shadow: 0 0 15px #39ff14, 0 0 30px #39ff14;
+  border: 2px solid #39ff14;
+}
+
+.fondo-joystick2 {
+  background: rgba(255, 0, 0, 0.2); /* rojo neón */
+  box-shadow: 0 0 15px red, 0 0 30px red;
+  border: 2px solid red;
+}
+
+.fondo-joystick3 {
+  background: rgba(0, 128, 255, 0.2); /* azul neón */
+  box-shadow: 0 0 15px #00bfff, 0 0 30px #00bfff;
+  border: 2px solid #00bfff;
+}
+
+.fondo-joystick4 {
+  background: rgba(255, 255, 0, 0.2); /* amarillo neón */
+  box-shadow: 0 0 15px yellow, 0 0 30px yellow;
+  border: 2px solid yellow;
+}
+
+
+@keyframes parpadeo-verde {
+  0%, 100% { box-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14; }
+  50% { box-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14; }
+}
+
+@keyframes parpadeo-rojo {
+  0%, 100% { box-shadow: 0 0 10px red, 0 0 25px red; }
+  50% { box-shadow: 0 0 5px red, 0 0 10px red; }
+}
+
+@keyframes parpadeo-azul {
+  0%, 100% { box-shadow: 0 0 10px #00bfff, 0 0 25px #00bfff; }
+  50% { box-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff; }
+}
+
+@keyframes parpadeo-amarillo {
+  0%, 100% { box-shadow: 0 0 10px yellow, 0 0 25px yellow; }
+  50% { box-shadow: 0 0 5px yellow, 0 0 10px yellow; }
+}
+
+.seleccionando-verde {
+  animation: parpadeo-verde 1s infinite;
+  background: rgba(57, 255, 20, 0.15);
+  border: 2px solid #39ff14;
+}
+
+.seleccionando-rojo {
+  animation: parpadeo-rojo 1s infinite;
+  background: rgba(255, 0, 0, 0.15);
+  border: 2px solid red;
+}
+
+.seleccionando-azul {
+  animation: parpadeo-azul 1s infinite;
+  background: rgba(0, 128, 255, 0.15);
+  border: 2px solid #00bfff;
+}
+
+.seleccionando-amarillo {
+  animation: parpadeo-amarillo 1s infinite;
+  background: rgba(255, 255, 0, 0.15);
+  border: 2px solid yellow;
+}
+
+
+
+/* Fondos animados para selección */
+.fondo-joystick1 {
+  background: #00ff00;
+  animation: parpadeo-neon-verde 1s infinite;
+}
+
+.fondo-joystick2 {
+  background: #ff0000;
+  animation: parpadeo-neon-rojo 1s infinite;
+}
+
+.fondo-joystick3 {
+  background: #00bfff;
+  animation: parpadeo-neon-azul 1s infinite;
+}
+
+.fondo-joystick4 {
+  background: #ffff00;
+  animation: parpadeo-neon-amarillo 1s infinite;
+}
+
+/* Fondos fijos para selección confirmada */
+.fijo-joystick1 { background: #00ff00; }
+.fijo-joystick2 { background: #ff0000; }
+.fijo-joystick3 { background: #00bfff; }
+.fijo-joystick4 { background: #ffff00; }
+
+@keyframes parpadeo-neon-verde {
+  0%, 100% { box-shadow: 0 0 10px #00ff00; }
+  50% { box-shadow: 0 0 30px #00ff00; }
+}
+@keyframes parpadeo-neon-rojo {
+  0%, 100% { box-shadow: 0 0 10px #ff0000; }
+  50% { box-shadow: 0 0 30px #ff0000; }
+}
+@keyframes parpadeo-neon-azul {
+  0%, 100% { box-shadow: 0 0 10px #00bfff; }
+  50% { box-shadow: 0 0 30px #00bfff; }
+}
+@keyframes parpadeo-neon-amarillo {
+  0%, 100% { box-shadow: 0 0 10px #ffff00; }
+  50% { box-shadow: 0 0 30px #ffff00; }
+}
+
+#vs-title {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 75px;
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 1000;
+}
+#vs-title span {
+  white-space: nowrap;
+}
+
+#nameA {
+  color: #ffffff;
+  text-shadow: 0 0 8px #00bfff, 0 0 16px #00bfff, 0 0 24px #00bfff;
+  text-align: right; /* alinea hacia el VS */
+  font-size: 2.5rem;
+  flex: 1;
+}
+
+#vs-title .vs {
+  flex: 0;
+  font-size: 2rem;
+  color: #ffffff;
+  text-shadow: 0 0 8px #39ff14, 0 0 16px #39ff14;
+}
+
+#nameB {
+  color: #ffffff;
+  text-shadow: 0 0 8px #ff1744, 0 0 16px #ff1744, 0 0 24px #ff1744;
+  text-align: left; /* alinea hacia el VS */
+  font-size: 2.5rem;
+  flex: 1;
+}
+
+
+#area-number {
+    position: absolute;
+    text-align: center;
+    display: flex;
+    margin-top: 75px;
+    font-size: 1.2rem;
+    color: #39ff14;
+    font-weight: bold;
+    text-shadow: 0 0 8px #39ff14, 0 0 16px #39ff14, 0 0 24px #39ff14;
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.overlay.hidden { display: none; }
+
+.menu {
+  background: #111;
+  padding: 20px 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 20px #39ff14;
+}
+
+.menu h3 {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  color: #39ff14;
+  text-shadow: 0 0 10px #39ff14;
+}
+
+.menu-btn {
+  display: block;
+  width: 200px;
+  margin: 8px auto;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #222;
+  color: #fff;
+  text-transform: uppercase;
+  transition: 0.2s;
+}
+
+.menu-btn:hover {
+  background: #39ff14;
+  color: #000;
+}
+
+.tiempo-victoria {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.2em;
+  color: white;
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+#resultMenu .menu {
+  max-width: 500px;
+  width: 90%;
+  padding: 25px;
+}
+
+#resultDetails {
+  font-size: 1.1em;
+  color: #ddd;
+}
+
+#resultDetails h4 {
+  margin: 0;
+  padding: 5px 0;
+  text-shadow: 0 0 5px currentColor;
+}
+
+#resultDetails strong {
+  color: #fff;
+}
+
+#resultDetails div > div {
+  flex: 1;
+  padding: 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+}
+
+  </style>
 </head>
 <body>
-  <h1 style="color: #00bfff;">🏅 Modalidad: Lucha al punto</h1>
-  <p>Acá se mostrará la tabla de participantes y resultados de salto.</p>
+  <!-- Menú de configuración oculto -->
+  <div id="menu-config" class="menu-config oculto">
+    <p class="campo activo" id="campo-0">Rounds: <span id="rounds">2</span></p>
+    <p class="campo" id="campo-1">Minutos por round: <span id="duracion">1</span></p>
+    <p class="campo" id="campo-2">Minutos de descanso: <span id="descanso">1</span></p>
+  </div>
+
+<h2 id="vs-title">
+  <span id="nameA"></span>
+  <span class="vs">VS</span>
+  <span id="nameB"></span>
+  <span id="area-number"></span>
+</h2>
+
+
+
+<div id="titulo-round" class="titulo-round">ROUND 1</div>
+
+
+  <!-- Cronómetro central -->
+  <div class="cronometro" id="cronometro">01:00.000</div>
+
+  <div class="cronometro descanso oculto" id="cronometro-descanso">00:30.000</div>
+
+
+<div class="promedios">
+  <div class="promedio-box azul-neon" id="promedio-azul">0.0</div>
+  <div class="promedio-box rojo-neon" id="promedio-rojo">0.0</div>
+</div>
+
+
+<!-- JUEZ esquina superior izquierda -->
+<div class="juez-box esquina-izq-arriba" data-id="0">
+  <div class="juez-icono" id="juez-0">👨‍⚖️</div>
+  <div class="puntos">
+    <div class="punto rojo" id="rojo-0">0</div>
+    <div class="punto azul" id="azul-0">0</div>
+  </div>
+</div>
+
+
+<!-- Repetí lo mismo con diferente posición y ID para cada esquina -->
+
+<div class="juez-box esquina-der-arriba" data-id="1">
+  <div class="juez-icono" id="juez-1">👨‍⚖️</div>
+  <div class="puntos">
+    <div class="punto rojo" id="rojo-1">0</div>
+    <div class="punto azul" id="azul-1">0</div>
+  </div>
+</div>
+
+<div class="juez-box esquina-izq-abajo" data-id="2">
+  <div class="juez-icono" id="juez-2">👨‍⚖️</div>
+  <div class="puntos">
+    <div class="punto rojo" id="rojo-2">0</div>
+    <div class="punto azul" id="azul-2">0</div>
+  </div>
+</div>
+
+
+<div class="juez-box esquina-der-abajo" data-id="3">
+  <div class="juez-icono" id="juez-3">👨‍⚖️</div>
+  <div class="puntos">
+    <div class="punto rojo" id="rojo-3">0</div>
+    <div class="punto azul" id="azul-3">0</div>
+  </div>
+</div>
+
+<!-- Overlay de pausa -->
+<div id="pauseMenu" class="overlay hidden">
+  <div class="menu">
+    <h3>Menú de Pausa</h3>
+    <button class="menu-btn" data-action="resume">Reanudar</button>
+    <button class="menu-btn" data-action="victory-blue">Victoria Azul</button>
+    <button class="menu-btn" data-action="victory-red">Victoria Rojo</button>
+  </div>
+</div>
+
+<!-- Submenú de victoria -->
+<div id="victoryMenu" class="overlay hidden">
+  <div class="menu">
+    <h3 id="victoryTitle">Victoria</h3>
+    <button class="menu-btn" data-action="jueces">Decisión de los Medicos</button>
+    <button class="menu-btn" data-action="medicos">Decisión de los Jueces</button>
+<!--     <button class="menu-btn" data-action="submission">Sumisión</button> -->
+    <button class="menu-btn" data-action="back">← Volver</button>
+  </div>
+</div>
+
+
+<!-- Submenú de resultado final -->
+
+<div id="resultMenu" class="overlay hidden">
+  <div class="menu">
+    <h3 id="resultTitle">RESULTADO FINAL</h3>
+    <div id="resultDetails" style="text-align: left; margin: 20px 0; line-height: 1.6;"></div>
+    <button class="menu-btn" data-action="finalizar">FINALIZAR</button>
+  </div>
+</div>
+
+<script id="variables">
+// Variables y sonidos
+let ultimoSegundoBipeado = null;
+let rounds = 1;
+let descanso = 0;
+let duracion = 2;
+let tiempoRestante = duracion * 60 * 1000;
+let tiempoAcumulado = tiempoRestante;
+let tiempoInicio = 0;
+let roundActual = 1;
+let enDescanso = false;
+let tiempoDescanso = descanso * 60 * 1000;
+let tiempoDescansoRestante = tiempoDescanso;
+let tiempoDescansoInicio = 0;
+let intervaloDescanso;
+const sonido10sec = new Audio("/sounds/10sec.mp3");
+sonido10sec.preload = "auto";
+sonido10sec.loop = false;
+const sonidoRound = new Audio("/sounds/startEndRound.mp3");
+const sonidoFinPelea = new Audio("/sounds/endFight.mp3");
+
+let indexCampo = 0;
+let menuAbierto = false;
+let corriendo = false;
+let intervalo;
+let historial = [];
+let cursorHistorial = -1;
+const params = new URLSearchParams(location.search);
+const area = params.get("area");
+document.getElementById("area-number").textContent = area;
+const aId = Number(params.get("a"));
+const bId = Number(params.get("b"));
+
+const STORAGE_KEY = "ct_acreditaciones_v2";
+function leerCompetidores(){
+  const raw = localStorage.getItem("ct_acreditaciones_v1");
+  if(!raw) return [];
+  return JSON.parse(raw) || [];
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(location.search);
+  const area = params.get("area") || '1';
+  const aId = Number(params.get("a"));
+  const bId = Number(params.get("b"));
+  
+  // Usar la función leerCompetidores del scope global (definida más abajo)
+  const competidores = leerCompetidores();
+  const A = competidores.find(c => c.id === aId);
+  const B = competidores.find(c => c.id === bId);
+  
+  const nameA = document.getElementById("nameA");
+  const nameB = document.getElementById("nameB");
+  const areaNumber = document.getElementById("area-number");
+  
+  if (nameA && nameB && areaNumber) {
+    nameA.textContent = A?.nombre || "—";
+    nameB.textContent = B?.nombre || "—";
+    areaNumber.textContent = `Área ${area}`;
+  }
+});
+
+</script>
+
+<script id="display">
+// Actualizaciones visuales
+const actualizarDisplay = () => {
+  document.getElementById("rounds").textContent = rounds;
+  document.getElementById("duracion").textContent = duracion;
+  document.getElementById("descanso").textContent = descanso.toFixed(1);
+  document.getElementById("titulo-round").textContent = `ROUND ${roundActual}`;
+  const mins = Math.floor(tiempoRestante / 60000).toString().padStart(2, '0');
+  const segs = Math.floor((tiempoRestante % 60000) / 1000).toString().padStart(2, '0');
+  const ms = (tiempoRestante % 1000).toString().padStart(3, '0');
+  document.getElementById("cronometro").textContent = `${mins}:${segs}.${ms}`;
+};
+
+function actualizarDescansoDisplay() {
+  const mins = Math.floor(tiempoDescansoRestante / 60000).toString().padStart(2, '0');
+  const segs = Math.floor((tiempoDescansoRestante % 60000) / 1000).toString().padStart(2, '0');
+  const ms = (tiempoDescansoRestante % 1000).toString().padStart(3, '0');
+  document.getElementById("cronometro-descanso").textContent = `${mins}:${segs}.${ms}`;
+}
+
+const actualizarHover = () => {
+  for (let i = 0; i < 3; i++) {
+    const campo = document.getElementById(`campo-${i}`);
+    if (campo) campo.classList.remove("activo");
+  }
+  if (menuAbierto) {
+    const activo = document.getElementById(`campo-${indexCampo}`);
+    if (activo) activo.classList.add("activo");
+  }
+};
+
+
+// === Persistencia hacia Start-Games ===
+const RESULT_SYNC_KEY = (a)=>`ct_results_sync_v1_${a||'?'}`;
+
+// Guarda (merge) los resultados por competidor para que Start-Games los lea
+function pushResultadosCombate({ area, aId, bId, puntajeAzul, puntajeRojo, tiempoFin }) {
+  try {
+    const raw = localStorage.getItem(RESULT_SYNC_KEY(area));
+    const prev = raw ? JSON.parse(raw) : {};
+
+    // armamos el merge por id
+    const up = {
+      [aId]: { combatePuntaje: Number(puntajeAzul||0), combateTiempoFin: tiempoFin },
+      [bId]: { combatePuntaje: Number(puntajeRojo||0), combateTiempoFin: tiempoFin },
+    };
+
+    const merged = { ...prev, ...up };
+    localStorage.setItem(RESULT_SYNC_KEY(area), JSON.stringify(merged));
+
+    // Disparamos el evento 'storage' para otras pestañas (por compatibilidad algunos navegadores solo lo disparan entre tabs)
+    try {
+      window.dispatchEvent(new StorageEvent('storage', { key: RESULT_SYNC_KEY(area), newValue: JSON.stringify(merged) }));
+    } catch(_) {}
+  } catch(e){ console.error('pushResultadosCombate error', e); }
+}
+
+// Formatea ms -> "MM:SS"
+function fmtMMSS(ms){
+  const total = Math.max(0, Math.floor(ms/1000));
+  const mm = String(Math.floor(total/60)).padStart(2,'0');
+  const ss = String(total%60).padStart(2,'0');
+  return `${mm}:${ss}`;
+}
+
+
+// Guarda resultados por competidor (permite tiempos distintos)
+// Guarda resultados de LUCHA POR PUNTOS por competidor (merge profundo)
+function pushResultadosLuchaPorLuchador({ area, data }) {
+  try {
+    const key = `ct_results_sync_v1_${area || '?'}`;
+    const raw = localStorage.getItem(key);
+    const prev = raw ? JSON.parse(raw) : {};
+
+    // merge por competidor para no perder rotura/salto/combate
+    const merged = { ...prev };
+    for (const [id, parcial] of Object.entries(data)) {
+      merged[id] = {
+        ...(prev[id] || {}),
+        ...parcial      // ← acá viene luchaPuntaje
+      };
+    }
+
+    localStorage.setItem(key, JSON.stringify(merged));
+
+    try {
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key,
+          newValue: JSON.stringify(merged),
+        })
+      );
+    } catch (_) {}
+  } catch (e) {
+    console.error("pushResultadosLuchaPorLuchador error", e);
+  }
+}
+
+
+
+</script>
+
+<!-- Otros bloques irán luego: cronómetro, controles, puntajes, etc. -->
+
+
+<!-- SCRIPT DE CRONOMETRO BEGIN   -->
+
+<script id="cronometro">
+// Variables para el marcador
+let puntosAzul = 0;
+let puntosRojo = 0;
+let tiempoTranscurridoFinal = 0;
+
+function reproducirSonido(audio) {
+  return new Promise((resolve) => {
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+    audio.onended = () => resolve();
+  });
+}
+
+function sonar10segundos(segundosRestantes) {
+  if (
+    segundosRestantes <= 10 &&
+    segundosRestantes >= 1 &&
+    segundosRestantes !== ultimoSegundoBipeado
+  ) {
+    if (sonido10sec.paused || sonido10sec.ended) {
+      sonido10sec.currentTime = 0;
+      sonido10sec.play().catch(() => {});
+      ultimoSegundoBipeado = segundosRestantes;
+    }
+  }
+
+  if (segundosRestantes <= 0 || segundosRestantes > 10) {
+    if (!sonido10sec.paused) {
+      sonido10sec.onended = () => {
+        sonido10sec.currentTime = 0;
+      };
+    }
+  }
+}
+
+let enDescansoPausado = false;
+
+const guardarHistorial = () => {
+  historial = historial.slice(0, cursorHistorial + 1);
+  historial.push(tiempoRestante);
+  cursorHistorial++;
+};
+
+const deshacer = () => {
+  if (cursorHistorial > 0) {
+    cursorHistorial--;
+    tiempoRestante = historial[cursorHistorial];
+    tiempoAcumulado = tiempoRestante;
+    actualizarDisplay();
+  }
+};
+
+const rehacer = () => {
+  if (cursorHistorial < historial.length - 1) {
+    cursorHistorial++;
+    tiempoRestante = historial[cursorHistorial];
+    tiempoAcumulado = tiempoRestante;
+    actualizarDisplay();
+  }
+};
+
+const iniciar = async () => {
+  if (corriendo || menuAbierto || enDescanso) return;
+  guardarHistorial();
+  corriendo = true;
+  fightPaused = false;
+  pauseMenu.classList.add("hidden");
+
+  await reproducirSonido(sonidoRound);
+  tiempoInicio = Date.now();
+  ultimoSegundoBipeado = null;
+
+  intervalo = setInterval(() => {
+    const transcurrido = Date.now() - tiempoInicio;
+    tiempoRestante = tiempoAcumulado - transcurrido;
+
+    const segundosRestantes = Math.floor((tiempoRestante - 0) / 1000);
+    sonar10segundos(segundosRestantes);
+
+    if (tiempoRestante <= 0) {
+      clearInterval(intervalo);
+      tiempoRestante = 0;
+      corriendo = false;
+      actualizarDisplay();
+
+      if (roundActual < rounds) {
+        iniciarDescanso();
+      } else {
+        if (!sonido10sec.paused) {
+          sonido10sec.onended = () => {
+            sonido10sec.currentTime = 0;
+          };
+        }
+
+        reproducirSonido(sonidoFinPelea);
+        document.getElementById("titulo-round").textContent = "FIN DE PELEA";
+        mostrarResultadoFinalPorTiempo();
+      }
+      return;
+    }
+
+    actualizarDisplay();
+  }, 10);
+};
+
+const pausar = () => {
+  if (corriendo) {
+    clearInterval(intervalo);
+    tiempoAcumulado = tiempoRestante;
+    corriendo = false;
+    guardarHistorial();
+    pauseMenu.classList.remove("hidden");
+    fightPaused = true;
+  } else if (enDescanso) {
+    clearInterval(intervaloDescanso);
+    tiempoDescanso = tiempoDescansoRestante;
+    enDescanso = false;
+    enDescansoPausado = true;
+    pauseMenu.classList.remove("hidden");
+    fightPaused = true;
+  }
+};
+
+const reiniciar = () => {
+  if (corriendo) clearInterval(intervalo);
+  guardarHistorial();
+  tiempoRestante = duracion * 60 * 1000;
+  tiempoAcumulado = tiempoRestante;
+  corriendo = false;
+  fightPaused = false;
+  pauseMenu.classList.add("hidden");
+  actualizarDisplay();
+};
+
+async function iniciarDescanso() {
+  await reproducirSonido(sonidoRound);
+  enDescanso = true;
+  enDescansoPausado = false;
+  fightPaused = false;
+  pauseMenu.classList.add("hidden");
+  tiempoDescanso = descanso * 60 * 1000;
+  tiempoDescansoRestante = tiempoDescanso;
+  tiempoDescansoInicio = Date.now();
+  ultimoSegundoBipeado = null;
+
+  actualizarDescansoDisplay();
+  document.getElementById("cronometro-descanso").classList.remove("oculto");
+
+  intervaloDescanso = setInterval(() => {
+    const transcurrido = Date.now() - tiempoDescansoInicio;
+    tiempoDescansoRestante = tiempoDescanso - transcurrido;
+
+    const segundosDescanso = Math.floor(tiempoDescansoRestante / 1000);
+    sonar10segundos(segundosDescanso);
+
+    if (tiempoDescansoRestante <= 0) {
+      clearInterval(intervaloDescanso);
+      tiempoDescansoRestante = 0;
+      enDescanso = false;
+      document.getElementById("cronometro-descanso").classList.add("oculto");
+
+      if (!sonido10sec.paused) {
+        sonido10sec.onended = () => {
+          sonido10sec.currentTime = 0;
+        };
+      }
+
+      if (roundActual < rounds) iniciarProximoRound();
+    }
+
+    actualizarDescansoDisplay();
+  }, 10);
+}
+
+function reanudarDescanso() {
+  enDescanso = true;
+  enDescansoPausado = false;
+  fightPaused = false;
+  pauseMenu.classList.add("hidden");
+  tiempoDescansoInicio = Date.now();
+  ultimoSegundoBipeado = null;
+
+  intervaloDescanso = setInterval(() => {
+    const transcurrido = Date.now() - tiempoDescansoInicio;
+    tiempoDescansoRestante = tiempoDescanso - transcurrido;
+
+    const segundosDescanso = Math.floor(tiempoDescansoRestante / 1000);
+    sonar10segundos(segundosDescanso);
+
+    if (tiempoDescansoRestante <= 0) {
+      clearInterval(intervaloDescanso);
+      tiempoDescansoRestante = 0;
+      enDescanso = false;
+      document.getElementById("cronometro-descanso").classList.add("oculto");
+
+      if (!sonido10sec.paused) {
+        sonido10sec.onended = () => {
+          sonido10sec.currentTime = 0;
+        };
+      }
+
+      if (roundActual < rounds) iniciarProximoRound();
+    }
+
+    actualizarDescansoDisplay();
+  }, 10);
+}
+
+function iniciarProximoRound() {
+  roundActual++;
+  if (roundActual > rounds) {
+    document.getElementById("titulo-round").textContent = "FIN DE PELEA";
+    return;
+  }
+
+  tiempoRestante = duracion * 60 * 1000;
+  tiempoAcumulado = tiempoRestante;
+  actualizarDisplay();
+  iniciar();
+}
+
+const toggleMenu = () => {
+  if (corriendo || enDescanso || enDescansoPausado) return;
+  menuAbierto = !menuAbierto;
+  document.getElementById("menu-config").classList.toggle("oculto", !menuAbierto);
+  actualizarHover();
+};
+
+window.addEventListener("keydown", (e) => {
+  const ctrl = e.ctrlKey;
+
+  if (e.key === "Enter" && !corriendo && !enDescanso && !enDescansoPausado) {
+    toggleMenu();
+    e.preventDefault();
+    return;
+  }
+
+  if (menuAbierto) {
+    if (e.key === "ArrowUp") indexCampo = (indexCampo - 1 + 3) % 3;
+    if (e.key === "ArrowDown") indexCampo = (indexCampo + 1) % 3;
+
+    if (e.key === "ArrowLeft") {
+      if (indexCampo === 0 && rounds > 1) rounds--;
+      else if (indexCampo === 1 && duracion > 1) {
+        guardarHistorial();
+        duracion--;
+        tiempoRestante = duracion * 60 * 1000;
+        tiempoAcumulado = tiempoRestante;
+      } else if (indexCampo === 2 && descanso > 0.5) {
+        descanso = Math.max(0.5, descanso - 0.5);
+        tiempoDescanso = descanso * 60 * 1000;
+        actualizarDescansoDisplay();
+      }
+      actualizarDisplay();
+    }
+
+    if (e.key === "ArrowRight") {
+      if (indexCampo === 0) rounds++;
+      else if (indexCampo === 1) {
+        guardarHistorial();
+        duracion++;
+        tiempoRestante = duracion * 60 * 1000;
+        tiempoAcumulado = tiempoRestante;
+      } else if (indexCampo === 2) {
+        descanso += 0.5;
+        tiempoDescanso = descanso * 60 * 1000;
+        actualizarDescansoDisplay();
+      }
+      actualizarDisplay();
+    }
+
+    actualizarHover();
+    e.preventDefault();
+    return;
+  }
+
+  if (e.code === "Space") {
+    if (corriendo || enDescanso) {
+      pausar();
+    } else if (enDescansoPausado) {
+      reanudarDescanso();
+    } else {
+      iniciar();
+    }
+    e.preventDefault();
+    return;
+  }
+
+  if (e.key === "Delete") {
+    reiniciar();
+    return;
+  }
+
+  if (ctrl && e.key.toLowerCase() === "z") {
+    deshacer();
+    e.preventDefault();
+    return;
+  }
+
+  if (ctrl && e.key.toLowerCase() === "a") {
+    rehacer();
+    e.preventDefault();
+    return;
+  }
+});
+
+// Elementos del menú de pausa
+const pauseMenu = document.getElementById("pauseMenu");
+const victoryMenu = document.getElementById("victoryMenu");
+const victoryTitle = document.getElementById("victoryTitle");
+let fightPaused = false;
+
+// Listener botones menú pausa
+pauseMenu.addEventListener("click", (e) => {
+  const btn = e.target.closest(".menu-btn");
+  if (!btn) return;
+  const action = btn.dataset.action;
+
+  if (action === "resume") {
+    pauseMenu.classList.add("hidden");
+    if (enDescansoPausado) {
+      reanudarDescanso();
+    } else {
+      iniciar();
+    }
+    fightPaused = false;
+  }
+  if (action === "victory-blue") {
+    pauseMenu.classList.add("hidden");
+    victoryTitle.textContent = "Victoria Azul";
+    victoryMenu.classList.remove("hidden");
+  }
+  if (action === "victory-red") {
+    pauseMenu.classList.add("hidden");
+    victoryTitle.textContent = "Victoria Rojo";
+    victoryMenu.classList.remove("hidden");
+  }
+});
+
+// Listener botones submenú victoria
+// Listener botones submenú victoria
+victoryMenu.addEventListener("click", (e) => {
+  const btn = e.target.closest(".menu-btn");
+  if (!btn) return;
+  const action = btn.dataset.action;
+
+  if (action === "back") {
+    victoryMenu.classList.add("hidden");
+    pauseMenu.classList.remove("hidden");
+    return;
+  }
+
+  if (action === "jueces" || action === "medicos") {
+    // Calcular tiempo transcurrido
+    const tiempoTotal = (duracion * 60 * 1000) - tiempoRestante;
+    const segundos = Math.floor(tiempoTotal / 1000);
+    
+    // Determinar puntos según el tiempo
+    let puntosBonus = 0;
+    if (segundos < 30) puntosBonus = 15;
+    else if (segundos < 90) puntosBonus = 10;
+    else if (segundos <= 120) puntosBonus = 7;
+    else puntosBonus = 0;
+    
+    // Determinar ganador
+    const esVictoriaAzul = victoryTitle.textContent.includes("Azul");
+    const ganador = esVictoriaAzul ? "azul" : "rojo";
+    
+    // Obtener puntajes actuales
+    const puntajeAzul = parseFloat(document.getElementById("promedio-azul").textContent);
+    const puntajeRojo = parseFloat(document.getElementById("promedio-rojo").textContent);
+    
+    // Calcular puntajes finales
+    const puntajeFinalAzul = esVictoriaAzul ? puntajeAzul + puntosBonus : puntajeAzul;
+    const puntajeFinalRojo = !esVictoriaAzul ? puntajeRojo + puntosBonus : puntajeRojo;
+    
+    // Formatear tiempo para mostrar
+    const formatoTiempo = (ms) => {
+      const mins = Math.floor(ms / 60000).toString().padStart(2, '0');
+      const segs = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+      return `${mins}:${segs}`;
+    };
+    
+    // Configurar contenido del menú de resultados
+    document.getElementById("resultTitle").textContent = `RESULTADO FINAL`;
+    document.getElementById("resultDetails").innerHTML = `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <div style="text-align: center;">
+          <h4 style="color: #2196F3; margin-bottom: 5px;">Esquina Azul</h4>
+          <p><strong>Puntaje:</strong> ${puntajeFinalAzul.toFixed(3)}</p>
+          <p><strong>Tiempo:</strong> ${esVictoriaAzul ? formatoTiempo(tiempoRestante) : "00:00"}</p>
+        </div>
+        <div style="text-align: center;">
+          <h4 style="color: #F44336; margin-bottom: 5px;">Esquina Roja</h4>
+          <p><strong>Puntaje:</strong> ${puntajeFinalRojo.toFixed(3)}</p>
+          <p><strong>Tiempo:</strong> ${!esVictoriaAzul ? formatoTiempo(tiempoRestante) : "00:00"}</p>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 15px;">
+        <p><strong>Método de Victoria:</strong> ${action.toUpperCase()}</p>
+        <p><strong>Duración:</strong> ${segundos} segundos</p>
+        <p><strong>Bonus por tiempo:</strong> ${puntosBonus} puntos</p>
+      </div>
+    `;
+    
+
+
+      // tiempo transcurrido al declarar la victoria
+      const elapsed = (duracion * 60 * 1000) - tiempoRestante; // ms
+      const tiempoGanador  = fmtMMSS(elapsed);
+      const tiempoRound    = fmtMMSS(duracion * 60 * 1000);
+
+      // Armamos estructura per-luchador (tiempos distintos)
+      window.__combateResultadoPendiente = {
+        tipo: 'victoriaLucha',
+        area,
+        aId, bId,
+        perLuchador: {
+          [aId]: {
+            luchaPuntaje: puntajeFinalAzul
+          },
+          [bId]: {
+            luchaPuntaje: puntajeFinalRojo
+          }
+        }
+      };
+
+
+
+    // Mostrar menú de resultados y ocultar los demás
+    victoryMenu.classList.add("hidden");
+    pauseMenu.classList.add("hidden");
+    document.getElementById("resultMenu").classList.remove("hidden");
+    
+
+// Y actualiza la creación dinámica del menú (si la tienes en tu código):
+if (!document.getElementById("resultMenu")) {
+  const resultMenu = document.createElement('div');
+  resultMenu.id = 'resultMenu';
+  resultMenu.className = 'overlay hidden';
+  resultMenu.innerHTML = `
+    <div class="menu">
+      <h3 id="resultTitle">RESULTADO FINAL</h3>
+      <div id="resultDetails"></div>
+      <button class="menu-btn" data-action="finalizar">FINALIZAR</button>
+    </div>
+  `;
+  document.body.appendChild(resultMenu);
+}
+
+    // Detener cualquier temporizador activo
+    if (corriendo) pausar();
+    if (enDescanso) {
+      clearInterval(intervaloDescanso);
+      enDescanso = false;
+    }
+  }
+});
+
+function mostrarResultadoFinalPorTiempo() {
+  const resultMenu = document.getElementById("resultMenu");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultDetails = document.getElementById("resultDetails");
+
+  const puntajeAzul = parseFloat(document.getElementById("promedio-azul")?.textContent || "0");
+  const puntajeRojo = parseFloat(document.getElementById("promedio-rojo")?.textContent || "0");
+  const ganador = puntajeAzul > puntajeRojo ? "Azul" : (puntajeRojo > puntajeAzul ? "Rojo" : "Empate");
+
+  // tiempo total del round (por defecto usás 1 round)
+  const durMs = duracion * 60 * 1000;
+  const durTexto = fmtMMSS(durMs);
+
+  // Pintamos menú
+  resultTitle.textContent = "RESULTADO FINAL";
+  resultDetails.innerHTML = `
+    <div style="display:flex; justify-content:space-between; gap:20px; margin-bottom:20px;">
+      <div style="text-align:center;">
+        <h4 style="color:#2196F3; margin-bottom:5px;">Esquina Azul</h4>
+        <p><strong>Puntaje:</strong> ${puntajeAzul.toFixed(3)}</p>
+      </div>
+      <div style="text-align:center;">
+        <h4 style="color:#F44336; margin-bottom:5px;">Esquina Roja</h4>
+        <p><strong>Puntaje:</strong> ${puntajeRojo.toFixed(3)}</p>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:15px;">
+      <p><strong>Método:</strong> Tiempo cumplido</p>
+      <p><strong>Duración:</strong> ${durTexto}</p>
+      <p><strong>Bonus por tiempo:</strong> 0 puntos</p>
+      <p><strong>Ganador por puntos:</strong> ${ganador}</p>
+    </div>
+  `;
+
+  // Guardamos en una variable global lo que vamos a persistir al tocar FINALIZAR
+      window.__combateResultadoPendiente = {
+        tipo: 'tiempoLucha',
+        area,
+        aId, bId,
+        perLuchador: {
+          [aId]: { luchaPuntaje: puntajeAzul },
+          [bId]: { luchaPuntaje: puntajeRojo }
+        }
+      };
+
+
+  // Mostrar overlay
+  document.getElementById("victoryMenu")?.classList.add("hidden");
+  document.getElementById("pauseMenu")?.classList.add("hidden");
+  resultMenu.classList.remove("hidden");
+
+  // Por si quedó algo corriendo
+  if (corriendo) pausar();
+  if (enDescanso) { clearInterval(intervaloDescanso); enDescanso = false; }
+}
+
+
+actualizarDisplay();
+actualizarHover();
+
+
+// Listener GLOBAL para el botón "FINALIZAR" del menú de resultado
+const resultMenuEl = document.getElementById("resultMenu");
+if (resultMenuEl) {
+  resultMenuEl.addEventListener("click", (e) => {
+    const btn = e.target.closest('.menu-btn[data-action="finalizar"]');
+    if (!btn) return;
+
+    const pending = window.__combateResultadoPendiente;
+    if (pending?.perLuchador) {
+      // Guardado de LUCHA al punto
+      pushResultadosLuchaPorLuchador({
+        area: pending.area,
+        data: pending.perLuchador
+      });
+    }
+    window.location.href = `start-games.html?area=${encodeURIComponent(area)}`;
+
+})}
+
+
+
+
+
+</script>
+
+<!-- SCRIPT DE CRONOMETRO END   -->
+
+
+
+<!-- SCRIPT DE JOYSTICKS SELECCION DE JUEZ BEGIN   -->
+
+
+<script id="joystick-seleccion">
+const joystickState = Array(4).fill().map(() => ({
+  modo: "inactivo", // inactivo | seleccionando | confirmado
+  juez: null,
+  lastPressed: {}
+}));
+
+const colores = ["verde", "rojo", "azul", "amarillo"];
+const clasesParpadeo = [
+  "seleccionando-verde",
+  "seleccionando-rojo",
+  "seleccionando-azul",
+  "seleccionando-amarillo"
+];
+const clasesFondo = [
+  "fondo-joystick1",
+  "fondo-joystick2",
+  "fondo-joystick3",
+  "fondo-joystick4"
+];
+
+function loopJoysticks() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+
+  pads.forEach((pad, index) => {
+    if (!pad) return;
+
+    const state = joystickState[index];
+    const botones = pad.buttons;
+    const ejes = pad.axes;
+    const pressed = (i) => botones[i]?.pressed;
+    const justPressed = (i) => pressed(i) && !state.lastPressed[i];
+    const updatePressed = (i) => (state.lastPressed[i] = pressed(i));
+
+    // START → entrar a selección
+    if (justPressed(9) && state.modo === "inactivo") {
+      const libre = primerJuezLibre();
+      if (libre !== null) {
+        state.modo = "seleccionando";
+        state.juez = libre;
+        aplicarParpadeo(index, libre);
+      }
+    }
+
+    // SELECT → confirmar o cancelar
+    if (justPressed(8)) {
+      if (state.modo === "seleccionando") {
+        state.modo = "confirmado";
+        aplicarFondo(index, state.juez);
+      } else if (state.modo === "confirmado") {
+        removerFondo(index, state.juez);
+        state.modo = "seleccionando";
+        aplicarParpadeo(index, state.juez);
+      }
+    }
+
+    // Movimiento entre jueces por ejes (← → en axis 0)
+    if (state.modo === "seleccionando") {
+      const now = Date.now();
+      const moveCooldown = 250; // milisegundos
+      state.lastMoveTime ??= 0;
+
+      if (now - state.lastMoveTime > moveCooldown) {
+        if (ejes[0] <= -0.9) {
+          mover(index, -1); // ←
+          state.lastMoveTime = now;
+        }
+        if (ejes[0] >= 0.9) {
+          mover(index, 1);  // →
+          state.lastMoveTime = now;
+        }
+      }
+    }
+
+    // Actualizar botones
+    for (let i = 0; i < botones.length; i++) updatePressed(i);
+  });
+
+  requestAnimationFrame(loopJoysticks);
+}
+
+requestAnimationFrame(loopJoysticks);
+
+// === FUNCIONES AUXILIARES ===
+
+function primerJuezLibre() {
+  const usados = joystickState
+    .filter(js => js.modo === "confirmado")
+    .map(js => js.juez);
+  for (let i = 0; i < 4; i++) {
+    if (!usados.includes(i)) return i;
+  }
+  return null;
+}
+
+function mover(joy, direccion) {
+  const state = joystickState[joy];
+  const usados = joystickState
+    .filter(js => js.modo === "confirmado")
+    .map(js => js.juez);
+  let nuevo = state.juez;
+  for (let i = 0; i < 4; i++) {
+    nuevo = (nuevo + direccion + 4) % 4;
+    if (!usados.includes(nuevo)) {
+      removerParpadeo(joy, state.juez);
+      state.juez = nuevo;
+      aplicarParpadeo(joy, nuevo);
+      break;
+    }
+  }
+}
+
+function aplicarParpadeo(joy, juez) {
+  const el = document.getElementById(`juez-${juez}`);
+  el.classList.add(clasesParpadeo[joy]);
+  el.classList.remove(clasesFondo[joy]);
+}
+
+function removerParpadeo(joy, juez) {
+  const el = document.getElementById(`juez-${juez}`);
+  el.classList.remove(clasesParpadeo[joy]);
+}
+
+function aplicarFondo(joy, juez) {
+  const el = document.getElementById(`juez-${juez}`);
+  el.classList.remove(clasesParpadeo[joy]);
+  el.classList.add(clasesFondo[joy]);
+}
+
+function removerFondo(joy, juez) {
+  const el = document.getElementById(`juez-${juez}`);
+  el.classList.remove(clasesFondo[joy]);
+}
+</script>
+
+<!-- SCRIPT DE JOYSTICKS SELECCION DE JUEZ END   -->
+
+<!-- SCRIPT DE JOYSTICKS PUNTAJES BEGIN   -->
+
+<script>
+function procesarPuntosJoysticks() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+
+  pads.forEach((pad, index) => {
+    if (!pad) return;
+
+    const state = joystickState[index];
+    if (state.modo !== "confirmado") return;
+
+    const juez = state.juez;
+    const botones = pad.buttons;
+    const axes = pad.axes;
+
+    // Multiplicador si R1 (B5) o L1 (B4) está presionado
+    const mult = (botones[4]?.pressed || botones[5]?.pressed) ? 10 : 1;
+
+    // Evitar múltiples registros por mantener presionado
+    if (!state.puntosLastFrame) state.puntosLastFrame = {};
+
+    // 👉 Puntos AZUL (flechas - axes)
+    if (axes[1] === -1 && !state.puntosLastFrame["azul-arriba"]) {
+      sumarPunto("azul", 0.1 * mult, juez);
+      state.puntosLastFrame["azul-arriba"] = true;
+    } else if (axes[1] !== -1) {
+      state.puntosLastFrame["azul-arriba"] = false;
+    }
+
+    if (axes[1] === 1 && !state.puntosLastFrame["azul-abajo"]) {
+      sumarPunto("azul", 0.4 * mult, juez);
+      state.puntosLastFrame["azul-abajo"] = true;
+    } else if (axes[1] !== 1) {
+      state.puntosLastFrame["azul-abajo"] = false;
+    }
+
+    if (axes[0] === -1 && !state.puntosLastFrame["azul-izq"]) {
+      sumarPunto("azul", 0.2 * mult, juez);
+      state.puntosLastFrame["azul-izq"] = true;
+    } else if (axes[0] !== -1) {
+      state.puntosLastFrame["azul-izq"] = false;
+    }
+
+    if (axes[0] === 1 && !state.puntosLastFrame["azul-der"]) {
+      sumarPunto("azul", 0.3 * mult, juez);
+      state.puntosLastFrame["azul-der"] = true;
+    } else if (axes[0] !== 1) {
+      state.puntosLastFrame["azul-der"] = false;
+    }
+
+    // 👉 Puntos ROJO (botones frontales)
+    const botonesRojo = [
+      { id: 0, valor: 0.1, clave: "rojo-triangulo" }, // Triángulo
+      { id: 3, valor: 0.2, clave: "rojo-cuadrado" },  // Cuadrado
+      { id: 1, valor: 0.3, clave: "rojo-circulo" },   // Círculo
+      { id: 2, valor: 0.4, clave: "rojo-equis" },     // Equis
+    ];
+
+    botonesRojo.forEach(b => {
+      if (botones[b.id]?.pressed && !state.puntosLastFrame[b.clave]) {
+        sumarPunto("rojo", b.valor * mult, juez);
+        state.puntosLastFrame[b.clave] = true;
+      } else if (!botones[b.id]?.pressed) {
+        state.puntosLastFrame[b.clave] = false;
+      }
+    });
+
+	// Deshacer (L2 - botón 6)
+	if (botones[6]?.pressed && !state.puntosLastFrame["deshacer"]) {
+	  state.puntosLastFrame["deshacer"] = true;
+	} else if (!botones[6]?.pressed) {
+	  state.puntosLastFrame["deshacer"] = false;
+	}
+
+
+    // 🔁 Rehacer (R2 - B7)
+    if (botones[7].value > 0.5 && !state.puntosLastFrame["rehacer"]) {
+      rehacerPunto(juez);
+      state.puntosLastFrame["rehacer"] = true;
+    } else if (botones[7].value <= 0.5) {
+      state.puntosLastFrame["rehacer"] = false;
+    }
+  });
+
+  requestAnimationFrame(procesarPuntosJoysticks);
+}
+requestAnimationFrame(procesarPuntosJoysticks);
+
+
+
+
+
+
+// 🔧 Reemplazar esto con la implementación real
+function sumarPunto(color, cantidad, juez) {
+  const campo = document.getElementById(`${color}-${juez}`);
+  if (!campo) return;
+  let valor = parseFloat(campo.textContent || "0");
+  valor += cantidad;
+  campo.textContent = valor.toFixed(1);
+}
+
+function deshacerPunto(juez) {
+  console.log("Deshacer punto del juez", juez + 1);
+}
+
+function rehacerPunto(juez) {
+  console.log("Rehacer punto del juez", juez + 1);
+}
+</script>
+
+
+
+
+<!-- SCRIPT DE JOYSTICKS PUNTAJES END   -->
+
+
+<!-- SCRIPT DE PROMEDIOS BEGIN   -->
+
+<script>
+function loopPromedios() {
+  let totalRojo = 0;
+  let totalAzul = 0;
+
+  for (let i = 0; i < 4; i++) {
+    const rojo = parseFloat(document.getElementById(`rojo-${i}`)?.textContent || "0");
+    const azul = parseFloat(document.getElementById(`azul-${i}`)?.textContent || "0");
+    totalRojo += rojo;
+    totalAzul += azul;
+  }
+
+  const promedioRojo = (totalRojo / 4).toFixed(3);
+  const promedioAzul = (totalAzul / 4).toFixed(3);
+
+  document.getElementById("promedio-rojo").textContent = promedioRojo;
+  document.getElementById("promedio-azul").textContent = promedioAzul;
+
+  requestAnimationFrame(loopPromedios);
+}
+
+requestAnimationFrame(loopPromedios);
+</script>
+
+
+<!-- SCRIPT DE PROMEDIOS END   -->
+
 </body>
 </html>

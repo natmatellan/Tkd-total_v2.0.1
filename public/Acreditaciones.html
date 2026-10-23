@@ -395,6 +395,26 @@ button[data-action="desacreditar"]:hover {
       </div>
     </div>
   </div>
+
+<div style="margin-top: 50px; padding-top: 25px; border-top: 1px solid #444;">
+  <button
+    id="btn-reiniciar-torneo"
+    onclick="reiniciarTorneo()"
+    style="
+      background: #c62828;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: 2px solid #ef5350;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    "
+  >
+    REINICIAR TORNEO
+  </button>
+</div>
+
 </div>
 
 
@@ -878,6 +898,73 @@ document.querySelector("thead").addEventListener("click", (e) => {
   ordenarCompetidores(sortConfig.field, sortConfig.direction);
   renderTabla(busqueda.value);
 });
+
+
+function reiniciarTorneo() {
+
+  // ============================
+  // PRIMERA CONFIRMACIÓN
+  // ============================
+
+  const confirmar1 = confirm(
+    "⚠️ REINICIAR TORNEO\n\n" +
+    "Se eliminarán TODOS los resultados actuales de:\n\n" +
+    "• Salto\n" +
+    "• Rotura\n" +
+    "• Lucha por puntos\n" +
+    "• Combate Total\n" +
+    "• Tiempos de finalización\n" +
+    "• Ranking actual\n\n" +
+    "Los competidores, acreditaciones y áreas asignadas SE CONSERVARÁN.\n\n" +
+    "¿Desea continuar?"
+  );
+
+  if (!confirmar1) return;
+
+
+  // ============================
+  // SEGUNDA CONFIRMACIÓN
+  // ============================
+
+  const confirmar2 = confirm(
+    "⚠️ ÚLTIMA CONFIRMACIÓN\n\n" +
+    "Esta acción no se puede deshacer.\n\n" +
+    "¿Está seguro de reiniciar el torneo?"
+  );
+
+  if (!confirmar2) return;
+
+
+  // ============================
+  // BORRAR RESULTADOS
+  // ============================
+
+  for (let area = 1; area <= 8; area++) {
+
+    // Estado interno de Start Games
+    localStorage.removeItem(
+      `ct_games_state_v1_${area}`
+    );
+
+    // Resultados utilizados por Ranking
+    localStorage.removeItem(
+      `ct_results_sync_v1_${area}`
+    );
+  }
+
+
+  // ============================
+  // FINALIZADO
+  // ============================
+
+  alert(
+    "✓ TORNEO REINICIADO\n\n" +
+    "Todos los resultados fueron eliminados.\n" +
+    "Los competidores y acreditaciones se conservaron."
+  );
+
+  location.reload();
+}
 
 
   // ---------- Boot ----------

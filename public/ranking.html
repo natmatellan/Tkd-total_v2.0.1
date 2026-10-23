@@ -1,0 +1,1189 @@
+<!--
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ranking de Áreas – TaeKwon-Do Total</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #222 0, #000 60%);
+      color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 5px 0;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #39ff14;
+      text-shadow: 0 0 12px #39ff14;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #ddd;
+      opacity: 0.85;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0 20px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .last-update {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    .btn-refresh {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid #39ff14;
+      background: transparent;
+      color: #39ff14;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
+
+    .btn-refresh:hover {
+      background: #39ff14;
+      color: #000;
+      transform: translateY(-1px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    @media (max-width: 1400px) {
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: linear-gradient(145deg, #111 0%, #1b1b1b 60%, #101010 100%);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
+      padding: 12px 12px 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 230px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background: radial-gradient(circle at top, rgba(57,255,20,0.1), transparent 60%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .card-title span {
+      opacity: 0.7;
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .table-wrap {
+      flex: 1;
+      overflow: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: #111;
+      z-index: 2;
+    }
+
+    th, td {
+      padding: 4px 4px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: #bbb;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(255,255,255,0.02);
+    }
+
+    tbody tr:nth-child(1) {
+      color: #ffd54f;
+    }
+    tbody tr:nth-child(2) {
+      color: #e0e0e0;
+    }
+    tbody tr:nth-child(3) {
+      color: #b0bec5;
+    }
+
+    .td-rank {
+      width: 1%;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .td-name {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .td-area {
+      text-align: center;
+    }
+
+    .td-score, .td-time {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .empty {
+      font-size: 0.8rem;
+      color: #888;
+      text-align: center;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ranking General</h1>
+    <div class="subtitle">Top competidores por categoría – 8 Áreas en tiempo real</div>
+  </header>
+
+  <div class="top-bar">
+    <div id="lastUpdate" class="last-update">Última actualización: —</div>
+    <button id="btnRefresh" class="btn-refresh">Actualizar ahora</button>
+  </div>
+
+  <main class="grid" id="categoriesContainer">
+  
+  </main>
+
+  <script>
+    // ====== CONFIGURACIÓN BÁSICA ======
+    const AREAS = ["1","2","3","4","5","6","7","8"];
+    const STORAGE_ACREDITACIONES = "ct_acreditaciones_v1";
+    const RESULT_SYNC_PREFIX     = "ct_results_sync_v1_";
+
+    const CATEGORIES = [
+      { id: "allAround", label: "All-Around",        field: "allAroundPuntaje" },
+      { id: "salto",     label: "Salto",             field: "saltoPuntaje" },
+      { id: "rotura",    label: "Rotura",            field: "roturaPuntaje" },
+      { id: "lucha",     label: "Lucha por puntos",  field: "luchaPuntaje" },
+      { id: "combate",   label: "Combate Total",     field: "combatePuntaje" } // ← especial: ordena por tiempo y luego puntaje
+    ];
+
+    const TOP_N = 10;
+
+    // ====== HELPERS ======
+    function safeParse(json, fallback) {
+      try { return JSON.parse(json); } catch { return fallback; }
+    }
+
+    function leerAcreditaciones() {
+      const raw = localStorage.getItem(STORAGE_ACREDITACIONES);
+      return raw ? safeParse(raw, []) : [];
+    }
+
+    function leerResultadosTodasAreas() {
+      const resultados = [];
+      for (const area of AREAS) {
+        const raw = localStorage.getItem(RESULT_SYNC_PREFIX + area);
+        if (!raw) continue;
+        const obj = safeParse(raw, {});
+        for (const [idStr, data] of Object.entries(obj)) {
+          resultados.push({
+            area,
+            id: Number(idStr),
+            ...data
+          });
+        }
+      }
+      return resultados;
+    }
+
+    function buildIndexAcreditaciones(acreditaciones) {
+      const map = new Map();
+      for (const c of acreditaciones) {
+        if (c && c.id != null) {
+          map.set(String(c.id), c);
+        }
+      }
+      return map;
+    }
+
+    // Convierte "MM:SS" o "MM:SS.mmm" o "12.345" → segundos (número)
+    function parseTiempoFinToSeconds(val) {
+      if (val == null) return Infinity;
+      if (typeof val === "number") {
+        return Number.isFinite(val) ? val : Infinity;
+      }
+      if (typeof val !== "string") return Infinity;
+
+      const str = val.trim();
+      if (!str) return Infinity;
+
+      if (str.includes(":")) {
+        // Formato "MM:SS" o "MM:SS.mmm"
+        const [mmStr, rest] = str.split(":");
+        const mm = parseInt(mmStr, 10);
+        const ss = parseFloat(rest.replace(",", "."));
+        if (Number.isNaN(mm) || Number.isNaN(ss)) return Infinity;
+        return mm * 60 + ss;
+      }
+
+      const num = parseFloat(str.replace(",", "."));
+      return Number.isNaN(num) ? Infinity : num;
+    }
+
+function calcularRankings(acreditaciones, resultados) {
+  const idxAcred = buildIndexAcreditaciones(acreditaciones);
+
+  // Estructura base por categoría
+  const byCat = {};
+  for (const cat of CATEGORIES) {
+    byCat[cat.id] = [];
+  }
+
+  // Mapa para All-Around
+  // { id, nombre, area, lucha, rotura, salto, combate }
+  const allMap = new Map();
+
+  for (const r of resultados) {
+    const idStr = String(r.id);
+    const compAcred = idxAcred.get(idStr) || {};
+    const nombre = compAcred.nombre || compAcred.nombreCompleto || `ID ${r.id}`;
+    const area = r.area;
+
+    // Aseguramos entrada en All-Around
+    let aa = allMap.get(idStr);
+    if (!aa) {
+      aa = { id: r.id, nombre, area, lucha: 0, rotura: 0, salto: 0, combate: 0 };
+      allMap.set(idStr, aa);
+    }
+
+// Recorremos categorías, excepto allAround
+for (const cat of CATEGORIES) {
+
+  if (cat.id === "allAround") continue;
+
+  // =========================
+  // SALTO
+  // =========================
+if (cat.id === "salto") {
+
+  const puntajeSalto = Number(r.saltoPuntaje || 0);
+
+  // La altura a saltar está en la acreditación del competidor (HdS)
+  const alturaSalto = Number(
+    String(compAcred.hds ?? 0).replace(",", ".")
+  );
+
+  // Si tiene puntaje de salto significa que logró el salto
+  if (
+    puntajeSalto > 0 &&
+    Number.isFinite(alturaSalto) &&
+    alturaSalto > 0
+  ) {
+
+    byCat.salto.push({
+      id: r.id,
+      nombre,
+      area,
+      altura: alturaSalto,
+      puntaje: puntajeSalto
+    });
+  }
+
+  // Para All-Around seguimos usando el puntaje
+  if (puntajeSalto > 0) {
+    if (aa.salto == null || puntajeSalto > aa.salto) {
+      aa.salto = puntajeSalto;
+    }
+  }
+
+  continue;
+}
+
+  // =========================
+  // RESTO DE DISCIPLINAS
+  // =========================
+
+  const field = cat.field;
+  const rawVal = r[field];
+
+  if (rawVal == null || rawVal === "") continue;
+
+  const val =
+    typeof rawVal === "number"
+      ? rawVal
+      : Number(rawVal);
+
+  if (!Number.isFinite(val) || val <= 0) continue;
+
+  const item = {
+    id: r.id,
+    nombre,
+    area,
+    puntaje: val
+  };
+
+  if (cat.id === "combate") {
+    const rawTime = r.combateTiempoFin;
+
+    item.tiempoRaw = rawTime ?? null;
+    item.tiempoNum = parseTiempoFinToSeconds(rawTime);
+  }
+
+  byCat[cat.id].push(item);
+
+  // All-Around
+  if (aa[cat.id] == null || val > aa[cat.id]) {
+    aa[cat.id] = val;
+  }
+}
+  }
+
+  // Construimos lista de All-Around
+  const allList = [];
+  for (const aa of allMap.values()) {
+    const total =
+      (aa.lucha   || 0) +
+      (aa.rotura  || 0) +
+      (aa.salto   || 0) +
+      (aa.combate || 0);
+
+    if (total > 0) {
+      allList.push({
+        id: aa.id,
+        nombre: aa.nombre,
+        area: aa.area,
+        puntaje: total
+      });
+    }
+  }
+  byCat["allAround"] = allList;
+
+// Ordenar cada categoría
+for (const cat of CATEGORIES) {
+
+  const list = byCat[cat.id] || [];
+
+  if (cat.id === "combate") {
+
+    list.sort((a, b) => {
+      const ta = a.tiempoNum ?? Infinity;
+      const tb = b.tiempoNum ?? Infinity;
+
+      if (ta !== tb) {
+        return ta - tb;
+      }
+
+      return b.puntaje - a.puntaje;
+    });
+
+  } else if (cat.id === "salto") {
+
+    // MAYOR ALTURA = MEJOR POSICIÓN
+    list.sort((a, b) => {
+
+      if (b.altura !== a.altura) {
+        return b.altura - a.altura;
+      }
+
+      // Desempate: mayor puntaje
+      return b.puntaje - a.puntaje;
+    });
+
+  } else {
+
+    // Rotura, Lucha y All-Around
+    list.sort((a, b) => b.puntaje - a.puntaje);
+  }
+
+  byCat[cat.id] = list.slice(0, TOP_N);
+}
+
+  return byCat;
+}
+
+
+
+
+
+
+
+    function formatScore(num) {
+      return num.toFixed(3);
+    }
+
+    function formatSeconds(num) {
+      if (!Number.isFinite(num)) return "—";
+      return num.toFixed(3);
+    }
+
+    function setLastUpdate() {
+      const el = document.getElementById("lastUpdate");
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const ss = String(now.getSeconds()).padStart(2, "0");
+      el.textContent = `Última actualización: ${now.toLocaleDateString()} ${hh}:${mm}:${ss}`;
+    }
+
+    // ====== RENDER ======
+    function renderRankings(rankings) {
+      const container = document.getElementById("categoriesContainer");
+      container.innerHTML = "";
+
+      for (const cat of CATEGORIES) {
+        const list = rankings[cat.id] || [];
+
+        const card = document.createElement("section");
+        card.className = "card";
+
+        const header = document.createElement("div");
+        header.className = "card-header";
+
+        const title = document.createElement("div");
+        title.className = "card-title";
+        title.innerHTML = `${cat.label} <span>TOP ${TOP_N}</span>`;
+
+        const badge = document.createElement("div");
+        badge.className = "badge";
+        badge.textContent = "En vivo";
+
+        header.appendChild(title);
+        header.appendChild(badge);
+        card.appendChild(header);
+
+        if (!list.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "Sin resultados aún";
+          card.appendChild(empty);
+          container.appendChild(card);
+          continue;
+        }
+
+        const wrap = document.createElement("div");
+        wrap.className = "table-wrap";
+
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        const tbody = document.createElement("tbody");
+
+        // Encabezado dinámico: Combate muestra Tiempo + Puntaje
+        if (cat.id === "combate") {
+          thead.innerHTML = `
+            <tr>
+              <th>#</th>
+              <th>Competidor</th>
+              <th>Área</th>
+              <th>Tiempo</th>
+              <th>Puntaje</th>
+            </tr>
+          `;
+        } else if (cat.id === "salto") {
+
+  thead.innerHTML = `
+    <tr>
+      <th>#</th>
+      <th>Competidor</th>
+      <th>Área</th>
+      <th>Altura</th>
+      <th>Puntaje</th>
+    </tr>
+  `;
+
+} else {
+
+  thead.innerHTML = `
+    <tr>
+      <th>#</th>
+      <th>Competidor</th>
+      <th>Área</th>
+      <th>Puntaje</th>
+    </tr>
+  `;
+}
+
+        list.forEach((item, index) => {
+          const tr = document.createElement("tr");
+
+          const tdRank = document.createElement("td");
+          tdRank.className = "td-rank";
+          tdRank.textContent = index + 1;
+
+          const tdName = document.createElement("td");
+          tdName.className = "td-name";
+          tdName.textContent = item.nombre;
+
+          const tdArea = document.createElement("td");
+          tdArea.className = "td-area";
+          tdArea.textContent = item.area;
+
+          tr.appendChild(tdRank);
+          tr.appendChild(tdName);
+          tr.appendChild(tdArea);
+
+          if (cat.id === "combate") {
+            const tdTime = document.createElement("td");
+            tdTime.className = "td-time";
+
+            // Convertimos el tiempo a segundos con decimales
+            const seconds = parseTiempoFinToSeconds(
+              item.tiempoRaw != null ? item.tiempoRaw : item.tiempoNum
+            );
+
+            tdTime.textContent = Number.isFinite(seconds)
+              ? seconds.toFixed(3)   // 👉 formato sss.sss
+              : "—";
+
+            const tdScore = document.createElement("td");
+            tdScore.className = "td-score";
+            tdScore.textContent = formatScore(item.puntaje);
+
+            tr.appendChild(tdTime);
+            tr.appendChild(tdScore);
+              } else if (cat.id === "salto") {
+
+              const tdAltura = document.createElement("td");
+              tdAltura.className = "td-score";
+              tdAltura.textContent = `${Number(item.altura).toFixed(3)} m`;
+
+              const tdScore = document.createElement("td");
+              tdScore.className = "td-score";
+              tdScore.textContent = formatScore(item.puntaje);
+
+              tr.appendChild(tdAltura);
+              tr.appendChild(tdScore);
+
+            } else {
+
+              const tdScore = document.createElement("td");
+              tdScore.className = "td-score";
+              tdScore.textContent = formatScore(item.puntaje);
+
+              tr.appendChild(tdScore);
+            }
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        wrap.appendChild(table);
+        card.appendChild(wrap);
+        container.appendChild(card);
+      }
+    }
+
+    // ====== CARGA / REFRESCO ======
+    function loadAndRender() {
+      const acreditaciones = leerAcreditaciones();
+      const resultados = leerResultadosTodasAreas();
+      const rankings = calcularRankings(acreditaciones, resultados);
+      renderRankings(rankings);
+      setLastUpdate();
+    }
+
+    // Primer render
+    loadAndRender();
+
+    // Botón manual
+    document.getElementById("btnRefresh").addEventListener("click", () => {
+      loadAndRender();
+    });
+
+    // Escuchar cambios en localStorage de otras pestañas (áreas)
+    window.addEventListener("storage", (ev) => {
+      if (!ev.key) return;
+      if (
+        ev.key === STORAGE_ACREDITACIONES ||
+        AREAS.some(area => ev.key === RESULT_SYNC_PREFIX + area)
+      ) {
+        loadAndRender();
+      }
+    });
+
+    // ====== PANTALLA COMPLETA + ESC PARA CERRAR ======
+    let fullscreenRequested = false;
+
+    function tryEnterFullscreen() {
+      if (fullscreenRequested) return;
+      fullscreenRequested = true;
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    }
+
+    // Cualquier clic entra a fullscreen (primer intento)
+    document.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        tryEnterFullscreen();
+      }
+    });
+
+    // Teclas: primera tecla distinta de ESC intenta fullscreen.
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") {
+        // Salir de fullscreen si está, y luego intentar cerrar
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+        // Si la ventana fue abierta por script, se cerrará; si no, el navegador lo ignora
+        window.close();
+        return;
+      }
+
+      if (!document.fullscreenElement) {
+        tryEnterFullscreen();
+      }
+    });
+  </script>
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ranking de Áreas – TaeKwon-Do Total</title>
+  <style>
+:root{color-scheme:dark;--green:#39ff14}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#173019,#080b09 65%);color:#f5f5f5;font-family:system-ui,Arial,sans-serif;min-height:100vh}header{display:flex;align-items:center;justify-content:space-between;padding:18px 3vw;border-bottom:1px solid #315335;gap:12px}h1{font-size:clamp(1rem,2vw,1.6rem);margin:0;color:var(--green);letter-spacing:.13em}.subtitle{font-size:.75rem;color:#a4b5a4}.live{color:var(--green);font-weight:800;font-size:.85rem}.top-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 3vw;flex-wrap:wrap}.last-update{font-size:.75rem;color:#9aa69a}.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}button{background:#16251a;border:1px solid #487a4d;color:#eaffea;border-radius:7px;padding:8px 12px;cursor:pointer;font-weight:700}button:hover{background:#284a2c}.screen{padding:0 3vw 20px}.category-heading{text-align:center;margin:0 0 16px}.category-heading h2{color:var(--green);font-size:clamp(2rem,5vw,4.5rem);letter-spacing:.1em;margin:0;text-transform:uppercase}.category-heading p{margin:0;color:#b5c3b5;letter-spacing:.16em;font-size:.8rem}.ranking{width:100%;border-collapse:separate;border-spacing:0 6px;table-layout:fixed}.ranking th{text-align:left;text-transform:uppercase;color:#9aaa9a;font-size:clamp(.65rem,1vw,.9rem);padding:8px 12px}.ranking td{padding:clamp(8px,1.3vh,16px) 12px;background:#142018;font-size:clamp(.85rem,1.6vw,1.5rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ranking tr td:first-child{border-radius:9px 0 0 9px;width:8%;font-weight:900;text-align:center}.ranking tr td:last-child{border-radius:0 9px 9px 0}.ranking .rank-1 td{background:#393018;color:#ffe28a}.ranking .rank-2 td{background:#273037;color:#e2ebf1}.ranking .rank-3 td{background:#39291e;color:#f3bd91}.ranking .rank-1 td:first-child,.ranking .rank-2 td:first-child,.ranking .rank-3 td:first-child{font-size:clamp(1.1rem,2vw,2rem)}.ranking th:nth-child(1){width:8%;text-align:center}.ranking th:nth-child(2){width:48%}.ranking th:nth-child(3){width:10%;text-align:center}.ranking td:nth-child(3){text-align:center}.ranking td:nth-child(n+4),.ranking th:nth-child(n+4){text-align:right;font-variant-numeric:tabular-nums}.ranking td:last-child{font-weight:800;color:var(--green)}.empty{text-align:center;padding:15vh 0;color:#9aa69a;font-size:1.5rem}.bottom{padding:10px 3vw 16px;display:flex;align-items:center;justify-content:space-between;gap:15px}.next{color:var(--green);font-size:.8rem;font-weight:800}.progress{height:5px;background:#263329;flex:1;border-radius:8px;overflow:hidden}.progress-fill{height:100%;width:0;background:var(--green);transition:width .15s linear}.counter{color:#a5b4a5;font-size:.8rem}.hints{padding:0 3vw 10px;color:#788978;font-size:.7rem;text-align:center}@media(max-width:650px){header{padding:12px}.screen{padding:0 8px}.ranking td,.ranking th{padding:8px 5px}.ranking th:nth-child(2){width:40%}.top-bar{padding:8px}.hints{display:none}}
+
+/* Presentación tipo marcador olímpico: franjas continuas, números grandes y podio sobrio */
+:root{--green:#67d7ef}
+body{background:linear-gradient(130deg,#07162b 0%,#102c4c 48%,#061326 100%);color:#fff}
+header{background:#06172c;border-bottom:3px solid #46c8e7}
+h1,.live{color:#fff}.live{background:#14607c;padding:7px 12px;border-radius:3px}
+.subtitle,.last-update{color:#a9c4d8}
+button{background:#183653;border-color:#3e7296;color:#f3faff;border-radius:3px}
+button:hover{background:#286084}
+.category-heading{background:#0c2846;margin-bottom:0;padding:12px 18px;border-left:7px solid #48c5e3;text-align:left}
+.category-heading h2{color:white;font-size:clamp(1.7rem,3.7vw,3.5rem);letter-spacing:.035em}
+.category-heading p{color:#a6c5da;letter-spacing:.12em}
+.ranking{border-collapse:collapse;border-spacing:0;table-layout:fixed}
+.ranking thead{background:#06182c}
+.ranking th{color:#b6d3e6;padding:12px 15px;font-size:clamp(.75rem,1.15vw,1.05rem);border-bottom:2px solid #3d6d8c}
+.ranking td{background:#ecf3f8;color:#102c47;padding:clamp(10px,1.55vh,19px) 15px;border-bottom:2px solid #bdcddd;font-weight:650;font-size:clamp(.95rem,1.65vw,1.55rem)}
+.ranking tbody tr:nth-child(even) td{background:#dbe8f1}
+.ranking tr td:first-child,.ranking tr td:last-child{border-radius:0}
+.ranking tr td:first-child{font-weight:900;background:#174468;color:white!important;border-right:3px solid #4e93b6}
+.ranking tbody tr:nth-child(even) td:first-child{background:#123958}
+.ranking .rank-1 td,.ranking .rank-2 td,.ranking .rank-3 td{color:#102c47}
+.ranking .rank-1 td{background:#fff4d5}.ranking .rank-2 td{background:#edf1f5}.ranking .rank-3 td{background:#f7e8dc}
+.ranking .rank-1 td:first-child{background:#d7a629;color:#111!important}
+.ranking .rank-2 td:first-child{background:#a9b8c5;color:#111!important}
+.ranking .rank-3 td:first-child{background:#b87c51;color:#fff!important}
+.ranking td:last-child{color:#093f68;font-weight:900}
+.ranking .rank-1 td:last-child,.ranking .rank-2 td:last-child,.ranking .rank-3 td:last-child{color:#102c47}
+.bottom{background:#06172c;margin-top:4px}.next{color:#7ee1f5}.progress{background:#23455e}.progress-fill{background:#5dd7ef}.counter,.hints{color:#abc6d8}
+.empty{background:#e7f0f7;color:#244561;padding:15vh 0}
+@media(max-width:650px){.ranking td,.ranking th{padding:10px 5px}.category-heading{padding:10px}}
+
+/* Broadcast finish: engraved panels, restrained metallic lighting and motion */
+.screen{position:relative;isolation:isolate;perspective:1100px}
+.category-heading{position:relative;overflow:hidden;background:linear-gradient(105deg,#071a30,#17476b 58%,#09223c);border-left:8px solid #6bd9f3;border-top:1px solid #6295b5;border-bottom:1px solid #020e1b;box-shadow:inset 0 1px rgba(255,255,255,.17),0 9px 24px #0005}
+.category-heading:after{content:"";position:absolute;right:-3%;top:-130%;height:320%;width:26%;transform:rotate(23deg);background:linear-gradient(90deg,transparent,#ffffff12,transparent);pointer-events:none}
+.ranking{filter:drop-shadow(0 10px 16px #0005)}
+.ranking td{position:relative;background:linear-gradient(180deg,#f8fbfd,#e3edf5);border-top:1px solid #fff;border-bottom:2px solid #b1c5d4;text-shadow:0 1px #fff9;box-shadow:inset 0 -2px 3px #315b7010}
+.ranking tbody tr:nth-child(even) td{background:linear-gradient(180deg,#eaf3f9,#d5e4ef)}
+.ranking .rank-1 td{background:linear-gradient(180deg,#fff9dc,#eddaa2);border-bottom-color:#bc9a48}
+.ranking .rank-2 td{background:linear-gradient(180deg,#f9fcff,#d5e0e9);border-bottom-color:#9baeba}
+.ranking .rank-3 td{background:linear-gradient(180deg,#ffeede,#e7c6ac);border-bottom-color:#b78d70}
+.ranking tr td:first-child{border-left:4px solid #70b2d7;box-shadow:inset -5px 0 10px #0002;text-shadow:none}
+.ranking .rank-1 td:first-child{border-left-color:#ffe8a0;background:linear-gradient(125deg,#ffe5a0,#b98316 55%,#f9d57b)}
+.ranking .rank-2 td:first-child{border-left-color:#f8fbff;background:linear-gradient(125deg,#f2f8fb,#8e9eaa 55%,#e4edf3)}
+.ranking .rank-3 td:first-child{border-left-color:#ffd9ba;background:linear-gradient(125deg,#eab78d,#955e3c 55%,#d99e76)}
+.ranking td:last-child{border-right:4px solid #3a9cc4}
+.ranking tbody tr{transition:filter .25s}.ranking tbody tr:hover{filter:brightness(1.045)}
+.top-bar{background:linear-gradient(90deg,#06182d,#102f4a)}
+.bottom{border-top:1px solid #2f6585;box-shadow:0 -5px 18px #0003}
+.screen.transition-out{animation:boardOut .35s cubic-bezier(.4,0,1,1) both}
+.screen.transition-in .category-heading{animation:headingIn .48s cubic-bezier(.2,.7,.2,1) both}
+.screen.transition-in .ranking,.screen.transition-in .empty{animation:boardIn .55s cubic-bezier(.16,.8,.2,1) both}
+.screen.transition-in .ranking tbody tr{animation:rowIn .45s cubic-bezier(.2,.75,.2,1) both;animation-delay:calc(var(--row) * 48ms)}
+@keyframes boardOut{to{opacity:0;transform:translateX(-34px) rotateY(2deg);filter:blur(5px)}}
+@keyframes headingIn{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes boardIn{from{opacity:0;transform:translateX(36px) rotateY(-2deg);filter:blur(5px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes rowIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.screen.transition-out,.screen.transition-in .category-heading,.screen.transition-in .ranking,.screen.transition-in .empty,.screen.transition-in .ranking tbody tr{animation:none!important}}
+
+/* Overlay preparado para superponer sobre una transmisión de video. */
+html,body{background:transparent!important;background-color:transparent!important}
+header,.top-bar,.bottom{background:transparent!important;box-shadow:none!important}
+header{border-bottom-color:transparent!important}
+.bottom{border-top-color:transparent!important}
+/* Los paneles del ranking mantienen su contraste y legibilidad. */
+
+/* Barra discreta para overlay */
+.bottom{padding:8px 3vw 12px;border:0!important;box-shadow:none!important;background:transparent!important}
+.progress{height:5px;background:rgba(6,19,33,.55);border-radius:4px}
+.progress-fill{background:#24536a;box-shadow:none}
+</style>
+</head>
+<body>
+<header><div><h1>TAEKWON-DO TOTAL</h1><div class="subtitle">RANKING GENERAL · 8 ÁREAS</div></div><div class="live">● EN VIVO</div></header>
+<div class="top-bar"><div id="lastUpdate" class="last-update">Última actualización: —</div></div>
+<main class="screen" id="categoriesContainer"></main>
+<div class="bottom"><div class="progress"><div class="progress-fill" id="progressFill"></div></div></div>
+
+<script>
+    // ====== CONFIGURACIÓN BÁSICA ======
+    const AREAS = ["1","2","3","4","5","6","7","8"];
+    const STORAGE_ACREDITACIONES = "ct_acreditaciones_v1";
+    const RESULT_SYNC_PREFIX     = "ct_results_sync_v1_";
+
+    const CATEGORIES = [
+      { id: "allAround", label: "All-Around",        field: "allAroundPuntaje" },
+      { id: "salto",     label: "Salto",             field: "saltoPuntaje" },
+      { id: "rotura",    label: "Rotura",            field: "roturaPuntaje" },
+      { id: "lucha",     label: "Lucha por puntos",  field: "luchaPuntaje" },
+      { id: "combate",   label: "Combate Total",     field: "combatePuntaje" } // ← especial: ordena por tiempo y luego puntaje
+    ];
+
+    const TOP_N = 10;
+
+    // ====== HELPERS ======
+    function safeParse(json, fallback) {
+      try { return JSON.parse(json); } catch { return fallback; }
+    }
+
+    function leerAcreditaciones() {
+      const raw = localStorage.getItem(STORAGE_ACREDITACIONES);
+      return raw ? safeParse(raw, []) : [];
+    }
+
+    function leerResultadosTodasAreas() {
+      const resultados = [];
+      for (const area of AREAS) {
+        const raw = localStorage.getItem(RESULT_SYNC_PREFIX + area);
+        if (!raw) continue;
+        const obj = safeParse(raw, {});
+        for (const [idStr, data] of Object.entries(obj)) {
+          resultados.push({
+            area,
+            id: Number(idStr),
+            ...data
+          });
+        }
+      }
+      return resultados;
+    }
+
+    function buildIndexAcreditaciones(acreditaciones) {
+      const map = new Map();
+      for (const c of acreditaciones) {
+        if (c && c.id != null) {
+          map.set(String(c.id), c);
+        }
+      }
+      return map;
+    }
+
+    // Convierte "MM:SS" o "MM:SS.mmm" o "12.345" → segundos (número)
+    function parseTiempoFinToSeconds(val) {
+      if (val == null) return Infinity;
+      if (typeof val === "number") {
+        return Number.isFinite(val) ? val : Infinity;
+      }
+      if (typeof val !== "string") return Infinity;
+
+      const str = val.trim();
+      if (!str) return Infinity;
+
+      if (str.includes(":")) {
+        // Formato "MM:SS" o "MM:SS.mmm"
+        const [mmStr, rest] = str.split(":");
+        const mm = parseInt(mmStr, 10);
+        const ss = parseFloat(rest.replace(",", "."));
+        if (Number.isNaN(mm) || Number.isNaN(ss)) return Infinity;
+        return mm * 60 + ss;
+      }
+
+      const num = parseFloat(str.replace(",", "."));
+      return Number.isNaN(num) ? Infinity : num;
+    }
+
+function calcularRankings(acreditaciones, resultados) {
+  const idxAcred = buildIndexAcreditaciones(acreditaciones);
+
+  // Estructura base por categoría
+  const byCat = {};
+  for (const cat of CATEGORIES) {
+    byCat[cat.id] = [];
+  }
+
+  // Mapa para All-Around
+  // { id, nombre, area, lucha, rotura, salto, combate }
+  const allMap = new Map();
+
+  for (const r of resultados) {
+    const idStr = String(r.id);
+    const compAcred = idxAcred.get(idStr) || {};
+    const nombre = compAcred.nombre || compAcred.nombreCompleto || `ID ${r.id}`;
+    const area = r.area;
+
+    // Aseguramos entrada en All-Around
+    let aa = allMap.get(idStr);
+    if (!aa) {
+      aa = { id: r.id, nombre, area, lucha: 0, rotura: 0, salto: 0, combate: 0 };
+      allMap.set(idStr, aa);
+    }
+
+// Recorremos categorías, excepto allAround
+for (const cat of CATEGORIES) {
+
+  if (cat.id === "allAround") continue;
+
+  // =========================
+  // SALTO
+  // =========================
+if (cat.id === "salto") {
+
+  const puntajeSalto = Number(r.saltoPuntaje || 0);
+
+  // La altura a saltar está en la acreditación del competidor (HdS)
+  const alturaSalto = Number(
+    String(compAcred.hds ?? 0).replace(",", ".")
+  );
+
+  // Si tiene puntaje de salto significa que logró el salto
+  if (
+    puntajeSalto > 0 &&
+    Number.isFinite(alturaSalto) &&
+    alturaSalto > 0
+  ) {
+
+    byCat.salto.push({
+      id: r.id,
+      nombre,
+      area,
+      altura: alturaSalto,
+      puntaje: puntajeSalto
+    });
+  }
+
+  // Para All-Around seguimos usando el puntaje
+  if (puntajeSalto > 0) {
+    if (aa.salto == null || puntajeSalto > aa.salto) {
+      aa.salto = puntajeSalto;
+    }
+  }
+
+  continue;
+}
+
+  // =========================
+  // RESTO DE DISCIPLINAS
+  // =========================
+
+  const field = cat.field;
+  const rawVal = r[field];
+
+  if (rawVal == null || rawVal === "") continue;
+
+  const val =
+    typeof rawVal === "number"
+      ? rawVal
+      : Number(rawVal);
+
+  if (!Number.isFinite(val) || val <= 0) continue;
+
+  const item = {
+    id: r.id,
+    nombre,
+    area,
+    puntaje: val
+  };
+
+  if (cat.id === "combate") {
+    const rawTime = r.combateTiempoFin;
+
+    item.tiempoRaw = rawTime ?? null;
+    item.tiempoNum = parseTiempoFinToSeconds(rawTime);
+  }
+
+  byCat[cat.id].push(item);
+
+  // All-Around
+  if (aa[cat.id] == null || val > aa[cat.id]) {
+    aa[cat.id] = val;
+  }
+}
+  }
+
+  // Construimos lista de All-Around
+  const allList = [];
+  for (const aa of allMap.values()) {
+    const total =
+      (aa.lucha   || 0) +
+      (aa.rotura  || 0) +
+      (aa.salto   || 0) +
+      (aa.combate || 0);
+
+    if (total > 0) {
+      allList.push({
+        id: aa.id,
+        nombre: aa.nombre,
+        area: aa.area,
+        puntaje: total
+      });
+    }
+  }
+  byCat["allAround"] = allList;
+
+// Ordenar cada categoría
+for (const cat of CATEGORIES) {
+
+  const list = byCat[cat.id] || [];
+
+  if (cat.id === "combate") {
+
+    list.sort((a, b) => {
+      const ta = a.tiempoNum ?? Infinity;
+      const tb = b.tiempoNum ?? Infinity;
+
+      if (ta !== tb) {
+        return ta - tb;
+      }
+
+      return b.puntaje - a.puntaje;
+    });
+
+  } else if (cat.id === "salto") {
+
+    // MAYOR ALTURA = MEJOR POSICIÓN
+    list.sort((a, b) => {
+
+      if (b.altura !== a.altura) {
+        return b.altura - a.altura;
+      }
+
+      // Desempate: mayor puntaje
+      return b.puntaje - a.puntaje;
+    });
+
+  } else {
+
+    // Rotura, Lucha y All-Around
+    list.sort((a, b) => b.puntaje - a.puntaje);
+  }
+
+  byCat[cat.id] = list.slice(0, TOP_N);
+}
+
+  return byCat;
+}
+
+
+
+
+
+
+
+    function formatScore(num) {
+      return num.toFixed(3);
+    }
+
+    function formatSeconds(num) {
+      if (!Number.isFinite(num)) return "—";
+      return num.toFixed(3);
+    }
+
+    function setLastUpdate() {
+      const el = document.getElementById("lastUpdate");
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const ss = String(now.getSeconds()).padStart(2, "0");
+      el.textContent = `Última actualización: ${now.toLocaleDateString()} ${hh}:${mm}:${ss}`;
+    }
+
+    // ====== PRESENTACIÓN ROTATIVA ======
+    const ROTATION_MS = 15000;
+    let currentCategory = 0;
+    let paused = false;
+    let elapsed = 0;
+    let lastTick = performance.now();
+    let latestRankings = {};
+    const container = document.getElementById("categoriesContainer");
+    const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    function renderRankings(rankings) {
+      latestRankings = rankings;
+      const cat = CATEGORIES[currentCategory];
+      const list = rankings[cat.id] || [];
+      const special = cat.id === "salto" ? "<th>Altura</th><th>Puntaje</th>" : cat.id === "combate" ? "<th>Tiempo</th><th>Puntaje</th>" : "<th>Puntaje</th>";
+      const rows = list.map((item, i) => {
+        let cells = "";
+        if(cat.id === "salto") cells = `<td>${Number(item.altura).toFixed(3)} m</td><td>${formatScore(item.puntaje)}</td>`;
+        else if(cat.id === "combate") {
+          const secs = parseTiempoFinToSeconds(item.tiempoRaw != null ? item.tiempoRaw : item.tiempoNum);
+          cells = `<td>${formatSeconds(secs)} s</td><td>${formatScore(item.puntaje)}</td>`;
+        } else cells = `<td>${formatScore(item.puntaje)}</td>`;
+        const medal = String(i+1).padStart(2,"0");
+        return `<tr class="rank-${i+1}" style="--row:${i}"><td>${medal}</td><td title="${escapeHTML(item.nombre)}">${escapeHTML(item.nombre)}</td><td>${escapeHTML(item.area)}</td>${cells}</tr>`;
+      }).join("");
+      container.innerHTML = `<div class="category-heading"><h2>${escapeHTML(cat.label)}</h2><p>TOP ${TOP_N} · CLASIFICACIÓN GENERAL</p></div>` +
+        (list.length ? `<table class="ranking"><thead><tr><th>#</th><th>Competidor</th><th>Área</th>${special}</tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty">Sin resultados aún</div>');
+      renderedSignature = JSON.stringify([currentCategory, list]);
+    }
+    let transitionTimer = null;
+    let renderedSignature = "";
+    function changeCategory(step) {
+      if (transitionTimer !== null) return;
+      elapsed = 0; lastTick = performance.now();
+      container.classList.remove("transition-in");
+      container.classList.add("transition-out");
+      transitionTimer = setTimeout(() => {
+        currentCategory = (currentCategory + step + CATEGORIES.length) % CATEGORIES.length;
+        container.classList.remove("transition-out");
+        renderRankings(latestRankings);
+        void container.offsetWidth;
+        container.classList.add("transition-in");
+        transitionTimer = null;
+        updateProgress();
+      }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 350);
+    }
+    function updateProgress() {
+      document.getElementById("progressFill").style.width = `${Math.min(100,elapsed/ROTATION_MS*100)}%`;
+    }
+    function togglePause() {
+      paused = !paused;
+
+      lastTick = performance.now();
+    }
+    function loadAndRender() {
+      const acreditaciones = leerAcreditaciones();
+      const resultados = leerResultadosTodasAreas();
+      const updated = calcularRankings(acreditaciones, resultados);
+      if (transitionTimer !== null) {
+        latestRankings = updated;
+      } else {
+        const signature = JSON.stringify([currentCategory, updated[CATEGORIES[currentCategory].id] || []]);
+        if (signature !== renderedSignature) {
+          // Los refrescos de datos no deben activar la animación de entrada.
+          container.classList.remove("transition-in");
+          renderRankings(updated);
+        } else {
+          latestRankings = updated;
+        }
+      }
+      setLastUpdate();
+    }
+    loadAndRender();
+    setInterval(() => {
+      const now = performance.now();
+      if (!paused) {
+        elapsed += Math.min(now-lastTick, 1000);
+        if (elapsed >= ROTATION_MS) changeCategory(1);
+        updateProgress();
+      }
+      lastTick = now;
+    }, 100);
+    // Refresco periódico, también cuando está pausada la rotación.
+    setInterval(loadAndRender, 3000);
+    function toggleFullscreen() {
+      if(document.fullscreenElement) document.exitFullscreen?.().catch(()=>{});
+      else document.documentElement.requestFullscreen?.().catch(()=>{});
+    }
+    window.addEventListener("storage", ev => {
+      if (ev.key === STORAGE_ACREDITACIONES || AREAS.some(a => ev.key === RESULT_SYNC_PREFIX+a) || ev.key === null) loadAndRender();
+    });
+    document.addEventListener("keydown", ev => {
+      if(["ArrowLeft","ArrowRight"," "].includes(ev.key)) ev.preventDefault();
+      if(ev.key === "ArrowRight") changeCategory(1);
+      else if(ev.key === "ArrowLeft") changeCategory(-1);
+      else if(ev.key === " ") togglePause();
+      else if(ev.key.toLowerCase() === "f") toggleFullscreen();
+      else if(ev.key.toLowerCase() === "r") loadAndRender();
+    });
+  </script>
+</body>
+</html>

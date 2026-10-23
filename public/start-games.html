@@ -84,16 +84,45 @@
 
 <script>
 (function(){
-  const STORAGE_KEY = "ct_acreditaciones_v2";
+  const STORAGE_KEY = "ct_acreditaciones_v1";
   const params = new URLSearchParams(location.search);
   const AREA = params.get("area") || "";
 
   const STATE_KEY = (a)=>`ct_games_state_v1_${a||'?'}`;
   const RESULT_SYNC_KEY = (a)=>`ct_results_sync_v1_${a||'?'}`;
-  const PAGES = { rotura: "rotura.html", lucha: "lucha.html", combate: "Combate Total.html" };
+  const PAGES = { rotura: "rotura.html", lucha: "lucha al punto.html", combate: "Combate Total.html" };
 
   const gamesState = {};
   const el = (id)=>document.getElementById(id);
+
+
+// Merge hacia el storage de resultados que usa el Ranking
+function mergeResultados(area, updatesById) {
+  try {
+    const key = RESULT_SYNC_KEY(area);
+    const raw = localStorage.getItem(key);
+    const prev = raw ? JSON.parse(raw) : {};
+    const merged = { ...prev };
+
+    for (const [id, parcial] of Object.entries(updatesById)) {
+      const anterior = prev[id] || {};
+      merged[id] = { ...anterior, ...parcial };  // no pisa rotura/lucha/combate
+    }
+
+    localStorage.setItem(key, JSON.stringify(merged));
+
+    // avisar a otras pestañas (Ranking)
+    try {
+      window.dispatchEvent(
+        new StorageEvent("storage", { key, newValue: JSON.stringify(merged) })
+      );
+    } catch (_) {}
+  } catch (e) {
+    console.error("mergeResultados error", e);
+  }
+}
+
+
 
   function markPersisted(ok){
     const pill = el('estado-persist'); if(!pill) return;
@@ -185,19 +214,19 @@
         <td style="text-align:left">${comp.nombre}</td>
 
         <!-- Salto: Acción (Fallo/Logró) y Puntaje -->
-        <td>${hds ? `${hds.toFixed(2)} m` : '<span class="cell-muted">—</span>'}</td>
+        <td>${hds ? `${hds.toFixed(3)} m` : '<span class="cell-muted">—</span>'}</td>
         <td>
           <button class="btn ${st.saltoLogrado?'btn-green':'btn-red'}"
                   data-action="toggle-salto" data-id="${comp.id}">
             ${st.saltoLogrado ? 'Logró' : 'Fallo'}
           </button>
         </td>
-        <td id="salto-score-${comp.id}">${Number(st.saltoLogrado ? st.saltoPuntaje : 0).toFixed(2)}</td>
+        <td id="salto-score-${comp.id}">${Number(st.saltoLogrado ? st.saltoPuntaje : 0).toFixed(3)}</td>
 
         <!-- Rotura (3 columnas: Puntaje de Rotura, Acción, Puntaje) -->
         <td>${(comp.pdr ?? '<span class="cell-muted">—</span>')}</td>
         <td><button class="btn btn-amber" data-action="iniciar-rotura" data-id="${comp.id}">Iniciar Rotura</button></td>
-        <td id="rotura-score-${comp.id}">${Number(st.roturaPuntaje||0).toFixed(2)}</td>
+        <td id="rotura-score-${comp.id}">${Number(st.roturaPuntaje||0).toFixed(3)}</td>
       `;
 
       // Lucha: Acción (rowSpan por pareja) + Puntaje (por fila)
@@ -215,7 +244,7 @@
       }
       const luchaScore = document.createElement("td");
       luchaScore.id = `lucha-score-${comp.id}`;
-      luchaScore.textContent = Number(st.luchaPuntaje||0).toFixed(2);
+      luchaScore.textContent = Number(st.luchaPuntaje||0).toFixed(3);
       tr.appendChild(luchaScore);
 
       // Combate: Acción (rowSpan) + Puntaje + Tiempo de Finalización
@@ -233,7 +262,7 @@
       }
       const combateScore = document.createElement("td");
       combateScore.id = `combate-score-${comp.id}`;
-      combateScore.textContent = Number(st.combatePuntaje||0).toFixed(2);
+      combateScore.textContent = Number(st.combatePuntaje||0).toFixed(3);
       tr.appendChild(combateScore);
 
       const combateTime = document.createElement("td");
@@ -255,7 +284,8 @@
       const data = leerCompetidores();
       const comp = data.find(c=>c.id===compId); if(!comp) return;
       const st = getCompState(compId);
-      const hds = parseFloat(comp.hds)||0; const altura = parseFloat(comp.altura)||1;
+      const hds = parseFloat(comp.hds)||0; 
+      const altura = parseFloat(comp.altura)||1;
 
       // Toggle SALTO: arranca en FALLÓ (rojo) -> LOGRÓ (verde) con puntaje
       st.saltoLogrado = !st.saltoLogrado;
@@ -266,10 +296,23 @@
       btn.classList.toggle("btn-red", !st.saltoLogrado);
 
       const scoreEl = el(`salto-score-${compId}`);
-      if(scoreEl) scoreEl.textContent = Number(st.saltoLogrado ? st.saltoPuntaje : 0).toFixed(2);
+      if(scoreEl) scoreEl.textContent = Number(st.saltoLogrado ? st.saltoPuntaje : 0).toFixed(3);
+
+      // 1) guardamos el estado local de la tabla
       saveState();
+
+      // 2) sincronizamos con el storage que usa Ranking
+        mergeResultados(AREA, {
+          [compId]: {
+            saltoLogrado: st.saltoLogrado,
+            saltoPuntaje: Number(st.saltoPuntaje || 0),
+            saltoAltura: st.saltoLogrado ? Number(hds || 0) : 0
+          }
+        });
+
       return;
     }
+
 
     if(action==="iniciar-rotura"){
       const compId = Number(btn.dataset.id);
@@ -304,10 +347,10 @@
         '"'+(c.nombre||'')+'"',
         AREA,
         st.saltoLogrado?1:0,
-        (st.saltoPuntaje||0).toFixed(2),
-        (st.roturaPuntaje||0).toFixed(2),
-        (st.luchaPuntaje||0).toFixed(2),
-        (st.combatePuntaje||0).toFixed(2),
+        (st.saltoPuntaje||0).toFixed(3),
+        (st.roturaPuntaje||0).toFixed(3),
+        (st.luchaPuntaje||0).toFixed(3),
+        (st.combatePuntaje||0).toFixed(3),
         '"'+(st.combateTiempoFin||'')+'"'
       ].join(',') + '\\n';
     });

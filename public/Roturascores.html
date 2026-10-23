@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de Rotura de Habilidad</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background-color: #111;
+      color: #eee;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2 {
+      color: #0f0;
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 0 6px #0f0;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    select {
+      width: 100%;
+      padding: 6px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+    .patada {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 16px;
+      padding: 10px 20px;
+      background-color: #0f0;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #4f4;
+    }
+    .dificultad {
+      margin-top: 24px;
+      font-size: 1.3em;
+      text-align: center;
+      color: #0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Evaluar Rotura de Habilidad</h2>
+
+  <label for="tablas">Cantidad de tablas</label>
+  <select id="tablas">
+    <option value="0">1 tabla (0)</option>
+    <option value="0.5">2 tablas (0.5)</option>
+    <option value="1.0">3 o más tablas (1.0)</option>
+  </select>
+
+  <label for="giros">Giros</label>
+  <select id="giros">
+    <option value="0">Sin giro</option>
+    <option value="0.5">1/2 giro (0.5)</option>
+    <option value="1.0">1 giro (1.0)</option>
+    <option value="1.5">1 1/2 giro (1.5)</option>
+    <option value="2.0">2 o más giros (2.0)</option>
+    <option value="0.6">Contra-giro (0.6)</option>
+  </select>
+
+  <label for="vuelo">Vuelo</label>
+  <select id="vuelo">
+    <option value="0">Sin despegue (0)</option>
+    <option value="0.5">Salto frontal (0.5)</option>
+    <option value="2.0">Salto mortal (2.0)</option>
+  </select>
+
+  <label for="dinamismo">Dinamismo</label>
+  <select id="dinamismo">
+    <option value="0">Fijo (0)</option>
+    <option value="3.0">En movimiento (3.0)</option>
+  </select>
+
+  <label for="riesgo">Riesgo de fallar</label>
+  <select id="riesgo">
+    <option value="0.15">Bajo (0.15)</option>
+    <option value="0.30">Medio (0.30)</option>
+    <option value="0.55">Alto (0.55)</option>
+    <option value="0.75">Muy alto (0.75)</option>
+  </select>
+
+  <div id="patadas">
+    <div class="patada">
+      <label>Tipo de patada</label>
+      <select class="patada-select">
+        <option value="0.01">Ap-Chagui (0.01)</option>
+        <option value="0.02">Dollyo-Chagui (0.02)</option>
+        <option value="0.03">Yop-Chagui (0.03)</option>
+        <option value="0.4">Sewo-Chagui (0.4)</option>
+        <option value="0.05">Naeryo-Chagui (0.05)</option>
+        <option value="0.06">Bituro-Chagui (0.06)</option>
+      </select>
+    </div>
+  </div>
+
+  <button onclick="agregarPatada()">Agregar otra patada</button>
+
+  <div class="dificultad">
+    Dificultad total: <span id="resultado">0.00</span>
+  </div>
+
+  <script>
+    function calcularDificultad() {
+      let total = 0;
+      total += parseFloat(document.getElementById("tablas").value);
+      total += parseFloat(document.getElementById("giros").value);
+      total += parseFloat(document.getElementById("vuelo").value);
+      total += parseFloat(document.getElementById("dinamismo").value);
+      total += parseFloat(document.getElementById("riesgo").value);
+
+      document.querySelectorAll(".patada-select").forEach(sel => {
+        total += parseFloat(sel.value);
+      });
+
+      document.getElementById("resultado").textContent = total.toFixed(2);
+    }
+
+    function agregarPatada() {
+      const div = document.createElement("div");
+      div.className = "patada";
+      div.innerHTML = `
+        <label>Tipo de patada</label>
+        <select class="patada-select">
+          <option value="0.01">Ap-Chagui (0.01)</option>
+          <option value="0.02">Dollyo-Chagui (0.02)</option>
+          <option value="0.03">Yop-Chagui (0.03)</option>
+          <option value="0.4">Sewo-Chagui (0.4)</option>
+          <option value="0.05">Naeryo-Chagui (0.05)</option>
+          <option value="0.06">Bituro-Chagui (0.06)</option>
+        </select>
+      `;
+      document.getElementById("patadas").appendChild(div);
+      div.querySelector("select").addEventListener("change", calcularDificultad);
+      calcularDificultad();
+    }
+
+    // Detectar cambios
+    document.querySelectorAll("select").forEach(sel => {
+      sel.addEventListener("change", calcularDificultad);
+    });
+
+    calcularDificultad();
+  </script>
+
+</body>
+</html>
