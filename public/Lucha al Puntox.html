@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Combate Total — NEON GRID v4.1 | Arena Pro</title>
+  <style>
+	body {
+	  margin: 0;
+	  background: #111;
+	  font-family: sans-serif;
+	  color: white;
+	  overflow: hidden;
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  height: 100vh;
+	  flex-direction: column;
+	}
+
+.cronometro {
+  width: 180px;
+  height: 80px; /* menor altura */
+  background: #ffeb3b;
+  color: #000;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #000;
+  border-radius: 0; /* sin bordes redondeados */
+  box-shadow: 0 0 15px rgba(255, 255, 0, 0.4);
+  z-index: 1;
+}
+
+
+.menu-config {
+  position: absolute;
+  top: 20%;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #39ff14;
+  padding: 30px 60px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 0 20px #39ff14;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.menu-config.oculto {
+  display: none;
+}
+
+.menu-config .campo {
+  font-size: 1.4rem;
+  margin: 15px 0;
+}
+
+.menu-config .activo {
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+}
+
+
+    .config {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .config p {
+      font-size: 1.5rem;
+      margin: 10px;
+    }
+
+    .activo {
+      color: #39ff14;
+      text-shadow: 0 0 10px #39ff14;
+    }
+
+.juez-box {
+  position: absolute;
+  width: 70px;
+  text-align: center;
+  z-index: 10;
+}
+
+.juez-icono {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.puntos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.punto {
+  width: 60px;
+  padding: 4px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  border: 1px solid #000;
+}
+
+.punto.rojo {
+  background-color: #c62828;
+}
+
+.punto.azul {
+  background-color: #1565c0;
+}
+
+/* Posiciones en las esquinas */
+.esquina-izq-arriba {
+  top: 10px;
+  left: 10px;
+}
+
+.esquina-der-arriba {
+  top: 10px;
+  right: 10px;
+}
+
+.esquina-izq-abajo {
+  bottom: 10px;
+  left: 10px;
+}
+
+.esquina-der-abajo {
+  bottom: 10px;
+  right: 10px;
+}
+
+.juez-icono.seleccionando {
+  position: relative;
+  z-index: 1;
+}
+
+.juez-icono.seleccionando::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -2px;
+  background: #39ff14;
+  border: 3px solid #39ff14;
+  box-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14;
+  animation: parpadeo-verdoso 1s infinite;
+  z-index: -1;
+}
+
+
+
+
+.juez-icono.seleccionado {
+  position: relative;
+  z-index: 1;
+}
+
+.juez-icono.seleccionado::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -2px;
+  background: #39ff14;
+  border: 3px solid #39ff14;
+  box-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14;
+  z-index: -1;
+}
+
+.juez-icono.seleccionado::after {
+  content: attr(data-label);
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+  background: transparent;
+  padding: 1px 5px;
+  border-radius: 4px;
+  text-shadow: 0 0 3px #000;
+  z-index: 3;
+}
+
+
+
+
+@keyframes parpadeo {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@keyframes parpadeo-verdoso {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+
+.promedios {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 200px;
+  pointer-events: none;
+}
+
+.promedio-box {
+  width: 240px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  font-weight: bold;
+  color: white;
+  border: 3px solid #000;
+  text-shadow: 0 0 10px white;
+  box-shadow: 0 0 25px rgba(255,255,255,0.1);
+  border-radius: 0; /* sin redondeo */
+}
+
+.azul-neon {
+  background-color: #1565c0;
+  text-shadow: 0 0 10px #bbdefb, 0 0 20px #2196f3;
+}
+
+.rojo-neon {
+  background-color: #c62828;
+  text-shadow: 0 0 10px #ef9a9a, 0 0 20px #f44336;
+}
+
+
+.titulo-round {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+}
+
+.cronometro.descanso {
+  margin-top: 1rem;
+  width: 160px;
+  height: 60px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: #2c2c2c; /* gris oscuro */
+  color: #ffcc80; /* cobrizo suave */
+  border: 2px solid #8d6e63;
+  text-shadow: 0 0 6px #ffcc80, 0 0 12px #ffb74d;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(-30px);
+  animation: slideIn 0.5s forwards;
+}
+
+
+.oculto {
+  display: none;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.fondo-joystick1 {
+  background: rgba(57, 255, 20, 0.2); /* verde neón translúcido */
+  box-shadow: 0 0 15px #39ff14, 0 0 30px #39ff14;
+  border: 2px solid #39ff14;
+}
+
+.fondo-joystick2 {
+  background: rgba(255, 0, 0, 0.2); /* rojo neón */
+  box-shadow: 0 0 15px red, 0 0 30px red;
+  border: 2px solid red;
+}
+
+.fondo-joystick3 {
+  background: rgba(0, 128, 255, 0.2); /* azul neón */
+  box-shadow: 0 0 15px #00bfff, 0 0 30px #00bfff;
+  border: 2px solid #00bfff;
+}
+
+.fondo-joystick4 {
+  background: rgba(255, 255, 0, 0.2); /* amarillo neón */
+  box-shadow: 0 0 15px yellow, 0 0 30px yellow;
+  border: 2px solid yellow;
+}
+
+
+@keyframes parpadeo-verde {
+  0%, 100% { box-shadow: 0 0 10px #39ff14, 0 0 25px #39ff14; }
+  50% { box-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14; }
+}
+
+@keyframes parpadeo-rojo {
+  0%, 100% { box-shadow: 0 0 10px red, 0 0 25px red; }
+  50% { box-shadow: 0 0 5px red, 0 0 10px red; }
+}
+
+@keyframes parpadeo-azul {
+  0%, 100% { box-shadow: 0 0 10px #00bfff, 0 0 25px #00bfff; }
+  50% { box-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff; }
+}
+
+@keyframes parpadeo-amarillo {
+  0%, 100% { box-shadow: 0 0 10px yellow, 0 0 25px yellow; }
+  50% { box-shadow: 0 0 5px yellow, 0 0 10px yellow; }
+}
+
+.seleccionando-verde {
+  animation: parpadeo-verde 1s infinite;
+  background: rgba(57, 255, 20, 0.15);
+  border: 2px solid #39ff14;
+}
+
+.seleccionando-rojo {
+  animation: parpadeo-rojo 1s infinite;
+  background: rgba(255, 0, 0, 0.15);
+  border: 2px solid red;
+}
+
+.seleccionando-azul {
+  animation: parpadeo-azul 1s infinite;
+  background: rgba(0, 128, 255, 0.15);
+  border: 2px solid #00bfff;
+}
+
+.seleccionando-amarillo {
+  animation: parpadeo-amarillo 1s infinite;
+  background: rgba(255, 255, 0, 0.15);
+  border: 2px solid yellow;
+}
+
+
+
+/* Fondos animados para selección */
+.fondo-joystick1 {
+  background: #00ff00;
+  animation: parpadeo-neon-verde 1s infinite;
+}
+
+.fondo-joystick2 {
+  background: #ff0000;
+  animation: parpadeo-neon-rojo 1s infinite;
+}
+
+.fondo-joystick3 {
+  background: #00bfff;
+  animation: parpadeo-neon-azul 1s infinite;
+}
+
+.fondo-joystick4 {
+  background: #ffff00;
+  animation: parpadeo-neon-amarillo 1s infinite;
+}
+
+/* Fondos fijos para selección confirmada */
+.fijo-joystick1 { background: #00ff00; }
+.fijo-joystick2 { background: #ff0000; }
+.fijo-joystick3 { background: #00bfff; }
+.fijo-joystick4 { background: #ffff00; }
+
+@keyframes parpadeo-neon-verde {
+  0%, 100% { box-shadow: 0 0 10px #00ff00; }
+  50% { box-shadow: 0 0 30px #00ff00; }
+}
+@keyframes parpadeo-neon-rojo {
+  0%, 100% { box-shadow: 0 0 10px #ff0000; }
+  50% { box-shadow: 0 0 30px #ff0000; }
+}
+@keyframes parpadeo-neon-azul {
+  0%, 100% { box-shadow: 0 0 10px #00bfff; }
+  50% { box-shadow: 0 0 30px #00bfff; }
+}
+@keyframes parpadeo-neon-amarillo {
+  0%, 100% { box-shadow: 0 0 10px #ffff00; }
+  50% { box-shadow: 0 0 30px #ffff00; }
+}
+
+#vs-title {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 75px;
+    font-size: 3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 1000;
+}
+#vs-title span {
+  white-space: nowrap;
+}
+
+#nameA {
+  color: #ffffff;
+  text-shadow: 0 0 8px #00bfff, 0 0 16px #00bfff, 0 0 24px #00bfff;
+  text-align: right; /* alinea hacia el VS */
+  font-size: 2.5rem;
+  flex: 1;
+}
+
+#vs-title .vs {
+  flex: 0;
+  font-size: 2rem;
+  color: #ffffff;
+  text-shadow: 0 0 8px #39ff14, 0 0 16px #39ff14;
+}
+
+#nameB {
+  color: #ffffff;
+  text-shadow: 0 0 8px #ff1744, 0 0 16px #ff1744, 0 0 24px #ff1744;
+  text-align: left; /* alinea hacia el VS */
+  font-size: 2.5rem;
+  flex: 1;
+}
+
+
+#area-number {
+    position: absolute;
+    text-align: center;
+    display: flex;
+    margin-top: 75px;
+    font-size: 1.2rem;
+    color: #39ff14;
+    font-weight: bold;
+    text-shadow: 0 0 8px #39ff14, 0 0 16px #39ff14, 0 0 24px #39ff14;
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.overlay.hidden { display: none; }
+
+.menu {
+  background: #111;
+  padding: 20px 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 20px #39ff14;
+}
+
+.menu h3 {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  color: #39ff14;
+  text-shadow: 0 0 10px #39ff14;
+}
+
+.menu-btn {
+  display: block;
+  width: 200px;
+  margin: 8px auto;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #222;
+  color: #fff;
+  text-transform: uppercase;
+  transition: 0.2s;
+}
+
+.menu-btn:hover {
+  background: #39ff14;
+  color: #000;
+}
+
+.tiempo-victoria {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.2em;
+  color: white;
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+#resultMenu .menu {
+  max-width: 500px;
+  width: 90%;
+  padding: 25px;
+}
+
+#resultDetails {
+  font-size: 1.1em;
+  color: #ddd;
+}
+
+#resultDetails h4 {
+  margin: 0;
+  padding: 5px 0;
+  text-shadow: 0 0 5px currentColor;
+}
+
+#resultDetails strong {
+  color: #fff;
+}
+
+#resultDetails div > div {
+  flex: 1;
+  padding: 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+}
+
+
+/* === ARENA PRO / VISUAL DESIGN v3 — no changes to scoring logic === */
+:root{color-scheme:dark;--bg:#070b13;--panel:#111a2a;--line:#28354b;--muted:#8493a9;--blue:#2c91ff;--red:#ff465f;--gold:#f4c86a}
+*{box-sizing:border-box}
+body{background:radial-gradient(ellipse at 50% 25%,#1a273b 0%,#0b1320 44%,#070b13 100%);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;min-height:100dvh;isolation:isolate}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:linear-gradient(90deg,transparent 49.95%,rgba(255,255,255,.035) 50%,transparent 50.05%),repeating-linear-gradient(0deg,transparent 0 71px,rgba(255,255,255,.018) 72px)}
+.brand-header{position:absolute;top:21px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;color:#d8e4f4;letter-spacing:.22em;font-size:11px;font-weight:800;text-transform:uppercase;white-space:nowrap;z-index:5}
+.brand-mark{width:29px;height:29px;border:1px solid #526581;display:grid;place-items:center;transform:rotate(45deg);color:var(--gold)}
+.brand-mark span{transform:rotate(-45deg);font-size:15px}
+#vs-title{top:89px;left:50%;transform:translateX(-50%);width:min(1200px,90vw);gap:0;align-items:center;z-index:5;margin:0;min-height:80px}
+#nameA,#nameB{font-size:clamp(21px,3vw,45px);line-height:1.12;letter-spacing:-.035em;white-space:normal!important;overflow-wrap:anywhere;text-shadow:none;padding:0 24px}
+#nameA{color:#eaf5ff;text-align:right}
+#nameB{color:#fff0f1;text-align:left}
+#vs-title .vs{display:grid;place-items:center;width:60px;height:60px;flex:0 0 60px;font-size:19px;font-weight:900;letter-spacing:.03em;color:#e7ecf7;text-shadow:none;border:1px solid #35445a;border-radius:50%;background:#141e2d}
+#area-number{position:absolute;top:83px;left:50%;transform:translateX(-50%);margin:0;color:var(--gold);text-shadow:none;font-size:12px;letter-spacing:.19em;text-transform:uppercase;white-space:nowrap}
+.match-kicker{position:absolute;top:190px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.24em;font-weight:700;color:var(--muted);text-transform:uppercase}
+#titulo-round{position:absolute;top:calc(50% - 135px);left:50%;transform:translateX(-50%);margin:0;padding:8px 22px;border:1px solid #46536a;border-radius:50px;background:#192337;color:var(--gold);font-size:13px;letter-spacing:.19em;text-shadow:none;white-space:nowrap;z-index:4}
+.cronometro:not(.descanso){position:absolute;top:calc(50% - 87px);left:50%;transform:translateX(-50%);width:clamp(250px,29vw,420px);height:125px;background:linear-gradient(160deg,#1c2a3c,#111a2a);color:#f8fafc;border:1px solid #46546a;border-radius:15px;box-shadow:0 18px 55px #0009,inset 0 1px 0 #ffffff18;font-size:clamp(35px,4.2vw,61px);font-weight:750;letter-spacing:-.055em;font-variant-numeric:tabular-nums;z-index:3}
+.cronometro:not(.descanso):before{content:'TIEMPO DE COMBATE';position:absolute;top:11px;left:0;right:0;text-align:center;font-size:10px;font-weight:750;letter-spacing:.23em;color:#8293ab}
+.cronometro.descanso{position:absolute;top:calc(50% + 56px);left:50%;margin:0;transform:translateX(-50%);z-index:6;width:230px;height:65px;border:1px solid #6a5940;border-radius:9px;background:#29231c;color:var(--gold);font-variant-numeric:tabular-nums}
+.oculto,.menu-config.oculto{display:none!important}
+.promedios{position:absolute;inset:0;width:auto;height:100%;transform:none;display:block;pointer-events:none;z-index:2}
+.promedio-box{position:absolute;top:50%;transform:translateY(-50%);width:clamp(200px,25vw,345px);height:clamp(210px,29vh,305px);border:1px solid #ffffff26;border-radius:16px;box-shadow:0 20px 65px #0008;font-size:clamp(62px,7vw,105px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.065em;text-shadow:none;flex-direction:column;gap:6px}
+.promedio-box:before{position:absolute;top:20px;font-size:12px;letter-spacing:.2em;font-weight:800;color:#ffffffb8}
+.promedio-box:after{position:absolute;bottom:21px;font-size:10px;letter-spacing:.17em;font-weight:750;color:#ffffffa6}
+#promedio-azul{left:max(115px,calc(50% - 590px));background:linear-gradient(150deg,#174e9b,#102f5a 55%,#10213a);border-color:#338dfc80}
+#promedio-azul:before{content:'ESQUINA AZUL'}
+#promedio-azul:after{content:'PUNTAJE PROMEDIO'}
+#promedio-rojo{right:max(115px,calc(50% - 590px));background:linear-gradient(150deg,#a82b42,#672037 55%,#331826);border-color:#ff526780}
+#promedio-rojo:before{content:'ESQUINA ROJA'}
+#promedio-rojo:after{content:'PUNTAJE PROMEDIO'}
+.juez-box{width:112px;padding:12px 11px 11px;background:linear-gradient(160deg,#1c293b,#101824);border:1px solid #344157;border-radius:12px;box-shadow:0 12px 30px #0007;z-index:15}
+.juez-box:before{content:'JUEZ ' attr(data-num);display:block;color:#aab9ce;font-size:10px;letter-spacing:.17em;font-weight:800;margin-bottom:7px}
+.juez-icono{font-size:17px;line-height:23px;margin:0 0 7px;min-height:23px}
+.puntos{gap:5px}
+.punto{width:100%;border-radius:6px;padding:6px 0;font-size:19px;font-weight:800;border:1px solid #ffffff1c;font-variant-numeric:tabular-nums}
+.punto.azul{background:#174e93}
+.punto.rojo{background:#95283c}
+.esquina-izq-arriba{top:22px;left:24px}.esquina-der-arriba{top:22px;right:24px}.esquina-izq-abajo{bottom:22px;left:24px}.esquina-der-abajo{bottom:22px;right:24px}
+.juez-icono.seleccionando:before,.juez-icono.seleccionado:before{border-radius:5px}
+.menu-config{top:50%;left:50%;transform:translate(-50%,-50%);min-width:420px;max-width:90vw;padding:28px 36px;border-radius:16px;border:1px solid #536782;background:#101b2af5;box-shadow:0 20px 80px #000b;z-index:100}
+.menu-config .campo{font-size:17px;line-height:1.6;text-align:left;color:#b9c7d8}
+.menu-config .activo{color:var(--gold);text-shadow:none}
+.overlay{background:#04080ed9;backdrop-filter:blur(9px)}
+.menu{background:#121e2d;border:1px solid #354860;border-radius:17px;box-shadow:0 25px 85px #000c;padding:30px 38px;min-width:310px}
+.menu h3{color:#f1f5fa;text-shadow:none;font-size:20px;letter-spacing:.03em}
+.menu-btn{width:100%;max-width:310px;padding:13px 18px;border:1px solid #35465c;border-radius:8px;background:#1c2b3d;letter-spacing:.05em}
+.menu-btn:hover{background:#2c8ef0;color:white;border-color:#66b0ff}
+#resultMenu .menu{max-width:600px}
+#resultDetails div>div{background:#1b2939;border:1px solid #ffffff12}
+.footer-guide{position:absolute;bottom:21px;left:50%;transform:translateX(-50%);color:#7889a0;font-size:10px;letter-spacing:.11em;text-transform:uppercase;white-space:nowrap;z-index:3}
+@media(max-width:1080px){#promedio-azul{left:90px}#promedio-rojo{right:90px}.promedio-box{width:25vw;height:210px;font-size:6vw}.cronometro:not(.descanso){width:28vw;min-width:240px;font-size:4vw}}
+@media(max-width:760px){.brand-header{top:12px;font-size:9px}#vs-title{top:70px;width:96vw}#nameA,#nameB{font-size:20px;padding:0 8px}#vs-title .vs{width:40px;height:40px;flex-basis:40px;font-size:14px}#area-number{top:55px}.match-kicker{top:155px}#titulo-round{top:calc(50% - 170px)}.cronometro:not(.descanso){top:calc(50% - 122px);width:235px;height:95px;font-size:34px}.promedio-box{top:calc(50% + 100px);width:39vw;height:135px;font-size:36px}#promedio-azul{left:8vw}#promedio-rojo{right:8vw}.promedio-box:before{top:12px;font-size:9px}.promedio-box:after{bottom:10px;font-size:8px}.juez-box{width:84px;padding:6px}.juez-box:before{font-size:8px}.juez-icono{font-size:13px}.punto{font-size:14px;padding:4px}.esquina-izq-arriba{top:12px;left:8px}.esquina-der-arriba{top:12px;right:8px}.esquina-izq-abajo{bottom:12px;left:8px}.esquina-der-abajo{bottom:12px;right:8px}.footer-guide{display:none}}
+@media(max-height:690px) and (min-width:761px){#vs-title{top:65px}.match-kicker{display:none}.promedio-box{height:205px}.brand-header{top:8px}.juez-box{padding:7px 9px}.punto{padding:3px 0}}
+
+  
+/* === NEON GRID / FUTURE ARENA V4 — visual-only overrides === */
+:root{--cyan:#20d9ff;--pink:#ff365f;--ice:#e8faff}
+body{background:radial-gradient(ellipse at 25% 42%,#103d61 0%,transparent 45%),radial-gradient(ellipse at 80% 42%,#4d1232 0%,transparent 43%),linear-gradient(135deg,#081c30,#0b1325 45%,#221021);overflow:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 49.9%,#ffffff10 50%,transparent 50.1%),repeating-linear-gradient(0deg,transparent 0 42px,#ffffff06 43px 44px),repeating-linear-gradient(90deg,transparent 0 42px,#ffffff05 43px 44px);mask-image:linear-gradient(to bottom,transparent,#000 20%,#000 85%,transparent)}
+body:after{content:"";position:fixed;inset:3.5vh 2vw;pointer-events:none;border:1px solid #65b8ff24;clip-path:polygon(0 0,100% 0,100% 100%,0 100%);box-shadow:inset 0 0 70px #0e72bb1a}
+.brand-header,.match-kicker,.footer-guide{display:none!important}
+#vs-title{position:absolute;top:5.5vh;left:4%;width:92%;height:13vh;min-height:65px;display:grid;grid-template-columns:1fr 82px 1fr;align-items:center;gap:0;padding:0;margin:0;background:linear-gradient(90deg,#0c63a350,#142e48bd 48%,#472036ba 52%,#b51f5250);border-top:2px solid #75d7ff6b;border-bottom:1px solid #ffffff25;border-radius:8px;box-shadow:0 14px 45px #0005}
+#nameA,#nameB{padding:0 2vw!important;font-size:clamp(23px,3.4vw,57px)!important;letter-spacing:-.045em!important;line-height:1.05!important;font-weight:900;text-shadow:0 0 25px #18a4ff44!important}
+#nameA{text-align:left;color:#e7f9ff}#nameB{text-align:right;color:#fff1f6;text-shadow:0 0 25px #ff286444!important}
+#vs-title .vs{width:62px;height:62px;flex:none;border-radius:14px;border:1px solid #ffffff5c;background:#0b1a2b;color:white;box-shadow:0 0 26px #46ccff30;font-size:22px;justify-self:center}
+#area-number{position:absolute;top:calc(18.5vh + 5px);left:50%;transform:translateX(-50%);font-size:clamp(11px,1.15vw,16px);letter-spacing:.23em;color:#91c8df;text-shadow:none;margin:0}
+.promedios{position:absolute;inset:24vh 2.5vw 24vh;display:grid;grid-template-columns:1fr 1fr;gap:clamp(240px,29vw,440px);height:auto;width:auto;transform:none;z-index:2;pointer-events:none}
+.promedio-box{position:relative!important;top:auto!important;left:auto!important;right:auto!important;transform:none!important;width:100%!important;height:100%!important;border-radius:16px;font-size:clamp(65px,10vw,185px)!important;letter-spacing:-.075em;box-shadow:inset 0 0 55px #0005,0 15px 60px #0007;display:flex;align-items:center;justify-content:center;border-width:2px;min-width:0}
+#promedio-azul{background:linear-gradient(145deg,#1676b6 0%,#09578f 48%,#092d56 100%);border-color:#3ee2ff;box-shadow:0 0 45px #08b9ff35,inset 0 0 75px #071e43a8}
+#promedio-rojo{background:linear-gradient(145deg,#bf2459 0%,#8d1b48 48%,#4b1735 100%);border-color:#ff5b8b;box-shadow:0 0 45px #ff1e6a32,inset 0 0 75px #300b2fa8}
+.promedio-box:before{content:''!important;top:14px;left:14px;right:14px;height:4px;background:currentColor;opacity:.45;box-shadow:0 0 18px currentColor}
+.promedio-box:after{content:''!important;bottom:13px;left:15px;right:15px;height:2px;background:currentColor;opacity:.28}
+#titulo-round{position:absolute;top:29vh;left:50%;transform:translateX(-50%);z-index:5;padding:7px 20px;border:1px solid #4de4ff9c;border-radius:5px;background:#102e49;color:#c8f9ff;font-size:clamp(16px,1.7vw,24px);letter-spacing:.13em;box-shadow:0 0 22px #00cfff2e}
+.cronometro:not(.descanso){position:absolute;top:calc(50% - 11vh);left:50%;transform:translateX(-50%);width:clamp(270px,28vw,460px);height:22vh;min-height:110px;max-height:200px;z-index:6;border:2px solid #7cefff;background:linear-gradient(155deg,#173f5b,#081b31 65%);border-radius:12px;color:#fff;font-size:clamp(40px,4.8vw,78px);box-shadow:0 0 45px #00d5ff4d,0 18px 65px #0009,inset 0 0 28px #45b6ff1a;letter-spacing:-.07em}
+.cronometro:not(.descanso):before{content:'';display:none}
+.cronometro.descanso{top:calc(50% + 13vh);border-color:#ffc875;background:#362615;color:#ffe1a1}
+.juez-box{position:absolute;top:auto!important;bottom:3.5vh!important;width:calc((100vw - 11vw)/4);height:16.5vh;min-height:105px;max-height:170px;padding:12px 14px;background:linear-gradient(150deg,#17314c,#101e36);border:1px solid #5aa3d26b;border-radius:9px;display:grid;grid-template-columns:55px 1fr;grid-template-rows:28px 1fr;align-items:center;box-shadow:0 8px 25px #0007;z-index:12}
+.juez-box:before{content:'J' attr(data-num);grid-column:1;grid-row:1;font-size:17px;color:#e3f7ff;letter-spacing:0;margin:0;text-align:center}
+.juez-icono{grid-column:1;grid-row:2;font-size:24px;margin:0;min-height:0}
+.puntos{grid-column:2;grid-row:1/span 2;display:grid;grid-template-columns:1fr 1fr;gap:7px;height:100%;align-items:stretch}
+.punto{width:100%;height:100%;display:grid;place-items:center;padding:0;font-size:clamp(22px,3vw,47px);border-radius:7px;border:1px solid #ffffff45}
+.punto.azul{background:#0d67a9}.punto.rojo{background:#b21e51}
+.esquina-izq-arriba{left:2.5vw!important}.esquina-der-arriba{left:calc(2.5vw + (100vw - 11vw)/4 + 1vw)!important;right:auto!important}.esquina-izq-abajo{left:calc(2.5vw + 2*((100vw - 11vw)/4 + 1vw))!important}.esquina-der-abajo{right:2.5vw!important;left:auto!important}
+.menu-config,.menu{background:#0c2035f7;border:1px solid #4cdcff;box-shadow:0 0 50px #13bdfc35,0 25px 70px #0009;border-radius:12px}
+.menu h3{color:#b9f6ff}.menu-btn:hover{background:#0d80b4}
+@media(max-width:1000px){.promedios{inset:25vh 2vw 24vh;gap:clamp(225px,29vw,330px)}.promedio-box{font-size:clamp(55px,8vw,100px)!important}.cronometro:not(.descanso){width:28vw;min-width:220px;font-size:clamp(33px,4vw,55px)}.juez-box{grid-template-columns:34px 1fr;padding:7px;min-height:90px}.juez-icono{font-size:17px}.punto{font-size:clamp(17px,2.5vw,30px)}}
+@media(max-width:650px){#vs-title{top:7vh;min-height:58px;grid-template-columns:1fr 44px 1fr}#nameA,#nameB{font-size:18px!important;padding:0 9px!important}#vs-title .vs{width:38px;height:38px;font-size:13px}.promedios{inset:28vh 2vw 29vh;gap:0;grid-template-columns:1fr 1fr}.promedio-box{font-size:clamp(37px,8vw,65px)!important;border-radius:8px}.cronometro:not(.descanso){top:calc(50% - 7vh);width:72vw;height:13vh;min-height:70px;font-size:clamp(29px,8vw,45px)}#titulo-round{top:32vh;font-size:12px}#area-number{top:20vh}.juez-box{bottom:4vh!important;width:45vw;height:10vh;min-height:68px;grid-template-columns:24px 1fr;padding:5px}.juez-box:before{font-size:11px}.juez-icono{font-size:12px}.punto{font-size:18px}.esquina-izq-arriba{left:3vw!important;bottom:15vh!important}.esquina-der-arriba{left:auto!important;right:3vw!important;bottom:15vh!important}.esquina-izq-abajo{left:3vw!important}.esquina-der-abajo{right:3vw!important}}
+
+
+/* === NEON GRID V4.1: reloj amarillo y puntajes individuales separados === */
+.cronometro:not(.descanso){
+  background:linear-gradient(155deg,#fff36a 0%,#ffe12d 52%,#ffba18 100%);
+  color:#101820;
+  border:3px solid #fff49a;
+  width:clamp(310px,32vw,540px);
+  font-size:clamp(52px,5.7vw,96px);
+  font-weight:900;
+  letter-spacing:-.065em;
+  text-shadow:0 2px 0 #ffffff70;
+  box-shadow:0 0 52px #ffdd365c,0 16px 60px #0008,inset 0 2px 0 #fff9bc;
+}
+.juez-box{grid-template-columns:46px minmax(0,1fr);column-gap:10px}
+.puntos{gap:clamp(10px,1.25vw,24px);min-width:0}
+.punto{
+  min-width:0;
+  aspect-ratio:1/1;
+  height:auto;
+  width:100%;
+  align-self:center;
+  justify-self:center;
+  border-radius:10px;
+  border:2px solid #ffffff8c;
+  color:#ffffff!important;
+  font-size:clamp(23px,2.8vw,48px);
+  font-weight:900;
+  text-shadow:0 2px 8px #0008;
+  box-shadow:inset 0 2px 0 #ffffff30,0 5px 16px #0006;
+}
+.punto.azul{background:linear-gradient(150deg,#1689ec,#0757b7);border-color:#65d7ff}
+.punto.rojo{background:linear-gradient(150deg,#f03c67,#aa1240);border-color:#ff8ca6}
+@media(max-width:1000px){
+  .cronometro:not(.descanso){width:clamp(250px,31vw,420px);font-size:clamp(39px,5vw,70px)}
+  .juez-box{grid-template-columns:30px minmax(0,1fr);column-gap:5px}
+  .puntos{gap:8px}
+  .punto{font-size:clamp(18px,2.5vw,32px)}
+}
+@media(max-width:650px){
+  .cronometro:not(.descanso){width:76vw;font-size:clamp(32px,8.2vw,50px)}
+  .juez-box{grid-template-columns:20px minmax(0,1fr);column-gap:3px}
+  .puntos{gap:6px}
+  .punto{border-radius:5px;border-width:1px;font-size:clamp(14px,4vw,22px)}
+}
+
+
+/* NEON GRID v4.2 — encabezados de jueces preparados para nombres */
+.juez-box{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:clamp(22px,3.5vh,34px) minmax(0,1fr);
+  gap:clamp(6px,0.9vh,12px);
+  padding:clamp(6px,0.85vw,12px);
+  align-items:stretch;
+}
+.juez-box::before{display:none!important;content:none!important}
+.juez-box .juez-icono{
+  grid-column:1;
+  grid-row:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  min-height:0;
+  margin:0;
+  padding:0 8px;
+  box-sizing:border-box;
+  font-size:clamp(11px,1.05vw,17px);
+  font-weight:800;
+  letter-spacing:.08em;
+  color:#e8f6ff;
+  background:linear-gradient(90deg,#234a68,#172e4a);
+  border:1px solid #71bfe37a;
+  border-radius:5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.juez-box .puntos{
+  grid-column:1;
+  grid-row:2;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr);
+  gap:clamp(8px,1.25vw,22px);
+  height:100%;
+  min-height:0;
+  align-items:stretch;
+}
+.juez-box .punto{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  aspect-ratio:auto;
+  height:100%;
+  max-height:100%;
+  padding:0;
+  font-size:clamp(18px,2.45vw,42px);
+}
+.juez-box .juez-icono.seleccionando::before,
+.juez-box .juez-icono.seleccionado::before{
+  top:0;right:0;bottom:0;left:0;border-radius:5px;
+}
+@media(max-width:650px){
+  .juez-box{grid-template-columns:minmax(0,1fr);grid-template-rows:19px minmax(0,1fr);gap:4px;padding:5px}
+  .juez-box .juez-icono{font-size:11px}
+  .juez-box .puntos{gap:6px}
+  .juez-box .punto{font-size:clamp(14px,4vw,22px)}
+}
+
+
+
+/* NEON GRID v4.3 — competidores en cajas verticales */
+#vs-title{
+  left:2vw!important;
+  width:96vw!important;
+  grid-template-columns:minmax(0,1fr) clamp(45px,6vw,82px) minmax(0,1fr)!important;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+#vs-title .competidor-nombre{
+  display:grid!important;
+  grid-template-rows:1fr 1fr;
+  gap:clamp(3px,.65vh,8px);
+  width:100%;
+  min-width:0;
+  height:100%;
+  box-sizing:border-box;
+  padding:clamp(5px,.75vh,12px) clamp(6px,1vw,18px)!important;
+  align-content:stretch;
+}
+#vs-title .nombre-pila{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  box-sizing:border-box;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  border-radius:5px;
+  border:1px solid #ffffff38;
+  background:#071c3199;
+  color:#fff;
+  font-size:clamp(12px,2vw,30px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:.01em;
+  text-align:center;
+  padding:2px 6px;
+}
+#nameA .nombre-pila{background:linear-gradient(90deg,#0b4d88cc,#102f53cc);border-color:#49b8ff8a}
+#nameB .nombre-pila{background:linear-gradient(90deg,#67233fcc,#98234dcc);border-color:#ff668f8a}
+@media(max-width:650px){
+  #vs-title{left:1vw!important;width:98vw!important;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr)!important}
+  #vs-title .competidor-nombre{padding:4px!important;gap:3px}
+  #vs-title .nombre-pila{font-size:clamp(10px,2.7vw,16px);padding:2px}
+}
+
+/* Corrección v4.4: eliminar traslación heredada que desplazaba toda la cabecera a la izquierda. */
+#vs-title{
+  left:2vw!important;
+  right:2vw!important;
+  width:96vw!important;
+  transform:none!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) clamp(44px,6vw,82px) minmax(0,1fr)!important;
+  align-items:stretch!important;
+  justify-content:initial!important;
+  gap:0!important;
+  overflow:visible!important;
+}
+#vs-title > #nameA,#vs-title > #nameB{min-width:0!important;width:100%!important;flex:none!important;overflow:hidden!important;}
+#vs-title > .vs{align-self:center!important;justify-self:center!important;}
+#vs-title .nombre-pila{white-space:nowrap;}
+@media(max-width:650px){#vs-title{left:1vw!important;right:1vw!important;width:98vw!important;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr)!important}}
+
+/* v4.6: iluminar TODO el panel del juez asignado, no solo el encabezado. */
+.juez-box:has(.juez-icono.fondo-joystick1),
+.juez-box:has(.juez-icono.seleccionando-verde){--juez-neon:#00ff00;--juez-glow:#00ff0050}
+.juez-box:has(.juez-icono.fondo-joystick2),
+.juez-box:has(.juez-icono.seleccionando-rojo){--juez-neon:#ff304e;--juez-glow:#ff304e50}
+.juez-box:has(.juez-icono.fondo-joystick3),
+.juez-box:has(.juez-icono.seleccionando-azul){--juez-neon:#00bfff;--juez-glow:#00bfff50}
+.juez-box:has(.juez-icono.fondo-joystick4),
+.juez-box:has(.juez-icono.seleccionando-amarillo){--juez-neon:#ffff00;--juez-glow:#ffff0050}
+.juez-box:has(.juez-icono.fondo-joystick1),
+.juez-box:has(.juez-icono.fondo-joystick2),
+.juez-box:has(.juez-icono.fondo-joystick3),
+.juez-box:has(.juez-icono.fondo-joystick4),
+.juez-box:has(.juez-icono[class*="seleccionando-"]){
+  background:var(--juez-neon)!important;
+  border:2px solid var(--juez-neon)!important;
+  box-shadow:0 0 15px var(--juez-glow),0 0 34px var(--juez-glow),inset 0 0 15px #ffffff25!important;
+}
+.juez-box:has(.juez-icono[class*="seleccionando-"]){animation:panel-juez-pulso 1s ease-in-out infinite}
+@keyframes panel-juez-pulso{0%,100%{filter:brightness(1)}50%{filter:brightness(.55)}}
+/* El rótulo queda legible y las cajas azul/rojo conservan sus colores. */
+.juez-box:has(.juez-icono[class*="joystick"]),
+.juez-box:has(.juez-icono[class*="seleccionando-"]){color:#081727}
+.juez-box:has(.juez-icono[class*="joystick"]) .juez-icono,
+.juez-box:has(.juez-icono[class*="seleccionando-"]) .juez-icono{
+  background:#081b2be8!important;color:#fff!important;border-color:#ffffff80!important;
+}
+
+</style>
+</head>
+<body>
+<div class="brand-header"><div class="brand-mark"><span>◆</span></div> TAEKWON-DO TOTAL <span style="color:#586981">/</span> ARENA PRO</div>
+<div class="match-kicker">MARCADOR OFICIAL · COMBATE TOTAL</div>
+<div class="footer-guide">MODE ENCENDIDO · START SELECCIONAR JUEZ · SELECT CONFIRMAR · L2 DESHACER · R2 REHACER</div>
+  <!-- Menú de configuración oculto -->
+  <div id="menu-config" class="menu-config oculto">
+    <p class="campo activo" id="campo-0">Rounds: <span id="rounds">2</span></p>
+    <p class="campo" id="campo-1">Minutos por round: <span id="duracion">1</span></p>
+    <p class="campo" id="campo-2">Minutos de descanso: <span id="descanso">1</span></p>
+  </div>
+
+<h2 id="vs-title">
+  <div id="nameA" class="competidor-nombre"><div class="nombre-linea nombre-pila" id="nombreA">—</div><div class="apellido-linea nombre-pila" id="apellidoA">—</div></div>
+  <span class="vs">VS</span>
+  <div id="nameB" class="competidor-nombre"><div class="nombre-linea nombre-pila" id="nombreB">—</div><div class="apellido-linea nombre-pila" id="apellidoB">—</div></div>
+  <span id="area-number"></span>
+</h2>
+
+
+
+<div id="titulo-round" class="titulo-round">ROUND 1</div>
+
+
+  <!-- Cronómetro central -->
+  <div class="cronometro" id="cronometro">01:00.000</div>
+
+  <div class="cronometro descanso oculto" id="cronometro-descanso">00:30.000</div>
+
+
+<div class="promedios">
+  <div class="promedio-box azul-neon" id="promedio-azul">0.0</div>
+  <div class="promedio-box rojo-neon" id="promedio-rojo">0.0</div>
+</div>
+
+
+<!-- JUEZ esquina superior izquierda -->
+<div class="juez-box esquina-izq-arriba" data-id="0" data-num="1">
+  <div class="juez-icono" id="juez-0" title="Espacio reservado para el nombre del juez">J1</div>
+  <div class="puntos">
+    <div class="punto azul" id="azul-0">0</div>
+    <div class="punto rojo" id="rojo-0">0</div>
+  </div>
+</div>
+
+
+<!-- Repetí lo mismo con diferente posición y ID para cada esquina -->
+
+<div class="juez-box esquina-der-arriba" data-id="1" data-num="2">
+  <div class="juez-icono" id="juez-1" title="Espacio reservado para el nombre del juez">J2</div>
+  <div class="puntos">
+    <div class="punto azul" id="azul-1">0</div>
+    <div class="punto rojo" id="rojo-1">0</div>
+  </div>
+</div>
+
+<div class="juez-box esquina-izq-abajo" data-id="2" data-num="3">
+  <div class="juez-icono" id="juez-2" title="Espacio reservado para el nombre del juez">J3</div>
+  <div class="puntos">
+    <div class="punto azul" id="azul-2">0</div>
+    <div class="punto rojo" id="rojo-2">0</div>
+  </div>
+</div>
+
+
+<div class="juez-box esquina-der-abajo" data-id="3" data-num="4">
+  <div class="juez-icono" id="juez-3" title="Espacio reservado para el nombre del juez">J4</div>
+  <div class="puntos">
+    <div class="punto azul" id="azul-3">0</div>
+    <div class="punto rojo" id="rojo-3">0</div>
+  </div>
+</div>
+
+<!-- Overlay de pausa -->
+<div id="pauseMenu" class="overlay hidden">
+  <div class="menu">
+    <h3>Menú de Pausa</h3>
+    <button class="menu-btn" data-action="resume">Reanudar</button>
+    <button class="menu-btn" data-action="victory-blue">Victoria Azul</button>
+    <button class="menu-btn" data-action="victory-red">Victoria Rojo</button>
+  </div>
+</div>
+
+<!-- Submenú de victoria -->
+<div id="victoryMenu" class="overlay hidden">
+  <div class="menu">
+    <h3 id="victoryTitle">Victoria</h3>
+    <button class="menu-btn" data-action="jueces">Decisión de los Jueces</button>
+    <button class="menu-btn" data-action="medicos">Decisión de los Médicos</button>
+    <button class="menu-btn" data-action="back">← Volver</button>
+  </div>
+</div>
+
+
+<!-- Submenú de resultado final -->
+
+<div id="resultMenu" class="overlay hidden">
+  <div class="menu">
+    <h3 id="resultTitle">RESULTADO FINAL</h3>
+    <div id="resultDetails" style="text-align: left; margin: 20px 0; line-height: 1.6;"></div>
+    <button class="menu-btn" data-action="finalizar">FINALIZAR</button>
+  </div>
+</div>
+
+<script id="variables">
+// Variables y sonidos
+let ultimoSegundoBipeado = null;
+let rounds = 1;
+let descanso = 0;
+let duracion = 2;
+let tiempoRestante = duracion * 60 * 1000;
+let tiempoAcumulado = tiempoRestante;
+let tiempoInicio = 0;
+let roundActual = 1;
+let enDescanso = false;
+let tiempoDescanso = descanso * 60 * 1000;
+let tiempoDescansoRestante = tiempoDescanso;
+let tiempoDescansoInicio = 0;
+let intervaloDescanso;
+const sonido10sec = new Audio("/sounds/10sec.mp3");
+sonido10sec.preload = "auto";
+sonido10sec.loop = false;
+const sonidoRound = new Audio("/sounds/startEndRound.mp3");
+const sonidoFinPelea = new Audio("/sounds/endFight.mp3");
+
+let indexCampo = 0;
+let menuAbierto = false;
+let corriendo = false;
+let intervalo;
+let historial = [];
+let cursorHistorial = -1;
+const params = new URLSearchParams(location.search);
+const area = params.get("area");
+document.getElementById("area-number").textContent = area;
+const aId = Number(params.get("a"));
+const bId = Number(params.get("b"));
+
+const STORAGE_KEY = "ct_acreditaciones_v2";
+function leerCompetidores(){
+  const raw = localStorage.getItem("ct_acreditaciones_v1");
+  if(!raw) return [];
+  return JSON.parse(raw) || [];
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(location.search);
+  const area = params.get("area") || '1';
+  const aId = Number(params.get("a"));
+  const bId = Number(params.get("b"));
+  
+  // Usar la función leerCompetidores del scope global (definida más abajo)
+  const competidores = leerCompetidores();
+  const A = competidores.find(c => c.id === aId);
+  const B = competidores.find(c => c.id === bId);
+  
+  const nameA = document.getElementById("nameA");
+  const nameB = document.getElementById("nameB");
+  const areaNumber = document.getElementById("area-number");
+  
+  if (nameA && nameB && areaNumber) {
+    // Mostrar nombre y apellido en dos cajas independientes.
+    // Si hay un solo campo "nombre", la última palabra se toma como apellido.
+    const separarNombre = (competidor) => {
+      const nombre = String(competidor?.nombre || "—").trim();
+      const apellidoExplicito = String(competidor?.apellido || "").trim();
+      if (apellidoExplicito) return [nombre, apellidoExplicito];
+      const partes = nombre.split(/\s+/);
+      return partes.length > 1 ? [partes.slice(0, -1).join(" "), partes.at(-1)] : [nombre, ""];
+    };
+    const [nombreAzul, apellidoAzul] = separarNombre(A);
+    const [nombreRojo, apellidoRojo] = separarNombre(B);
+    document.getElementById("nombreA").textContent = nombreAzul;
+    document.getElementById("apellidoA").textContent = apellidoAzul || " ";
+    document.getElementById("nombreB").textContent = nombreRojo;
+    document.getElementById("apellidoB").textContent = apellidoRojo || " ";
+    areaNumber.textContent = `Área ${area}`;
+  }
+});
+
+</script>
+
+<script id="display">
+// Actualizaciones visuales
+const actualizarDisplay = () => {
+  document.getElementById("rounds").textContent = rounds;
+  document.getElementById("duracion").textContent = duracion;
+  document.getElementById("descanso").textContent = descanso.toFixed(1);
+  document.getElementById("titulo-round").textContent = `ROUND ${roundActual}`;
+  const mins = Math.floor(tiempoRestante / 60000).toString().padStart(2, '0');
+  const segs = Math.floor((tiempoRestante % 60000) / 1000).toString().padStart(2, '0');
+  const ms = (tiempoRestante % 1000).toString().padStart(3, '0');
+  document.getElementById("cronometro").textContent = `${mins}:${segs}.${ms}`;
+};
+
+function actualizarDescansoDisplay() {
+  const mins = Math.floor(tiempoDescansoRestante / 60000).toString().padStart(2, '0');
+  const segs = Math.floor((tiempoDescansoRestante % 60000) / 1000).toString().padStart(2, '0');
+  const ms = (tiempoDescansoRestante % 1000).toString().padStart(3, '0');
+  document.getElementById("cronometro-descanso").textContent = `${mins}:${segs}.${ms}`;
+}
+
+const actualizarHover = () => {
+  for (let i = 0; i < 3; i++) {
+    const campo = document.getElementById(`campo-${i}`);
+    if (campo) campo.classList.remove("activo");
+  }
+  if (menuAbierto) {
+    const activo = document.getElementById(`campo-${indexCampo}`);
+    if (activo) activo.classList.add("activo");
+  }
+};
+
+
+// === Persistencia hacia Start-Games ===
+const RESULT_SYNC_KEY = (a)=>`ct_results_sync_v1_${a||'?'}`;
+
+// Guarda (merge) los resultados por competidor para que Start-Games los lea
+function pushResultadosCombate({ area, aId, bId, puntajeAzul, puntajeRojo, tiempoFin }) {
+  try {
+    const raw = localStorage.getItem(RESULT_SYNC_KEY(area));
+    const prev = raw ? JSON.parse(raw) : {};
+
+    // armamos el merge por id
+    const up = {
+      [aId]: { combatePuntaje: Number(puntajeAzul||0), combateTiempoFin: tiempoFin },
+      [bId]: { combatePuntaje: Number(puntajeRojo||0), combateTiempoFin: tiempoFin },
+    };
+
+    const merged = { ...prev, ...up };
+    localStorage.setItem(RESULT_SYNC_KEY(area), JSON.stringify(merged));
+
+    // Disparamos el evento 'storage' para otras pestañas (por compatibilidad algunos navegadores solo lo disparan entre tabs)
+    try {
+      window.dispatchEvent(new StorageEvent('storage', { key: RESULT_SYNC_KEY(area), newValue: JSON.stringify(merged) }));
+    } catch(_) {}
+  } catch(e){ console.error('pushResultadosCombate error', e); }
+}
+
+// Formatea ms -> "MM:SS"
+function fmtMMSS(ms){
+  const total = Math.max(0, Math.floor(ms/1000));
+  const mm = String(Math.floor(total/60)).padStart(2,'0');
+  const ss = String(total%60).padStart(2,'0');
+  return `${mm}:${ss}`;
+}
+
+
+// Guarda resultados por competidor (permite tiempos distintos)
+// Guarda resultados de LUCHA POR PUNTOS por competidor (merge profundo)
+function pushResultadosLuchaPorLuchador({ area, data }) {
+  try {
+    const key = `ct_results_sync_v1_${area || '?'}`;
+    const raw = localStorage.getItem(key);
+    const prev = raw ? JSON.parse(raw) : {};
+
+    // merge por competidor para no perder rotura/salto/combate
+    const merged = { ...prev };
+    for (const [id, parcial] of Object.entries(data)) {
+      merged[id] = {
+        ...(prev[id] || {}),
+        ...parcial      // ← acá viene luchaPuntaje
+      };
+    }
+
+    localStorage.setItem(key, JSON.stringify(merged));
+
+    try {
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key,
+          newValue: JSON.stringify(merged),
+        })
+      );
+    } catch (_) {}
+  } catch (e) {
+    console.error("pushResultadosLuchaPorLuchador error", e);
+  }
+}
+
+
+
+</script>
+
+<!-- Otros bloques irán luego: cronómetro, controles, puntajes, etc. -->
+
+
+<!-- SCRIPT DE CRONOMETRO BEGIN   -->
+
+<script id="cronometro">
+// Variables para el marcador
+let puntosAzul = 0;
+let puntosRojo = 0;
+let tiempoTranscurridoFinal = 0;
+
+function reproducirSonido(audio) {
+  return new Promise((resolve) => {
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+    audio.onended = () => resolve();
+  });
+}
+
+function sonar10segundos(segundosRestantes) {
+  if (
+    segundosRestantes <= 10 &&
+    segundosRestantes >= 1 &&
+    segundosRestantes !== ultimoSegundoBipeado
+  ) {
+    if (sonido10sec.paused || sonido10sec.ended) {
+      sonido10sec.currentTime = 0;
+      sonido10sec.play().catch(() => {});
+      ultimoSegundoBipeado = segundosRestantes;
+    }
+  }
+
+  if (segundosRestantes <= 0 || segundosRestantes > 10) {
+    if (!sonido10sec.paused) {
+      sonido10sec.onended = () => {
+        sonido10sec.currentTime = 0;
+      };
+    }
+  }
+}
+
+let enDescansoPausado = false;
+
+const guardarHistorial = () => {
+  historial = historial.slice(0, cursorHistorial + 1);
+  historial.push(tiempoRestante);
+  cursorHistorial++;
+};
+
+const deshacer = () => {
+  if (cursorHistorial > 0) {
+    cursorHistorial--;
+    tiempoRestante = historial[cursorHistorial];
+    tiempoAcumulado = tiempoRestante;
+    actualizarDisplay();
+  }
+};
+
+const rehacer = () => {
+  if (cursorHistorial < historial.length - 1) {
+    cursorHistorial++;
+    tiempoRestante = historial[cursorHistorial];
+    tiempoAcumulado = tiempoRestante;
+    actualizarDisplay();
+  }
+};
+
+const iniciar = async () => {
+  if (corriendo || menuAbierto || enDescanso) return;
+  guardarHistorial();
+  corriendo = true;
+  fightPaused = false;
+  pauseMenu.classList.add("hidden");
+
+  await reproducirSonido(sonidoRound);
+  tiempoInicio = Date.now();
+  ultimoSegundoBipeado = null;
+
+  intervalo = setInterval(() => {
+    const transcurrido = Date.now() - tiempoInicio;
+    tiempoRestante = tiempoAcumulado - transcurrido;
+
+    const segundosRestantes = Math.floor((tiempoRestante - 0) / 1000);
+    sonar10segundos(segundosRestantes);
+
+    if (tiempoRestante <= 0) {
+      clearInterval(intervalo);
+      tiempoRestante = 0;
+      corriendo = false;
+      actualizarDisplay();
+
+      if (roundActual < rounds) {
+        iniciarDescanso();
+      } else {
+        if (!sonido10sec.paused) {
+          sonido10sec.onended = () => {
+            sonido10sec.currentTime = 0;
+          };
+        }
+
+        reproducirSonido(sonidoFinPelea);
+        document.getElementById("titulo-round").textContent = "FIN DE PELEA";
+        mostrarResultadoFinalPorTiempo();
+      }
+      return;
+    }
+
+    actualizarDisplay();
+  }, 10);
+};
+
+const pausar = () => {
+  if (corriendo) {
+    clearInterval(intervalo);
+    tiempoAcumulado = tiempoRestante;
+    corriendo = false;
+    guardarHistorial();
+    pauseMenu.classList.remove("hidden");
+    fightPaused = true;
+  } else if (enDescanso) {
+    clearInterval(intervaloDescanso);
+    tiempoDescanso = tiempoDescansoRestante;
+    enDescanso = false;
+    enDescansoPausado = true;
+    pauseMenu.classList.remove("hidden");
+    fightPaused = true;
+  }
+};
+
+const reiniciar = () => {
+  if (corriendo) clearInterval(intervalo);
+  guardarHistorial();
+  tiempoRestante = duracion * 60 * 1000;
+  tiempoAcumulado = tiempoRestante;
+  corriendo = false;
+  fightPaused = false;
+  pauseMenu.classList.add("hidden");
+  actualizarDisplay();
+};
+
+async function iniciarDescanso() {
+  await reproducirSonido(sonidoRound);
+  enDescanso = true;
+  enDescansoPausado = false;
+  fightPaused = false;
+  pauseMenu.classList.add("hidden");
+  tiempoDescanso = descanso * 60 * 1000;
+  tiempoDescansoRestante = tiempoDescanso;
+  tiempoDescansoInicio = Date.now();
+  ultimoSegundoBipeado = null;
+
+  actualizarDescansoDisplay();
+  document.getElementById("cronometro-descanso").classList.remove("oculto");
+
+  intervaloDescanso = setInterval(() => {
+    const transcurrido = Date.now() - tiempoDescansoInicio;
+    tiempoDescansoRestante = tiempoDescanso - transcurrido;
+
+    const segundosDescanso = Math.floor(tiempoDescansoRestante / 1000);
+    sonar10segundos(segundosDescanso);
+
+    if (tiempoDescansoRestante <= 0) {
+      clearInterval(intervaloDescanso);
+      tiempoDescansoRestante = 0;
+      enDescanso = false;
+      document.getElementById("cronometro-descanso").classList.add("oculto");
+
+      if (!sonido10sec.paused) {
+        sonido10sec.onended = () => {
+          sonido10sec.currentTime = 0;
+        };
+      }
+
+      if (roundActual < rounds) iniciarProximoRound();
+    }
+
+    actualizarDescansoDisplay();
+  }, 10);
+}
+
+function reanudarDescanso() {
+  enDescanso = true;
+  enDescansoPausado = false;
+  fightPaused = false;
+  pauseMenu.classList.add("hidden");
+  tiempoDescansoInicio = Date.now();
+  ultimoSegundoBipeado = null;
+
+  intervaloDescanso = setInterval(() => {
+    const transcurrido = Date.now() - tiempoDescansoInicio;
+    tiempoDescansoRestante = tiempoDescanso - transcurrido;
+
+    const segundosDescanso = Math.floor(tiempoDescansoRestante / 1000);
+    sonar10segundos(segundosDescanso);
+
+    if (tiempoDescansoRestante <= 0) {
+      clearInterval(intervaloDescanso);
+      tiempoDescansoRestante = 0;
+      enDescanso = false;
+      document.getElementById("cronometro-descanso").classList.add("oculto");
+
+      if (!sonido10sec.paused) {
+        sonido10sec.onended = () => {
+          sonido10sec.currentTime = 0;
+        };
+      }
+
+      if (roundActual < rounds) iniciarProximoRound();
+    }
+
+    actualizarDescansoDisplay();
+  }, 10);
+}
+
+function iniciarProximoRound() {
+  roundActual++;
+  if (roundActual > rounds) {
+    document.getElementById("titulo-round").textContent = "FIN DE PELEA";
+    return;
+  }
+
+  tiempoRestante = duracion * 60 * 1000;
+  tiempoAcumulado = tiempoRestante;
+  actualizarDisplay();
+  iniciar();
+}
+
+const toggleMenu = () => {
+  if (corriendo || enDescanso || enDescansoPausado) return;
+  menuAbierto = !menuAbierto;
+  document.getElementById("menu-config").classList.toggle("oculto", !menuAbierto);
+  actualizarHover();
+};
+
+window.addEventListener("keydown", (e) => {
+  const ctrl = e.ctrlKey;
+
+  if (e.key === "Enter" && !corriendo && !enDescanso && !enDescansoPausado) {
+    toggleMenu();
+    e.preventDefault();
+    return;
+  }
+
+  if (menuAbierto) {
+    if (e.key === "ArrowUp") indexCampo = (indexCampo - 1 + 3) % 3;
+    if (e.key === "ArrowDown") indexCampo = (indexCampo + 1) % 3;
+
+    if (e.key === "ArrowLeft") {
+      if (indexCampo === 0 && rounds > 1) rounds--;
+      else if (indexCampo === 1 && duracion > 1) {
+        guardarHistorial();
+        duracion--;
+        tiempoRestante = duracion * 60 * 1000;
+        tiempoAcumulado = tiempoRestante;
+      } else if (indexCampo === 2 && descanso > 0.5) {
+        descanso = Math.max(0.5, descanso - 0.5);
+        tiempoDescanso = descanso * 60 * 1000;
+        actualizarDescansoDisplay();
+      }
+      actualizarDisplay();
+    }
+
+    if (e.key === "ArrowRight") {
+      if (indexCampo === 0) rounds++;
+      else if (indexCampo === 1) {
+        guardarHistorial();
+        duracion++;
+        tiempoRestante = duracion * 60 * 1000;
+        tiempoAcumulado = tiempoRestante;
+      } else if (indexCampo === 2) {
+        descanso += 0.5;
+        tiempoDescanso = descanso * 60 * 1000;
+        actualizarDescansoDisplay();
+      }
+      actualizarDisplay();
+    }
+
+    actualizarHover();
+    e.preventDefault();
+    return;
+  }
+
+  if (e.code === "Space") {
+    if (corriendo || enDescanso) {
+      pausar();
+    } else if (enDescansoPausado) {
+      reanudarDescanso();
+    } else {
+      iniciar();
+    }
+    e.preventDefault();
+    return;
+  }
+
+  if (e.key === "Delete") {
+    reiniciar();
+    return;
+  }
+
+  if (ctrl && e.key.toLowerCase() === "z") {
+    deshacer();
+    e.preventDefault();
+    return;
+  }
+
+  if (ctrl && e.key.toLowerCase() === "a") {
+    rehacer();
+    e.preventDefault();
+    return;
+  }
+});
+
+// Elementos del menú de pausa
+const pauseMenu = document.getElementById("pauseMenu");
+const victoryMenu = document.getElementById("victoryMenu");
+const victoryTitle = document.getElementById("victoryTitle");
+let fightPaused = false;
+
+// Listener botones menú pausa
+pauseMenu.addEventListener("click", (e) => {
+  const btn = e.target.closest(".menu-btn");
+  if (!btn) return;
+  const action = btn.dataset.action;
+
+  if (action === "resume") {
+    pauseMenu.classList.add("hidden");
+    if (enDescansoPausado) {
+      reanudarDescanso();
+    } else {
+      iniciar();
+    }
+    fightPaused = false;
+  }
+  if (action === "victory-blue") {
+    pauseMenu.classList.add("hidden");
+    victoryTitle.textContent = "Victoria Azul";
+    victoryMenu.classList.remove("hidden");
+  }
+  if (action === "victory-red") {
+    pauseMenu.classList.add("hidden");
+    victoryTitle.textContent = "Victoria Rojo";
+    victoryMenu.classList.remove("hidden");
+  }
+});
+
+// Listener botones submenú victoria
+// Listener botones submenú victoria
+victoryMenu.addEventListener("click", (e) => {
+  const btn = e.target.closest(".menu-btn");
+  if (!btn) return;
+  const action = btn.dataset.action;
+
+  if (action === "back") {
+    victoryMenu.classList.add("hidden");
+    pauseMenu.classList.remove("hidden");
+    return;
+  }
+
+  if (action === "jueces" || action === "medicos") {
+    // Calcular tiempo transcurrido
+    const tiempoTotal = (duracion * 60 * 1000) - tiempoRestante;
+    const segundos = Math.floor(tiempoTotal / 1000);
+    
+    // Determinar puntos según el tiempo
+    let puntosBonus = 0;
+    if (segundos < 30) puntosBonus = 15;
+    else if (segundos < 90) puntosBonus = 10;
+    else if (segundos <= 120) puntosBonus = 7;
+    else puntosBonus = 0;
+    
+    // Determinar ganador
+    const esVictoriaAzul = victoryTitle.textContent.includes("Azul");
+    const ganador = esVictoriaAzul ? "azul" : "rojo";
+    
+    // Obtener puntajes actuales
+    const puntajeAzul = parseFloat(document.getElementById("promedio-azul").textContent);
+    const puntajeRojo = parseFloat(document.getElementById("promedio-rojo").textContent);
+    
+    // Calcular puntajes finales
+    const puntajeFinalAzul = esVictoriaAzul ? puntajeAzul + puntosBonus : puntajeAzul;
+    const puntajeFinalRojo = !esVictoriaAzul ? puntajeRojo + puntosBonus : puntajeRojo;
+    
+    // Formatear tiempo para mostrar
+    const formatoTiempo = (ms) => {
+      const mins = Math.floor(ms / 60000).toString().padStart(2, '0');
+      const segs = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+      return `${mins}:${segs}`;
+    };
+    
+    // Configurar contenido del menú de resultados
+    document.getElementById("resultTitle").textContent = `RESULTADO FINAL`;
+    document.getElementById("resultDetails").innerHTML = `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <div style="text-align: center;">
+          <h4 style="color: #2196F3; margin-bottom: 5px;">Esquina Azul</h4>
+          <p><strong>Puntaje:</strong> ${puntajeFinalAzul.toFixed(3)}</p>
+          <p><strong>Tiempo:</strong> ${esVictoriaAzul ? formatoTiempo(tiempoRestante) : "00:00"}</p>
+        </div>
+        <div style="text-align: center;">
+          <h4 style="color: #F44336; margin-bottom: 5px;">Esquina Roja</h4>
+          <p><strong>Puntaje:</strong> ${puntajeFinalRojo.toFixed(3)}</p>
+          <p><strong>Tiempo:</strong> ${!esVictoriaAzul ? formatoTiempo(tiempoRestante) : "00:00"}</p>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 15px;">
+        <p><strong>Método de Victoria:</strong> ${action.toUpperCase()}</p>
+        <p><strong>Duración:</strong> ${segundos} segundos</p>
+        <p><strong>Bonus por tiempo:</strong> ${puntosBonus} puntos</p>
+      </div>
+    `;
+    
+
+
+      // tiempo transcurrido al declarar la victoria
+      const elapsed = (duracion * 60 * 1000) - tiempoRestante; // ms
+      const tiempoGanador  = fmtMMSS(elapsed);
+      const tiempoRound    = fmtMMSS(duracion * 60 * 1000);
+
+      // Armamos estructura per-luchador (tiempos distintos)
+      window.__combateResultadoPendiente = {
+        tipo: 'victoriaLucha',
+        area,
+        aId, bId,
+        perLuchador: {
+          [aId]: {
+            luchaPuntaje: puntajeFinalAzul
+          },
+          [bId]: {
+            luchaPuntaje: puntajeFinalRojo
+          }
+        }
+      };
+
+
+
+    // Mostrar menú de resultados y ocultar los demás
+    victoryMenu.classList.add("hidden");
+    pauseMenu.classList.add("hidden");
+    document.getElementById("resultMenu").classList.remove("hidden");
+    
+
+// Y actualiza la creación dinámica del menú (si la tienes en tu código):
+if (!document.getElementById("resultMenu")) {
+  const resultMenu = document.createElement('div');
+  resultMenu.id = 'resultMenu';
+  resultMenu.className = 'overlay hidden';
+  resultMenu.innerHTML = `
+    <div class="menu">
+      <h3 id="resultTitle">RESULTADO FINAL</h3>
+      <div id="resultDetails"></div>
+      <button class="menu-btn" data-action="finalizar">FINALIZAR</button>
+    </div>
+  `;
+  document.body.appendChild(resultMenu);
+}
+
+    // Detener cualquier temporizador activo
+    if (corriendo) pausar();
+    if (enDescanso) {
+      clearInterval(intervaloDescanso);
+      enDescanso = false;
+    }
+  }
+});
+
+function mostrarResultadoFinalPorTiempo() {
+  const resultMenu = document.getElementById("resultMenu");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultDetails = document.getElementById("resultDetails");
+
+  const puntajeAzul = parseFloat(document.getElementById("promedio-azul")?.textContent || "0");
+  const puntajeRojo = parseFloat(document.getElementById("promedio-rojo")?.textContent || "0");
+  const ganador = puntajeAzul > puntajeRojo ? "Azul" : (puntajeRojo > puntajeAzul ? "Rojo" : "Empate");
+
+  // tiempo total del round (por defecto usás 1 round)
+  const durMs = duracion * 60 * 1000;
+  const durTexto = fmtMMSS(durMs);
+
+  // Pintamos menú
+  resultTitle.textContent = "RESULTADO FINAL";
+  resultDetails.innerHTML = `
+    <div style="display:flex; justify-content:space-between; gap:20px; margin-bottom:20px;">
+      <div style="text-align:center;">
+        <h4 style="color:#2196F3; margin-bottom:5px;">Esquina Azul</h4>
+        <p><strong>Puntaje:</strong> ${puntajeAzul.toFixed(3)}</p>
+      </div>
+      <div style="text-align:center;">
+        <h4 style="color:#F44336; margin-bottom:5px;">Esquina Roja</h4>
+        <p><strong>Puntaje:</strong> ${puntajeRojo.toFixed(3)}</p>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:15px;">
+      <p><strong>Método:</strong> Tiempo cumplido</p>
+      <p><strong>Duración:</strong> ${durTexto}</p>
+      <p><strong>Bonus por tiempo:</strong> 0 puntos</p>
+      <p><strong>Ganador por puntos:</strong> ${ganador}</p>
+    </div>
+  `;
+
+  // Guardamos en una variable global lo que vamos a persistir al tocar FINALIZAR
+      window.__combateResultadoPendiente = {
+        tipo: 'tiempoLucha',
+        area,
+        aId, bId,
+        perLuchador: {
+          [aId]: { luchaPuntaje: puntajeAzul },
+          [bId]: { luchaPuntaje: puntajeRojo }
+        }
+      };
+
+
+  // Mostrar overlay
+  document.getElementById("victoryMenu")?.classList.add("hidden");
+  document.getElementById("pauseMenu")?.classList.add("hidden");
+  resultMenu.classList.remove("hidden");
+
+  // Por si quedó algo corriendo
+  if (corriendo) pausar();
+  if (enDescanso) { clearInterval(intervaloDescanso); enDescanso = false; }
+}
+
+
+actualizarDisplay();
+actualizarHover();
+
+
+// Listener GLOBAL para el botón "FINALIZAR" del menú de resultado
+const resultMenuEl = document.getElementById("resultMenu");
+if (resultMenuEl) {
+  resultMenuEl.addEventListener("click", (e) => {
+    const btn = e.target.closest('.menu-btn[data-action="finalizar"]');
+    if (!btn) return;
+
+    const pending = window.__combateResultadoPendiente;
+    if (pending?.perLuchador) {
+      // Guardado de LUCHA al punto
+      pushResultadosLuchaPorLuchador({
+        area: pending.area,
+        data: pending.perLuchador
+      });
+    }
+    window.location.href = `start-games.html?area=${encodeURIComponent(area)}`;
+
+})}
+
+
+
+
+
+</script>
+
+<!-- SCRIPT DE CRONOMETRO END   -->
+
+
+
+<!-- SCRIPT DE JOYSTICKS SELECCION DE JUEZ BEGIN   -->
+
+
+<script id="joystick-seleccion">
+const joystickState = Array(4).fill().map(() => ({
+  modo: "inactivo", // inactivo | seleccionando | confirmado
+  juez: null,
+  lastPressed: {}
+}));
+
+const colores = ["verde", "rojo", "azul", "amarillo"];
+const clasesParpadeo = [
+  "seleccionando-verde",
+  "seleccionando-rojo",
+  "seleccionando-azul",
+  "seleccionando-amarillo"
+];
+const clasesFondo = [
+  "fondo-joystick1",
+  "fondo-joystick2",
+  "fondo-joystick3",
+  "fondo-joystick4"
+];
+
+function loopJoysticks() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+
+  pads.forEach((pad, index) => {
+    if (!pad || index >= joystickState.length) return;
+
+    const state = joystickState[index];
+    const botones = pad.buttons;
+    const ejes = pad.axes;
+    const pressed = (i) => (botones[i]?.value ?? 0) >= 0.15;
+    const justPressed = (i) => pressed(i) && !state.lastPressed[i];
+    const updatePressed = (i) => (state.lastPressed[i] = pressed(i));
+
+    // START → entrar a selección
+    if (justPressed(9) && state.modo === "inactivo") {
+      const libre = primerJuezLibre();
+      if (libre !== null) {
+        state.modo = "seleccionando";
+        state.juez = libre;
+        aplicarParpadeo(index, libre);
+      }
+    }
+
+    // SELECT → confirmar o cancelar
+    if (justPressed(8)) {
+      if (state.modo === "seleccionando") {
+        state.modo = "confirmado";
+        aplicarFondo(index, state.juez);
+      } else if (state.modo === "confirmado") {
+        removerFondo(index, state.juez);
+        state.modo = "seleccionando";
+        aplicarParpadeo(index, state.juez);
+      }
+    }
+
+    // Movimiento entre jueces: Firefox PS3 usa A1; standard usa A0
+    if (state.modo === "seleccionando") {
+      const now = Date.now();
+      const moveCooldown = 250; // milisegundos
+      state.lastMoveTime ??= 0;
+
+      // Selección con el stick IZQUIERDO: eje horizontal A0.
+      // No usar A5: en algunos mandos corresponde al stick derecho.
+      const xIzquierdo = Number(ejes[0] ?? 0);
+      if (now - state.lastMoveTime > moveCooldown) {
+        if (xIzquierdo < -0.55) {
+          mover(index, -1);
+          state.lastMoveTime = now;
+        } else if (xIzquierdo > 0.55) {
+          mover(index, 1);
+          state.lastMoveTime = now;
+        }
+      }
+    }
+
+    // Actualizar botones
+    for (let i = 0; i < botones.length; i++) updatePressed(i);
+  });
+
+  requestAnimationFrame(loopJoysticks);
+}
+
+requestAnimationFrame(loopJoysticks);
+
+// === FUNCIONES AUXILIARES ===
+
+function primerJuezLibre() {
+  const usados = joystickState
+    .filter(js => js.modo === "confirmado")
+    .map(js => js.juez);
+  for (let i = 0; i < 4; i++) {
+    if (!usados.includes(i)) return i;
+  }
+  return null;
+}
+
+function mover(joy, direccion) {
+  const state = joystickState[joy];
+  const usados = joystickState
+    .filter(js => js.modo === "confirmado")
+    .map(js => js.juez);
+  let nuevo = state.juez;
+  for (let i = 0; i < 4; i++) {
+    nuevo = (nuevo + direccion + 4) % 4;
+    if (!usados.includes(nuevo)) {
+      removerParpadeo(joy, state.juez);
+      state.juez = nuevo;
+      aplicarParpadeo(joy, nuevo);
+      break;
+    }
+  }
+}
+
+function aplicarParpadeo(joy, juez) {
+  const el = document.getElementById(`juez-${juez}`);
+  el.classList.add(clasesParpadeo[joy]);
+  el.classList.remove(clasesFondo[joy]);
+}
+
+function removerParpadeo(joy, juez) {
+  const el = document.getElementById(`juez-${juez}`);
+  el.classList.remove(clasesParpadeo[joy]);
+}
+
+function aplicarFondo(joy, juez) {
+  const el = document.getElementById(`juez-${juez}`);
+  el.classList.remove(clasesParpadeo[joy]);
+  el.classList.add(clasesFondo[joy]);
+}
+
+function removerFondo(joy, juez) {
+  const el = document.getElementById(`juez-${juez}`);
+  el.classList.remove(clasesFondo[joy]);
+}
+</script>
+
+<!-- SCRIPT DE JOYSTICKS SELECCION DE JUEZ END   -->
+
+<!-- SCRIPT DE JOYSTICKS PUNTAJES BEGIN   -->
+
+<script>
+// Firefox/macOS PS3: con MODE encendido la cruceta fisica usa A5; A1/A2 son el analogico.
+// Se puede forzar el perfil en la URL con ?pad=firefox o ?pad=standard.
+function perfilPad(pad) {
+  const forced = new URLSearchParams(location.search).get("pad");
+  const firefoxPS3 = forced === "firefox" ||
+    (forced !== "standard" && pad.axes.length >= 3 && (/Firefox/i.test(navigator.userAgent) || pad.mapping !== "standard"));
+  return firefoxPS3 ? { horizontal: 1, vertical: 2, dpadButtons: false }
+                    : { horizontal: 0, vertical: 1, dpadButtons: pad.buttons.length >= 16 };
+}
+const PRESION = 0.12;
+const EJE_ON = 0.25;
+const EJE_OFF = 0.10;
+const historialesPuntos = Array.from({length:4}, () => ({acciones:[], cursor:0}));
+function valorBoton(pad, i) { return pad.buttons[i]?.value ?? 0; }
+function pulso(state, clave, valor, activar=PRESION, liberar=0.06) {
+  state.puntosLastFrame ??= {};
+  const previo = !!state.puntosLastFrame[clave];
+  if (!previo && valor >= activar) {
+    state.puntosLastFrame[clave] = true;
+    return true;
+  }
+  if (previo && valor <= liberar) state.puntosLastFrame[clave] = false;
+  return false;
+}
+function pulsoEje(state, clave, valor) {
+  return pulso(state, clave, valor, EJE_ON, EJE_OFF);
+}
+function procesarPuntosJoysticks() {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  pads.forEach((pad, index) => {
+    if (!pad || index >= joystickState.length) return;
+    const state = joystickState[index];
+    if (state.modo !== "confirmado") return;
+    const juez = state.juez;
+    const perfil = perfilPad(pad);
+    const horizontal = pad.axes[perfil.horizontal] ?? 0;
+    const vertical = pad.axes[perfil.vertical] ?? 0;
+    const mult = (valorBoton(pad,4) >= PRESION || valorBoton(pad,5) >= PRESION) ? 10 : 1;
+    // Cruceta física exclusivamente. Nunca interpretar el stick derecho como puntos.
+    // Se detecta primero como botones 12-15 y, si no están, por el eje
+    // elegido mediante la calibración integrada (tecla F8).
+    let azulActivo = null;
+    const botonesCruceta = [[12,"azul-arriba"],[14,"azul-izq"],[15,"azul-der"]];
+    const botonCruceta = botonesCruceta.find(([id]) => valorBoton(pad,id) > 0.12);
+    if (botonCruceta) azulActivo = botonCruceta[1];
+    if (!azulActivo) {
+      // Perfil de fábrica del joystick del usuario: cruceta en A9.
+      // Una calibración F8 guardada tiene prioridad sobre este valor.
+      const cal = window.calibracionCruceta?.[index] || {
+        axis: 9,
+        valores: {
+          "azul-arriba": -1.000,
+          "azul-izq": 1.000,
+          "azul-der": -0.429,
+          "azul-abajo": 0.143
+        }
+      };
+      if (cal && Number.isFinite(pad.axes[cal.axis])) {
+        const actual = pad.axes[cal.axis];
+        // Mayor tolerancia, especialmente hacia la izquierda.
+        // Elegir siempre el valor MÁS cercano para evitar lecturas ambiguas.
+        const candidatos = Object.entries(cal.valores)
+          .map(([clave,v]) => ({clave,distancia:Math.abs(actual-v)}))
+          .sort((a,b) => a.distancia-b.distancia);
+        const mejor = candidatos[0];
+        const tolerancia = mejor?.clave === "azul-izq" ? 0.30 : 0.22;
+        azulActivo = mejor && mejor.distancia <= tolerancia ? mejor.clave : null;
+      } else {
+        // Compatibilidad automática A5 únicamente si su reposo es 3.286,
+        // característico del D-pad digital en MODE (no del stick derecho).
+        const hat = pad.axes[5];
+        if (Number.isFinite(hat) && Math.abs(hat-3.286)<0.3) state.hatDigitalConfirmado=true;
+        if (state.hatDigitalConfirmado && Number.isFinite(hat)) {
+          const opciones = [["azul-arriba",-1],["azul-izq",1],["azul-der",-0.429],["azul-abajo",0.143]];
+          azulActivo = opciones.find(([,v]) => Math.abs(hat-v)<0.10)?.[0] ?? null;
+        }
+      }
+    }
+    const valoresAzul = {"azul-arriba":0.1,"azul-izq":0.2,"azul-der":0.3};
+    // Antirrebote: contar una sola vez al PRESIONAR.
+    // Al soltar, algunos mandos envían brevemente otra dirección: no se cuenta.
+    // Rearmar solo tras 110 ms continuos de reposo.
+    const ahora = performance.now();
+    state.crucetaBloqueada ??= false;
+    if (azulActivo) {
+      state.crucetaReposoDesde = null;
+      if (!state.crucetaBloqueada) {
+        if (valoresAzul[azulActivo] !== undefined) sumarPunto("azul", valoresAzul[azulActivo]*mult, juez);
+        state.crucetaBloqueada = true;
+      }
+    } else if (state.crucetaBloqueada) {
+      state.crucetaReposoDesde ??= ahora;
+      if (ahora - state.crucetaReposoDesde >= 110) {
+        state.crucetaBloqueada = false;
+        state.crucetaReposoDesde = null;
+      }
+    }
+    for (const [id, valor, clave] of [
+      [0,0.1,"rojo-triangulo"],[3,0.2,"rojo-cuadrado"],
+      [1,0.3,"rojo-circulo"]
+    ]) if (pulso(state,clave,valorBoton(pad,id))) sumarPunto("rojo",valor*mult,juez);
+    if (pulso(state,"deshacer",valorBoton(pad,6))) deshacerPunto(juez);
+    if (pulso(state,"rehacer",valorBoton(pad,7))) rehacerPunto(juez);
+  });
+  requestAnimationFrame(procesarPuntosJoysticks);
+}
+requestAnimationFrame(procesarPuntosJoysticks);
+
+function escribirPunto(color,juez,valor) {
+  const campo = document.getElementById(`${color}-${juez}`);
+  if (campo) campo.textContent = (Math.round(valor*10)/10).toFixed(1);
+}
+function sumarPunto(color,cantidad,juez) {
+  const campo = document.getElementById(`${color}-${juez}`);
+  if (!campo) return;
+  const h = historialesPuntos[juez];
+  h.acciones = h.acciones.slice(0,h.cursor);
+  h.acciones.push({color,cantidad});
+  h.cursor++;
+  escribirPunto(color,juez,parseFloat(campo.textContent||"0")+cantidad);
+}
+function deshacerPunto(juez) {
+  const h = historialesPuntos[juez];
+  if (!h || h.cursor === 0) return;
+  const accion = h.acciones[--h.cursor];
+  const campo = document.getElementById(`${accion.color}-${juez}`);
+  escribirPunto(accion.color,juez,Math.max(0,parseFloat(campo.textContent||"0")-accion.cantidad));
+}
+function rehacerPunto(juez) {
+  const h = historialesPuntos[juez];
+  if (!h || h.cursor >= h.acciones.length) return;
+  const accion = h.acciones[h.cursor++];
+  const campo = document.getElementById(`${accion.color}-${juez}`);
+  escribirPunto(accion.color,juez,parseFloat(campo.textContent||"0")+accion.cantidad);
+}
+</script>
+
+
+
+
+<!-- SCRIPT DE JOYSTICKS PUNTAJES END   -->
+
+
+<!-- SCRIPT DE PROMEDIOS BEGIN   -->
+
+<script>
+function loopPromedios() {
+  let totalRojo = 0;
+  let totalAzul = 0;
+
+  for (let i = 0; i < 4; i++) {
+    const rojo = parseFloat(document.getElementById(`rojo-${i}`)?.textContent || "0");
+    const azul = parseFloat(document.getElementById(`azul-${i}`)?.textContent || "0");
+    totalRojo += rojo;
+    totalAzul += azul;
+  }
+
+  const promedioRojo = (totalRojo / 4).toFixed(3);
+  const promedioAzul = (totalAzul / 4).toFixed(3);
+
+  document.getElementById("promedio-rojo").textContent = promedioRojo;
+  document.getElementById("promedio-azul").textContent = promedioAzul;
+
+  requestAnimationFrame(loopPromedios);
+}
+
+requestAnimationFrame(loopPromedios);
+</script>
+
+
+<!-- SCRIPT DE PROMEDIOS END   -->
+
+
+<style>
+#cal-pad{display:none;position:fixed;z-index:99999;inset:0;background:#04101df0;color:white;align-items:center;justify-content:center;font-family:Arial,sans-serif}
+#cal-pad.visible{display:flex}
+#cal-pad .cal-card{background:#142c48;border:2px solid #45caff;border-radius:14px;padding:24px;max-width:540px;width:90%;text-align:center}
+#cal-pad button{padding:12px 18px;background:#0c75b9;color:white;border:0;border-radius:8px;margin:8px;cursor:pointer;font-weight:bold}
+#cal-pad #cal-info{min-height:65px;font-size:18px;line-height:1.5}
+</style>
+<div id="cal-pad"><div class="cal-card">
+<h2>CALIBRAR CRUCETA</h2>
+<p id="cal-info">Seleccioná el joystick y seguí las indicaciones. No muevas los analógicos durante la calibración.</p>
+<label>Joystick <select id="cal-joy"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option></select></label>
+<div><button id="cal-next">COMENZAR</button><button id="cal-close">CERRAR</button></div>
+<small>F8 abre/cierra esta calibración. Se guarda en este navegador.</small>
+</div></div>
+<script>
+window.calibracionCruceta = JSON.parse(localStorage.getItem("ct_cal_cruceta_v1")||"{}");
+(function(){
+ const overlay=document.getElementById("cal-pad"), info=document.getElementById("cal-info");
+ const pasos=[["azul-arriba","ARRIBA"],["azul-izq","IZQUIERDA"],["azul-der","DERECHA"],["azul-abajo","ABAJO"]];
+ let paso=-1, capturas=[], base=null;
+ const getPad=()=>navigator.getGamepads?.()[Number(document.getElementById("cal-joy").value)];
+ function abrir(){overlay.classList.add("visible");paso=-1;capturas=[];info.textContent="Soltá todos los controles y pulsá COMENZAR.";}
+ function cerrar(){overlay.classList.remove("visible")}
+ document.addEventListener("keydown",e=>{if(e.key==="F8"){e.preventDefault();overlay.classList.contains("visible")?cerrar():abrir();}});
+ document.getElementById("cal-close").onclick=cerrar;
+ document.getElementById("cal-next").onclick=()=>{
+   const pad=getPad();if(!pad){info.textContent="No se detectó el joystick seleccionado.";return;}
+   if(paso===-1){
+     base=Array.from(pad.axes);paso=0;
+     info.textContent="Mantené la cruceta hacia "+pasos[paso][1]+" y pulsá CAPTURAR.";
+     document.getElementById("cal-next").textContent="CAPTURAR";return;
+   }
+   const axes=Array.from(pad.axes);
+   const diferencias=axes.map((v,i)=>({i,delta:Math.abs(v-(base[i]??0)),valor:v})).sort((a,b)=>b.delta-a.delta);
+   if(!diferencias.length||diferencias[0].delta<0.18){
+     info.textContent="No detecté un cambio de eje. Mantené la cruceta "+pasos[paso][1]+" y probá otra vez.";return;
+   }
+   capturas.push({clave:pasos[paso][0],diferencias});
+   paso++;
+   if(paso<pasos.length){info.textContent="Soltá la cruceta, luego mantené "+pasos[paso][1]+" y pulsá CAPTURAR.";return;}
+   // Elegir eje con cambio consistente en las cuatro direcciones.
+   const candidatos=base.map((_,i)=>({i,min:Math.min(...capturas.map(c=>c.diferencias.find(d=>d.i===i)?.delta||0))})).sort((a,b)=>b.min-a.min);
+   const eje=candidatos[0];
+   if(!eje||eje.min<0.15){info.textContent="No se encontró un eje común para las cuatro direcciones. Puede ser una cruceta por botones. Avisame y lo adaptamos.";paso=-1;return;}
+   const valores={};
+   for(const c of capturas)valores[c.clave]=c.diferencias.find(d=>d.i===eje.i).valor;
+   const index=Number(document.getElementById("cal-joy").value);
+   window.calibracionCruceta[index]={axis:eje.i,valores};
+   localStorage.setItem("ct_cal_cruceta_v1",JSON.stringify(window.calibracionCruceta));
+   info.textContent="¡Calibración guardada! Cruceta detectada en A"+eje.i+". Cerrá y probá los puntos.";
+   document.getElementById("cal-next").textContent="COMENZAR";paso=-1;
+ };
+})();
+</script>
+</body>
+</html>

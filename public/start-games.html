@@ -2,70 +2,212 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<title>Games - Combate Total</title>
+<title>Start Games</title>
 <style>
-  :root{
-    --bg:#0f1115; --muted:#bbb; --grid:#333; --card:#1a1a1a; --neon:#39ff14;
-  }
-  *{box-sizing:border-box}
-  body{ background:var(--bg); color:#f5f5f5; font-family:system-ui,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif; margin:0; padding:16px; }
-  h2{ text-align:center; margin:8px 0 6px; color:var(--neon); text-shadow:0 0 10px var(--neon); }
-  .topbar{ display:flex; gap:10px; justify-content:center; margin-bottom:8px; flex-wrap:wrap; }
-  .badge{ background:#181a1f; border:1px solid var(--grid); border-radius:10px; padding:6px 10px; box-shadow:0 0 0 1px #000 inset }
+:root{--bg:#060d1a;--panel:#101e33;--panel2:#142640;--muted:#90a6c0;--grid:#294362;--neon:#36eaff;--green:#39ff9c;--blue:#26aaff;--red:#ff4167;--amber:#ffd34d}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{min-height:100vh;margin:0;padding:22px clamp(12px,2vw,34px) 38px;color:#f4faff;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:radial-gradient(ellipse at 50% -15%,#163a62 0%,transparent 55%),linear-gradient(135deg,rgba(36,95,146,.1) 1px,transparent 1px),linear-gradient(45deg,rgba(36,95,146,.1) 1px,transparent 1px),#060d1a;background-size:auto,42px 42px,42px 42px,auto}
+body:before{content:'';position:fixed;inset:0;pointer-events:none;background:linear-gradient(transparent 97%,rgba(36,234,255,.035) 100%);background-size:100% 5px;z-index:0}
+body>*{position:relative;z-index:1}
+h2{font-size:clamp(25px,3vw,40px);letter-spacing:.13em;text-transform:uppercase;text-align:center;margin:26px 0 14px;color:#f8fcff;text-shadow:0 0 20px rgba(54,234,255,.6);font-weight:900}
+h2:after{content:'';display:block;width:170px;max-width:50%;height:3px;background:linear-gradient(90deg,transparent,var(--neon),transparent);margin:14px auto 0;box-shadow:0 0 15px var(--neon)}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;background:rgba(12,27,49,.9);border:1px solid #2a527a;border-radius:14px;box-shadow:0 8px 28px #0007, inset 0 1px 0 #ffffff0c}
+.left,.right{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.topbar{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:0 0 23px}
+.badge{background:linear-gradient(180deg,#172c49,#101f35);border:1px solid #365d83;border-radius:9px;padding:10px 16px;color:#e9f7ff;font-weight:700;box-shadow:inset 0 1px 0 #ffffff14,0 4px 14px #0004}
+#area-info{color:var(--neon);border-color:#24849d;box-shadow:0 0 12px #1ce5ff1c}
+.pill{border:1px solid #3e7666;background:#102c29;color:#adffdc;border-radius:7px;padding:4px 10px;font-size:.9rem}
+.btn{border:1px solid transparent;border-radius:8px;min-height:38px;padding:8px 12px;font-size:.83rem;font-weight:800;letter-spacing:.025em;cursor:pointer;transition:filter .16s,transform .1s,box-shadow .16s;white-space:nowrap}
+.btn:hover:not(:disabled){filter:brightness(1.15);box-shadow:0 0 15px currentColor}.btn:active:not(:disabled){transform:scale(.97)}.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-green{background:#1b8f5d;color:white;border-color:#36f9a0}.btn-red{background:#a62642;color:white;border-color:#ff4769}.btn-blue{background:#146bb1;color:white;border-color:#33b6ff}.btn-amber{background:#176c5a;color:#e8fff5;border-color:#2de0a6}.btn-gray{background:#283a53;color:#e0edff;border-color:#45617f}
+input[type=search]{background:#071526;border:1px solid #385879;border-radius:8px;padding:10px 12px;color:white;outline:none;min-width:215px}input[type=search]:focus{border-color:var(--neon);box-shadow:0 0 0 2px #26dfff33}
+.games-scroll{overflow:auto;max-height:calc(100vh - 250px);min-height:220px;border:1px solid #335a80;border-radius:13px;box-shadow:0 14px 35px #0008,0 0 28px #00aaff0d;background:#0a1527}
+table{width:100%;min-width:1180px;border-spacing:0;border-collapse:separate;text-align:center;font-size:.9rem}
+th,td{border-right:1px solid #29405d;border-bottom:1px solid #243a53;padding:11px 9px;vertical-align:middle}th:last-child,td:last-child{border-right:0}
+thead th{position:sticky;top:0;z-index:4;background:#142b49;color:#c7e7ff;font-size:.76rem;text-transform:uppercase;letter-spacing:.06em}
+thead tr:first-child th{background:#0e2543;color:#fff;font-size:.94rem;font-weight:900;padding:16px 8px;top:0;border-bottom:2px solid #355d83}
+thead tr:nth-child(2) th{top:51px;background:#162c47;color:#a7c5e3;z-index:3}
+/* Encabezados de disciplina: fondo pleno y letras negras */
+thead tr:first-child th:nth-child(3){background:#ffd53d;color:#000;border-bottom-color:#ffd53d;text-shadow:none}
+thead tr:first-child th:nth-child(4){background:#39ed79;color:#000;border-bottom-color:#39ed79;text-shadow:none}
+thead tr:first-child th:nth-child(5){background:#37aaff;color:#000;border-bottom-color:#37aaff;text-shadow:none}
+thead tr:first-child th:nth-child(6){background:#ff5265;color:#000;border-bottom-color:#ff5265;text-shadow:none}
+tbody tr:nth-child(odd){background:#0b1b30}tbody tr:nth-child(even){background:#0f2239}tbody tr:hover{background:#193350}
+tbody td:nth-child(1){color:#82a7c6;font-weight:800}tbody td:nth-child(2){font-weight:800;color:#fff;min-width:165px}tbody td[id*='score-']{font-variant-numeric:tabular-nums;font-weight:900;font-size:1.04rem;color:#e7f6ff}tbody td[id^='salto-score-']{color:#79f2bd}tbody td[id^='rotura-score-']{color:#ffdc8e}tbody td[id^='lucha-score-']{color:#8cd2ff}tbody td[id^='combate-score-']{color:#ff9cac}
+.cell-muted{color:var(--muted)}.hint{color:var(--muted);font-size:.85rem}
+@media(max-width:650px){body{padding:10px}.toolbar{padding:12px}.games-scroll{max-height:calc(100vh - 295px)}.btn{font-size:.77rem;padding:8px}h2{margin:20px 0 14px}}
 
-  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin:8px 0; gap:8px; flex-wrap:wrap; }
-  .left{ display:flex; gap:8px; flex-wrap:wrap; }
+/* v3: colores neón puros y contornos de disciplina de extremo a extremo */
+:root{--salto-neon:#fff000;--rotura-neon:#39ff14;--lucha-neon:#00b7ff;--combate-neon:#ff1744}
+#games-table thead tr:first-child th:nth-child(3){background:var(--salto-neon);color:#000;border-bottom:3px solid #050b16;box-shadow:inset 0 0 0 1px #fff8a0}
+#games-table thead tr:first-child th:nth-child(4){background:var(--rotura-neon);color:#000;border-bottom:3px solid #050b16;box-shadow:inset 0 0 0 1px #baffaa}
+#games-table thead tr:first-child th:nth-child(5){background:var(--lucha-neon);color:#000;border-bottom:3px solid #050b16;box-shadow:inset 0 0 0 1px #a3eaff}
+#games-table thead tr:first-child th:nth-child(6){background:var(--combate-neon);color:#000;border-bottom:3px solid #050b16;box-shadow:inset 0 0 0 1px #ff93a6}
+/* Cada celda conserva su borde fino; cada disciplina tiene bordes externos de 3px. */
+#games-table .disc-salto{--disc-color:var(--salto-neon)}
+#games-table .disc-rotura{--disc-color:var(--rotura-neon)}
+#games-table .disc-lucha{--disc-color:var(--lucha-neon)}
+#games-table .disc-combate{--disc-color:var(--combate-neon)}
+#games-table .disc-start{border-left:3px solid var(--disc-color)!important}
+#games-table .disc-end{border-right:3px solid var(--disc-color)!important}
+#games-table thead tr:first-child th:nth-child(n+3){border-left:3px solid var(--disc-color);border-right:3px solid var(--disc-color)}
+#games-table thead tr:first-child th:nth-child(3){--disc-color:var(--salto-neon)}
+#games-table thead tr:first-child th:nth-child(4){--disc-color:var(--rotura-neon)}
+#games-table thead tr:first-child th:nth-child(5){--disc-color:var(--lucha-neon)}
+#games-table thead tr:first-child th:nth-child(6){--disc-color:var(--combate-neon)}
+#games-table thead tr:nth-child(2) th{border-bottom:3px solid #3d5979}
+#games-table thead tr:nth-child(2) th:nth-child(3),#games-table thead tr:nth-child(2) th:nth-child(6),#games-table thead tr:nth-child(2) th:nth-child(9),#games-table thead tr:nth-child(2) th:nth-child(11){border-left:3px solid var(--disc-color)!important}
+#games-table thead tr:nth-child(2) th:nth-child(5),#games-table thead tr:nth-child(2) th:nth-child(8),#games-table thead tr:nth-child(2) th:nth-child(10),#games-table thead tr:nth-child(2) th:nth-child(13){border-right:3px solid var(--disc-color)!important}
+#games-table thead tr:nth-child(2) th:nth-child(n+3):nth-child(-n+5){--disc-color:var(--salto-neon)}
+#games-table thead tr:nth-child(2) th:nth-child(n+6):nth-child(-n+8){--disc-color:var(--rotura-neon)}
+#games-table thead tr:nth-child(2) th:nth-child(n+9):nth-child(-n+10){--disc-color:var(--lucha-neon)}
+#games-table thead tr:nth-child(2) th:nth-child(n+11):nth-child(-n+13){--disc-color:var(--combate-neon)}
+#games-table tbody td{border-bottom-color:#3c5775;border-bottom-width:1.5px}
+#games-table tbody tr:last-child td{border-bottom:3px solid #526f91}
+#games-table tbody td[id^='salto-score-']{color:var(--salto-neon)}
+#games-table tbody td[id^='rotura-score-']{color:var(--rotura-neon)}
+#games-table tbody td[id^='lucha-score-']{color:var(--lucha-neon)}
+#games-table tbody td[id^='combate-score-']{color:#ff6681}
 
-  table{ width:100%; border-collapse:collapse; margin-top:8px; border:1px solid var(--grid); }
-  th,td{ border:1px solid var(--grid); padding:6px 8px; text-align:center; }
-  thead th{ position:sticky; top:0; z-index:2; background:var(--card); color:var(--neon); }
-  tbody tr:nth-child(odd){ background:#121419; }
-  tbody tr:nth-child(even){ background:#0e1015; }
-  /* hover desactivado para no tapar los botones */
-  tbody tr:hover{ }
+/* v4: todos los bordes azul noche profundo, casi negro. */
+:root{--border-night:#071426;--border-night-strong:#030c1b;--grid:var(--border-night)}
+.toolbar,.badge,.pill,.btn,input[type=search],.games-scroll{border-color:var(--border-night)!important}
+input[type=search]:focus{border-color:var(--border-night)!important}
+#games-table th,#games-table td{border-right-color:var(--border-night)!important;border-bottom-color:var(--border-night)!important}
+#games-table .disc-start,#games-table thead tr:first-child th:nth-child(n+3),#games-table thead tr:nth-child(2) th:nth-child(3),#games-table thead tr:nth-child(2) th:nth-child(6),#games-table thead tr:nth-child(2) th:nth-child(9),#games-table thead tr:nth-child(2) th:nth-child(11){border-left:3px solid var(--border-night-strong)!important}
+#games-table .disc-end,#games-table thead tr:first-child th:nth-child(n+3),#games-table thead tr:nth-child(2) th:nth-child(5),#games-table thead tr:nth-child(2) th:nth-child(8),#games-table thead tr:nth-child(2) th:nth-child(10),#games-table thead tr:nth-child(2) th:nth-child(13){border-right:3px solid var(--border-night-strong)!important}
+#games-table thead tr:first-child th,#games-table thead tr:nth-child(2) th,#games-table tbody tr:last-child td{border-bottom-color:var(--border-night-strong)!important}
+#games-table thead tr:first-child th:nth-child(n+3){box-shadow:none}
 
-  .btn{ padding:6px 10px; border:none; border-radius:8px; cursor:pointer; font-weight:700; transition:transform .06s ease, filter .15s ease; }
-  .btn:active{ transform:scale(.98) }
-  .btn-green{ background:var(--neon); color:#000 }
-  .btn-red{ background:#e53935; color:#fff }
-  .btn-blue{ background:#2196f3; color:#fff }
-  .btn-amber{ background:#64d76e; color:#000 }
-  .btn-gray{ background:#3b3b3b; color:#ddd }
-  .btn:hover{ filter:brightness(.95) }
+/* v5: encabezado único compacto, más superficie visible para competidores */
+body{padding-top:10px;padding-bottom:12px}
+.toolbar-compact{display:flex;flex-direction:column;gap:8px;padding:9px 14px;margin-bottom:9px}
+.toolbar-main{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;width:100%}
+.toolbar-main .left{justify-content:flex-start}
+.toolbar-main .right{justify-content:flex-end}
+.toolbar-main h2{margin:0;white-space:nowrap;font-size:clamp(18px,2vw,27px);letter-spacing:.09em;line-height:1.1}
+.toolbar-main h2:after{display:none}
+.toolbar-stats{display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;width:100%}
+.toolbar-stats .badge{padding:5px 11px;font-size:.8rem}
+.toolbar-stats .pill{padding:2px 8px;font-size:.8rem}
+.toolbar-main .btn{min-height:34px;padding:6px 10px}
+.toolbar-main input[type=search]{padding:7px 10px;min-width:170px}
+.games-scroll{max-height:calc(100vh - 125px)}
+@media(max-width:1100px){.toolbar-main{grid-template-columns:1fr auto}.toolbar-main h2{grid-column:1/-1;grid-row:1;text-align:center}.toolbar-main .left{grid-column:1;grid-row:2}.toolbar-main .right{grid-column:2;grid-row:2}}
+@media(max-width:650px){.toolbar-compact{padding:8px;gap:7px}.toolbar-main{display:flex;flex-direction:column;gap:7px}.toolbar-main .left,.toolbar-main .right{justify-content:center}.toolbar-main h2{order:-1}.toolbar-main .btn{font-size:.72rem;padding:6px 8px}.toolbar-stats{gap:5px}.toolbar-stats .badge{padding:4px 7px;font-size:.72rem}.games-scroll{max-height:calc(100vh - 215px)}}
 
-  .cell-muted{ color:var(--muted) }
-  .pill{ padding:.15rem .5rem; border-radius:999px; border:1px solid var(--grid); background:#151821; font-weight:600; }
-  .right{ display:flex; gap:8px; align-items:center }
-  input[type="search"]{ background:#0b0d12; color:#e6e6e6; border:1px solid #2a2f3a; border-radius:8px; padding:8px 10px; outline:none; }
-  .hint{ color:#8aa; font-size:.85rem }
+/* v6: métricas junto al título, todo en una sola franja */
+.toolbar-compact{padding:8px 12px;margin-bottom:7px}
+.toolbar-main{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.toolbar-main .left,.toolbar-main .right{flex:0 1 auto}
+.toolbar-center{display:flex;align-items:center;justify-content:center;gap:12px;flex:1 1 auto;min-width:0;flex-wrap:wrap}
+.toolbar-center h2{margin:0;flex:0 0 auto;white-space:nowrap;font-size:clamp(18px,1.7vw,26px)}
+.toolbar-center .toolbar-stats{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;width:auto}
+.toolbar-center .badge{padding:5px 8px;font-size:.75rem;white-space:nowrap}
+.toolbar-center .pill{padding:2px 6px;font-size:.75rem}
+.games-scroll{max-height:calc(100vh - 91px)}
+@media(max-width:1450px){.toolbar-main{justify-content:center}.toolbar-center{order:0;flex-basis:100%}.toolbar-main .left{order:1}.toolbar-main .right{order:2}}
+@media(max-width:650px){.toolbar-main{display:flex;flex-direction:column;gap:7px}.toolbar-center{order:0;gap:7px;flex-basis:auto}.toolbar-main .left{order:1}.toolbar-main .right{order:2}.toolbar-center .badge{font-size:.69rem;padding:4px 6px}.games-scroll{max-height:calc(100vh - 170px)}}
+/* Neón de alta intensidad: fondos sólidos y brillo interno, tipografía negra */
+:root{--salto-neon:#ffff00;--rotura-neon:#39ff14;--lucha-neon:#00e5ff;--combate-neon:#ff1744}
+#games-table thead tr:first-child th:nth-child(3){background:#ffff00!important;color:#000!important;box-shadow:inset 0 0 15px #ffffff9c,0 0 15px #ffff0055!important}
+#games-table thead tr:first-child th:nth-child(4){background:#39ff14!important;color:#000!important;box-shadow:inset 0 0 15px #eaffdc9c,0 0 15px #39ff1455!important}
+#games-table thead tr:first-child th:nth-child(5){background:#00e5ff!important;color:#000!important;box-shadow:inset 0 0 15px #d6ffff9c,0 0 15px #00e5ff55!important}
+#games-table thead tr:first-child th:nth-child(6){background:#ff1744!important;color:#000!important;box-shadow:inset 0 0 15px #ffcad69c,0 0 15px #ff174455!important}
+/* v7: encabezado estrictamente de una sola línea; desplazamiento horizontal solo en pantallas estrechas */
+.toolbar-compact{padding:8px 12px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
+.toolbar-main,.toolbar-main .left,.toolbar-main .right,.toolbar-center,.toolbar-center .toolbar-stats{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;gap:7px!important}
+.toolbar-main{width:max-content;min-width:100%;justify-content:space-between!important}
+.toolbar-main .left,.toolbar-main .right,.toolbar-center{flex:0 0 auto!important;order:initial!important}
+.toolbar-center{min-width:0!important;gap:12px!important}
+.toolbar-center h2{font-size:clamp(17px,1.5vw,23px);white-space:nowrap}
+.toolbar-main .btn{min-height:32px;padding:5px 8px;font-size:.75rem}
+.toolbar-main input[type=search]{min-width:0;width:145px;padding:6px 8px}
+.toolbar-center .badge,.toolbar-main #area-info{font-size:.73rem;padding:5px 7px;white-space:nowrap}
+.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+:root{--lucha-neon:#0066ff}
+#games-table thead tr:first-child th:nth-child(5){background:#0066ff!important;box-shadow:inset 0 0 15px #99bbffb0,0 0 15px #0066ff88!important;color:#000!important}
+
+/* v8: cuatro nombres de jueces bajo el encabezado */
+.judges-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 8px}
+.judge-name-card{display:flex;align-items:center;gap:10px;min-width:0;padding:8px 12px;background:linear-gradient(145deg,#101e34,#091425);border:2px solid var(--judge-color);border-radius:9px;box-shadow:inset 0 0 14px #0007,0 0 10px color-mix(in srgb,var(--judge-color) 22%,transparent)}
+.judge-name-card label{color:var(--judge-color);font-size:.86rem;font-weight:900;white-space:nowrap;letter-spacing:.06em}
+.judge-name-card input{flex:1;min-width:0;width:100%;border:0;outline:0;background:transparent;color:#fff;font:600 .92rem inherit;font-family:inherit;padding:5px 0}
+.judge-name-card input::placeholder{color:#91a2ba}
+.judge-name-card:focus-within{box-shadow:0 0 17px color-mix(in srgb,var(--judge-color) 45%,transparent)}
+.games-scroll{max-height:calc(100vh - 150px)}
+@media(max-width:800px){.judges-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.games-scroll{max-height:calc(100vh - 205px)}}
+@media(max-width:420px){.judge-name-card{padding:6px;gap:5px}.judge-name-card input{font-size:.78rem}}
+/* v10: nombres en mayúsculas y encabezados compactos y fijos */
+.judge-name-card input{text-transform:uppercase}
+#games-table thead tr:first-child th{padding-top:7px!important;padding-bottom:7px!important;line-height:1.1!important;height:33px;box-sizing:border-box;z-index:12!important}
+#games-table thead tr:nth-child(2) th{position:sticky!important;top:var(--alto-disciplinas,33px)!important;z-index:11!important;background:#162c47!important;background-clip:padding-box!important}
+#games-table thead tr:first-child th{position:sticky!important;top:0!important;background-clip:padding-box!important}
+
+/* v11: puntajes pendientes como raya; resultados con fondo de disciplina */
+#games-table tbody td.score-result{background:var(--score-bg)!important;color:#000!important;font-weight:900!important;text-shadow:none!important;box-shadow:inset 0 0 12px #ffffff55}
+#games-table tbody td.score-result.disc-salto{--score-bg:#ffff00}
+#games-table tbody td.score-result.disc-rotura{--score-bg:#39ff14}
+#games-table tbody td.score-result.disc-lucha{--score-bg:#0066ff}
+#games-table tbody td.score-result.disc-combate{--score-bg:#ff1744}
+#games-table tbody td.score-pending{color:#a4b3c8!important}
+
+/* v13: el tono claro acompaña la fila clara de la tabla y viceversa. */
+#games-table tbody tr:nth-child(odd) td.score-result.disc-salto{--score-bg:#e5e500}
+#games-table tbody tr:nth-child(even) td.score-result.disc-salto{--score-bg:#ffff36}
+#games-table tbody tr:nth-child(odd) td.score-result.disc-rotura{--score-bg:#31e30f}
+#games-table tbody tr:nth-child(even) td.score-result.disc-rotura{--score-bg:#61ff41}
+#games-table tbody tr:nth-child(odd) td.score-result.disc-lucha{--score-bg:#0059df}
+#games-table tbody tr:nth-child(even) td.score-result.disc-lucha{--score-bg:#3186ff}
+#games-table tbody tr:nth-child(odd) td.score-result.disc-combate{--score-bg:#e80c39}
+#games-table tbody tr:nth-child(even) td.score-result.disc-combate{--score-bg:#ff4265}
+/* La altura de las celdas combinadas debe ser calculada por el navegador.
+   Forzar height:110px en un rowspan de dos filas causaba el desfase. */
+#games-table{border-collapse:collapse!important}
+#games-table tbody tr{height:50px!important}
+#games-table tbody td{box-sizing:border-box!important;height:50px!important;padding-top:5px!important;padding-bottom:5px!important;vertical-align:middle!important;line-height:1.2}
+#games-table tbody td[rowspan]{height:auto!important;min-height:0!important;padding-top:0!important;padding-bottom:0!important;vertical-align:middle!important}
+#games-table tbody td.score-result{background-clip:padding-box!important;box-shadow:inset 0 0 10px #ffffff33!important}
+#games-table tbody td[id^="lucha-score-"],#games-table tbody td[id^="combate-score-"]{padding-left:5px!important;padding-right:5px!important}
 </style>
 </head>
 <body>
 
-<div class="toolbar">
-  <div class="left">
-    <button class="btn btn-amber" id="btn-volver">← Volver</button>
-    <button class="btn btn-blue" id="btn-refrescar">Refrescar datos</button>
-    <button class="btn btn-gray" id="btn-export">Exportar resultados</button>
+<header class="toolbar toolbar-compact">
+  <div class="toolbar-main">
+    <div class="left">
+      <button class="btn btn-amber" id="btn-volver">← Volver</button>
+      <button class="btn btn-blue" id="btn-refrescar">Refrescar datos</button>
+      <button class="btn btn-gray" id="btn-export">Exportar resultados</button>
+    </div>
+    <div class="toolbar-center">
+      <h2 id="title">START GAMES</h2>
+      <div class="toolbar-stats">
+        <div class="badge" id="count">Competidores: 0</div>
+        <div class="badge" id="peso-range">Peso: —</div>
+        <span class="visually-hidden" id="estado-persist" aria-live="polite">Sin guardar</span>
+      </div>
+    </div>
+    <div class="right">
+      <span class="badge" id="area-info">Área</span>
+      <input id="filtro" type="search" placeholder="Filtrar por nombre…" />
+    </div>
   </div>
-  <div class="right">
-    <span class="badge" id="area-info">Área</span>
-    <input id="filtro" type="search" placeholder="Filtrar por nombre…" />
-  </div>
-</div>
+</header>
 
-<h2 id="title">Juegos - Área</h2>
-<div class="topbar">
-  <div class="badge" id="count">Competidores: 0</div>
-  <div class="badge" id="peso-range">Peso: —</div>
-  <div class="badge"><span class="pill" id="estado-persist">Sin guardar</span></div>
-</div>
+<section class="judges-strip" aria-label="Nombres de los jueces">
+  <div class="judge-name-card" style="--judge-color:#39ff14"><label for="nombre-juez-1">JUEZ 1</label><input id="nombre-juez-1" type="text" placeholder="Nombre del juez" autocomplete="off" maxlength="80"></div>
+  <div class="judge-name-card" style="--judge-color:#ffff00"><label for="nombre-juez-2">JUEZ 2</label><input id="nombre-juez-2" type="text" placeholder="Nombre del juez" autocomplete="off" maxlength="80"></div>
+  <div class="judge-name-card" style="--judge-color:#ff00ff"><label for="nombre-juez-3">JUEZ 3</label><input id="nombre-juez-3" type="text" placeholder="Nombre del juez" autocomplete="off" maxlength="80"></div>
+  <div class="judge-name-card" style="--judge-color:#ff8c00"><label for="nombre-juez-4">JUEZ 4</label><input id="nombre-juez-4" type="text" placeholder="Nombre del juez" autocomplete="off" maxlength="80"></div>
+</section>
 
-<table id="games-table">
+<div class="games-scroll"><table id="games-table">
   <thead>
     <tr>
       <th>#</th>
-      <th>Nombre y apellido</th>
+      <th>Nombre</th>
       <th colspan="3">Salto</th>
       <th colspan="3">Rotura</th>
       <th colspan="2">Lucha</th>
@@ -80,7 +222,7 @@
     </tr>
   </thead>
   <tbody id="games-tbody"></tbody>
-</table>
+</table></div>
 
 <script>
 (function(){
@@ -91,6 +233,32 @@
   const STATE_KEY = (a)=>`ct_games_state_v1_${a||'?'}`;
   const RESULT_SYNC_KEY = (a)=>`ct_results_sync_v1_${a||'?'}`;
   const PAGES = { rotura: "rotura.html", lucha: "lucha al punto.html", combate: "Combate Total.html" };
+
+
+  // Nombres de jueces guardados por área, sin alterar los resultados de competición.
+  const JUDGES_KEY = (a)=>`ct_jueces_nombres_v1_${a||'?'}`;
+  let nombresJueces = [];
+  try { const saved = JSON.parse(localStorage.getItem(JUDGES_KEY(AREA)) || '[]'); if(Array.isArray(saved)) nombresJueces = saved; } catch(e) { console.warn('No se pudieron leer los jueces',e); }
+  for(let i=1;i<=4;i++){
+    const campo = document.getElementById(`nombre-juez-${i}`);
+    campo.value = (nombresJueces[i-1] || '').toLocaleUpperCase('es-AR');
+    campo.addEventListener('input',()=>{
+      const inicio = campo.selectionStart, fin = campo.selectionEnd;
+      campo.value = campo.value.toLocaleUpperCase('es-AR');
+      try { campo.setSelectionRange(inicio, fin); } catch(e) {}
+      nombresJueces[i-1] = campo.value;
+      try { localStorage.setItem(JUDGES_KEY(AREA),JSON.stringify(nombresJueces)); } catch(e) { console.warn('No se pudieron guardar los jueces',e); }
+    });
+  }
+
+  // Mantener fija la segunda fila completa justo debajo de las disciplinas.
+  const filaDisciplinas = document.querySelector('#games-table thead tr:first-child');
+  const actualizarAltoDisciplinas = () => {
+    if (filaDisciplinas) document.documentElement.style.setProperty('--alto-disciplinas', `${filaDisciplinas.getBoundingClientRect().height}px`);
+  };
+  actualizarAltoDisciplinas();
+  if (window.ResizeObserver && filaDisciplinas) new ResizeObserver(actualizarAltoDisciplinas).observe(filaDisciplinas);
+  window.addEventListener('resize', actualizarAltoDisciplinas);
 
   const gamesState = {};
   const el = (id)=>document.getElementById(id);
@@ -183,6 +351,16 @@ function mergeResultados(area, updatesById) {
     }catch(e){ console.error('merge ext', e); }
   }
 
+  // Mantener los valores reales en el estado; solo cambia la presentación.
+  function pintarPuntaje(celda, valor){
+    if(!celda) return;
+    const numero = Number(valor) || 0;
+    const tieneResultado = Number.isFinite(numero) && numero !== 0;
+    celda.textContent = tieneResultado ? numero.toFixed(3) : '—';
+    celda.classList.toggle('score-result', tieneResultado);
+    celda.classList.toggle('score-pending', !tieneResultado);
+  }
+
   function render(){
     mergeResultadosExternos();
     const q = (el('filtro')?.value||'').trim().toLowerCase();
@@ -191,7 +369,7 @@ function mergeResultados(area, updatesById) {
       .filter(c => !q || String(c.nombre||'').toLowerCase().includes(q))
       .sort((a,b)=>(parsePeso(a.peso)||0)-(parsePeso(b.peso)||0));
 
-    el("title").textContent = `Juegos - Área ${AREA||"?"}`;
+    el("title").textContent = "START GAMES";
     el("area-info").textContent = `Área ${AREA||"?"}`;
     el("count").textContent = `Competidores: ${list.length}`;
 
@@ -270,6 +448,27 @@ function mergeResultados(area, updatesById) {
       combateTime.innerHTML = st.combateTiempoFin ? `<span>${st.combateTiempoFin}</span>` : '<span class="cell-muted">—</span>';
       tr.appendChild(combateTime);
 
+      // Marcar límites de disciplinas por celda real (rowSpan no altera la asignación).
+      pintarPuntaje(tr.querySelector(`[id="salto-score-${comp.id}"]`), st.saltoLogrado ? st.saltoPuntaje : 0);
+      pintarPuntaje(tr.querySelector(`[id="rotura-score-${comp.id}"]`), st.roturaPuntaje);
+      pintarPuntaje(luchaScore, st.luchaPuntaje);
+      pintarPuntaje(combateScore, st.combatePuntaje);
+
+      // Las primeras 8 celdas son ID, nombre, salto x3 y rotura x3.
+      // Las restantes se agregan en orden: lucha (acción opcional), puntaje,
+      // combate (acción opcional), puntaje y tiempo.
+      const base = tr.cells;
+      for(let c=2;c<=4;c++) base[c].classList.add('disc-salto');
+      base[2].classList.add('disc-start'); base[4].classList.add('disc-end');
+      for(let c=5;c<=7;c++) base[c].classList.add('disc-rotura');
+      base[5].classList.add('disc-start'); base[7].classList.add('disc-end');
+      const luchaInicio = 8;
+      const luchaFin = luchaInicio + (idx % 2 === 0 ? 1 : 0);
+      for(let c=luchaInicio;c<=luchaFin;c++) base[c].classList.add('disc-lucha');
+      base[luchaInicio].classList.add('disc-start'); base[luchaFin].classList.add('disc-end');
+      const combateInicio = luchaFin+1;
+      for(let c=combateInicio;c<base.length;c++) base[c].classList.add('disc-combate');
+      base[combateInicio].classList.add('disc-start'); base[base.length-1].classList.add('disc-end');
       tbody.appendChild(tr);
     });
   }
@@ -296,7 +495,7 @@ function mergeResultados(area, updatesById) {
       btn.classList.toggle("btn-red", !st.saltoLogrado);
 
       const scoreEl = el(`salto-score-${compId}`);
-      if(scoreEl) scoreEl.textContent = Number(st.saltoLogrado ? st.saltoPuntaje : 0).toFixed(3);
+      pintarPuntaje(scoreEl, st.saltoLogrado ? st.saltoPuntaje : 0);
 
       // 1) guardamos el estado local de la tabla
       saveState();

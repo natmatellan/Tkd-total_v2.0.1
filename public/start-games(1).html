@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Games - Combate Total</title>
+<style>
+  :root{
+    --bg:#0f1115; --muted:#bbb; --grid:#333; --card:#1a1a1a; --neon:#39ff14;
+  }
+  *{box-sizing:border-box}
+  body{ background:var(--bg); color:#f5f5f5; font-family:system-ui,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif; margin:0; padding:16px; }
+  h2{ text-align:center; margin:8px 0 6px; color:var(--neon); text-shadow:0 0 10px var(--neon); }
+  .topbar{ display:flex; gap:10px; justify-content:center; margin-bottom:8px; flex-wrap:wrap; }
+  .badge{ background:#181a1f; border:1px solid var(--grid); border-radius:10px; padding:6px 10px; box-shadow:0 0 0 1px #000 inset }
+
+  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin:8px 0; gap:8px; flex-wrap:wrap; }
+  .left{ display:flex; gap:8px; flex-wrap:wrap; }
+
+  table{ width:100%; border-collapse:collapse; margin-top:8px; border:1px solid var(--grid); }
+  th,td{ border:1px solid var(--grid); padding:6px 8px; text-align:center; }
+  thead th{ position:sticky; top:0; z-index:2; background:var(--card); color:var(--neon); }
+  tbody tr:nth-child(odd){ background:#121419; }
+  tbody tr:nth-child(even){ background:#0e1015; }
+  /* hover desactivado para no tapar los botones */
+  tbody tr:hover{ }
+
+  .btn{ padding:6px 10px; border:none; border-radius:8px; cursor:pointer; font-weight:700; transition:transform .06s ease, filter .15s ease; }
+  .btn:active{ transform:scale(.98) }
+  .btn-green{ background:var(--neon); color:#000 }
+  .btn-red{ background:#e53935; color:#fff }
+  .btn-blue{ background:#2196f3; color:#fff }
+  .btn-amber{ background:#64d76e; color:#000 }
+  .btn-gray{ background:#3b3b3b; color:#ddd }
+  .btn:hover{ filter:brightness(.95) }
+
+  .cell-muted{ color:var(--muted) }
+  .pill{ padding:.15rem .5rem; border-radius:999px; border:1px solid var(--grid); background:#151821; font-weight:600; }
+  .right{ display:flex; gap:8px; align-items:center }
+  input[type="search"]{ background:#0b0d12; color:#e6e6e6; border:1px solid #2a2f3a; border-radius:8px; padding:8px 10px; outline:none; }
+  .hint{ color:#8aa; font-size:.85rem }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="left">
+    <button class="btn btn-amber" id="btn-volver">← Volver</button>
+    <button class="btn btn-blue" id="btn-refrescar">Refrescar datos</button>
+    <button class="btn btn-gray" id="btn-export">Exportar resultados</button>
+  </div>
+  <div class="right">
+    <span class="badge" id="area-info">Área</span>
+    <input id="filtro" type="search" placeholder="Filtrar por nombre…" />
+  </div>
+</div>
+
+<h2 id="title">Juegos - Área</h2>
+<div class="topbar">
+  <div class="badge" id="count">Competidores: 0</div>
+  <div class="badge" id="peso-range">Peso: —</div>
+  <div class="badge"><span class="pill" id="estado-persist">Sin guardar</span></div>
+</div>
+
+<table id="games-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Nombre y apellido</th>
+      <th colspan="3">Salto</th>
+      <th colspan="3">Rotura</th>
+      <th colspan="2">Lucha</th>
+      <th colspan="3">Combate</th>
+    </tr>
+    <tr>
+      <th></th><th></th>
+      <th>Altura a saltar</th><th>Acción</th><th>Puntaje</th>
+      <th>Puntaje de Rotura</th><th>Acción</th><th>Puntaje</th>
+      <th>Acción</th><th>Puntaje</th>
+      <th>Acción</th><th>Puntaje</th><th>Tiempo de Finalización</th>
+    </tr>
+  </thead>
+  <tbody id="games-tbody"></tbody>
+</table>
+
+<script>
+(function(){
+  const STORAGE_KEY = "ct_acreditaciones_v1";
+  const params = new URLSearchParams(location.search);
+  const AREA = params.get("area") || "";
+
+  const STATE_KEY = (a)=>`ct_games_state_v1_${a||'?'}`;
+  const RESULT_SYNC_KEY = (a)=>`ct_results_sync_v1_${a||'?'}`;
+  const PAGES = { rotura: "rotura.html", lucha: "lucha al punto.html", combate: "Combate Total.html" };
+
+  const gamesState = {};
+  const el = (id)=>document.getElementById(id);
+
+
+// Merge hacia el storage de resultados que usa el Ranking
+function mergeResultados(area, updatesById) {
+  try {
+    const key = RESULT_SYNC_KEY(area);
+    const raw = localStorage.getItem(key);
+    const prev = raw ? JSON.parse(raw) : {};
+    const merged = { ...prev };
+
+    for (const [id, parcial] of Object.entries(updatesById)) {
+      const anterior = prev[id] || {};
+      merged[id] = { ...anterior, ...parcial };  // no pisa rotura/lucha/combate
+    }
+
+    localStorage.setItem(key, JSON.stringify(merged));
+
+    // avisar a otras pestañas (Ranking)
+    try {
+      window.dispatchEvent(
+        new StorageEvent("storage", { key, newValue: JSON.stringify(merged) })
+      );
+    } catch (_) {}
+  } catch (e) {
+    console.error("mergeResultados error", e);
+  }
+}
+
+
+
+  function markPersisted(ok){
+    const pill = el('estado-persist'); if(!pill) return;
+    if(ok){ pill.textContent = 'Guardado'; pill.style.color = '#aef0b0'; pill.style.borderColor = '#2f5'; }
+    else { pill.textContent = 'Sin guardar'; pill.style.color = '#faa'; pill.style.borderColor = '#f55'; }
+  }
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STATE_KEY(AREA));
+      const obj = raw? JSON.parse(raw) : {};
+      Object.assign(gamesState, obj);
+      markPersisted(true);
+    }catch(e){ console.error(e); markPersisted(false); }
+  }
+  function saveState(){
+    try{
+      localStorage.setItem(STATE_KEY(AREA), JSON.stringify(gamesState));
+      markPersisted(true);
+    }catch(e){ console.error(e); markPersisted(false); }
+  }
+  function getCompState(id){
+    if(!gamesState[id]) gamesState[id] = {
+      saltoLogrado:false, saltoPuntaje:0,
+      roturaIniciada:false, roturaPuntaje:0,
+      luchaPuntaje:0,
+      combatePuntaje:0, combateTiempoFin:""
+    };
+    return gamesState[id];
+  }
+
+  function leerCompetidores(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return [];
+      const arr = JSON.parse(raw) || [];
+      return arr.filter(c=>c.acreditado && String(c.area)===String(AREA));
+    }catch(e){ console.error(e); return []; }
+  }
+
+  // Parsing robusto de pesos para el rango
+  function parsePeso(val){
+    if(val==null) return NaN;
+    const s = String(val).replace(',', '.');               // 70,5 -> 70.5
+    const m = s.match(/[0-9]+(?:\\.[0-9]+)?/);             // toma 70 / 70.5
+    return m ? Number(m[0]) : NaN;
+  }
+
+  // Merge de resultados que vengan de otras vistas
+  function mergeResultadosExternos(){
+    try{
+      const raw = localStorage.getItem(RESULT_SYNC_KEY(AREA));
+      if(!raw) return;
+      const obj = JSON.parse(raw) || {};
+      Object.entries(obj).forEach(([id, up])=>{
+        Object.assign(getCompState(id), up);
+      });
+      saveState();
+    }catch(e){ console.error('merge ext', e); }
+  }
+
+  function render(){
+    mergeResultadosExternos();
+    const q = (el('filtro')?.value||'').trim().toLowerCase();
+
+    const list = leerCompetidores()
+      .filter(c => !q || String(c.nombre||'').toLowerCase().includes(q))
+      .sort((a,b)=>(parsePeso(a.peso)||0)-(parsePeso(b.peso)||0));
+
+    el("title").textContent = `Juegos - Área ${AREA||"?"}`;
+    el("area-info").textContent = `Área ${AREA||"?"}`;
+    el("count").textContent = `Competidores: ${list.length}`;
+
+    const pesos = list.map(c=>parsePeso(c.peso)).filter(n=>Number.isFinite(n));
+    el("peso-range").textContent = pesos.length
+      ? `Peso: ${Math.min(...pesos).toFixed(0)}–${Math.max(...pesos).toFixed(0)} kg`
+      : "Peso: —";
+
+    const tbody = el("games-tbody");
+    tbody.innerHTML = "";
+
+    list.forEach((comp, idx)=>{
+      const st = getCompState(comp.id);
+      const hds = parseFloat(comp.hds) || 0;
+      const altura = parseFloat(comp.altura) || 1;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${comp.id}</td>
+        <td style="text-align:left">${comp.nombre}</td>
+
+        <!-- Salto: Acción (Fallo/Logró) y Puntaje -->
+        <td>${hds ? `${hds.toFixed(3)} m` : '<span class="cell-muted">—</span>'}</td>
+        <td>
+          <button class="btn ${st.saltoLogrado?'btn-green':'btn-red'}"
+                  data-action="toggle-salto" data-id="${comp.id}">
+            ${st.saltoLogrado ? 'Logró' : 'Fallo'}
+          </button>
+        </td>
+        <td id="salto-score-${comp.id}">${Number(st.saltoLogrado ? st.saltoPuntaje : 0).toFixed(3)}</td>
+
+        <!-- Rotura (3 columnas: Puntaje de Rotura, Acción, Puntaje) -->
+        <td>${(comp.pdr ?? '<span class="cell-muted">—</span>')}</td>
+        <td><button class="btn btn-amber" data-action="iniciar-rotura" data-id="${comp.id}">Iniciar Rotura</button></td>
+        <td id="rotura-score-${comp.id}">${Number(st.roturaPuntaje||0).toFixed(3)}</td>
+      `;
+
+      // Lucha: Acción (rowSpan por pareja) + Puntaje (por fila)
+      if(idx % 2 === 0){
+        const parejaSize = (idx+1 < list.length) ? 2 : 1;
+        const A = list[idx];
+        const B = list[idx+1];
+        const luchaTd = document.createElement("td");
+        luchaTd.rowSpan = parejaSize;
+        const disabled = !B; // si no hay contrincante, se deshabilita
+        luchaTd.innerHTML = `<button class="btn ${disabled?'btn-gray':'btn-blue'}" ${disabled?'disabled':''}
+                              data-action="iniciar-lucha" data-a="${A?.id??''}" data-b="${B?.id??''}">
+                              Iniciar Lucha</button>`;
+        tr.appendChild(luchaTd);
+      }
+      const luchaScore = document.createElement("td");
+      luchaScore.id = `lucha-score-${comp.id}`;
+      luchaScore.textContent = Number(st.luchaPuntaje||0).toFixed(3);
+      tr.appendChild(luchaScore);
+
+      // Combate: Acción (rowSpan) + Puntaje + Tiempo de Finalización
+      if(idx % 2 === 0){
+        const parejaSize = (idx+1 < list.length) ? 2 : 1;
+        const A = list[idx];
+        const B = list[idx+1];
+        const combateTd = document.createElement("td");
+        combateTd.rowSpan = parejaSize;
+        const disabled = !B;
+        combateTd.innerHTML = `<button class="btn ${disabled?'btn-gray':'btn-blue'}" ${disabled?'disabled':''}
+                                data-action="iniciar-combate" data-a="${A?.id??''}" data-b="${B?.id??''}">
+                                Iniciar Combate</button>`;
+        tr.appendChild(combateTd);
+      }
+      const combateScore = document.createElement("td");
+      combateScore.id = `combate-score-${comp.id}`;
+      combateScore.textContent = Number(st.combatePuntaje||0).toFixed(3);
+      tr.appendChild(combateScore);
+
+      const combateTime = document.createElement("td");
+      combateTime.id = `combate-tiempo-${comp.id}`;
+      combateTime.innerHTML = st.combateTiempoFin ? `<span>${st.combateTiempoFin}</span>` : '<span class="cell-muted">—</span>';
+      tr.appendChild(combateTime);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Eventos
+  el("games-tbody").addEventListener("click",(e)=>{
+    const btn = e.target.closest("button[data-action]"); if(!btn) return;
+    const action = btn.dataset.action;
+
+    if(action==="toggle-salto"){
+      const compId = Number(btn.dataset.id);
+      const data = leerCompetidores();
+      const comp = data.find(c=>c.id===compId); if(!comp) return;
+      const st = getCompState(compId);
+      const hds = parseFloat(comp.hds)||0; 
+      const altura = parseFloat(comp.altura)||1;
+
+      // Toggle SALTO: arranca en FALLÓ (rojo) -> LOGRÓ (verde) con puntaje
+      st.saltoLogrado = !st.saltoLogrado;
+      st.saltoPuntaje = st.saltoLogrado && altura>0 ? ((hds/altura)*10) : 0;
+
+      btn.textContent = st.saltoLogrado ? "Logró" : "Fallo";
+      btn.classList.toggle("btn-green", st.saltoLogrado);
+      btn.classList.toggle("btn-red", !st.saltoLogrado);
+
+      const scoreEl = el(`salto-score-${compId}`);
+      if(scoreEl) scoreEl.textContent = Number(st.saltoLogrado ? st.saltoPuntaje : 0).toFixed(3);
+
+      // 1) guardamos el estado local de la tabla
+      saveState();
+
+      // 2) sincronizamos con el storage que usa Ranking
+        mergeResultados(AREA, {
+          [compId]: {
+            saltoLogrado: st.saltoLogrado,
+            saltoPuntaje: Number(st.saltoPuntaje || 0),
+            saltoAltura: st.saltoLogrado ? Number(hds || 0) : 0
+          }
+        });
+
+      return;
+    }
+
+
+    if(action==="iniciar-rotura"){
+      const compId = Number(btn.dataset.id);
+      const data = leerCompetidores();
+      const comp = data.find(c=>c.id===compId);
+      location.href = `${PAGES.rotura}?area=${encodeURIComponent(AREA)}&id=${encodeURIComponent(compId)}&nombre=${encodeURIComponent(comp?.nombre||'')}`;
+      return;
+    }
+
+    if(action==="iniciar-lucha" || action==="iniciar-combate"){
+      const a = Number(btn.dataset.a);
+      const b = Number(btn.dataset.b);
+      const page = (action === "iniciar-lucha") ? PAGES.lucha : PAGES.combate;
+      location.href = `${page}?area=${encodeURIComponent(AREA)}&a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`;
+      return;
+    }
+  });
+
+  // Topbar
+  document.getElementById("btn-volver").addEventListener("click", ()=> history.length>1 ? history.back() : window.close());
+  document.getElementById("btn-refrescar").addEventListener("click", render);
+  document.getElementById("filtro").addEventListener("input", render);
+
+  // Export CSV
+  document.getElementById("btn-export").addEventListener("click", ()=>{
+    const list = leerCompetidores().sort((a,b)=>(parsePeso(a.peso)||0)-(parsePeso(b.peso)||0));
+    let csv = 'ID,Nombre,Área,SaltoLogrado,SaltoPuntaje,RoturaPuntaje,LuchaPuntaje,CombatePuntaje,CombateTiempoFin\\n';
+    list.forEach(c=>{
+      const st = getCompState(c.id);
+      csv += [
+        c.id,
+        '"'+(c.nombre||'')+'"',
+        AREA,
+        st.saltoLogrado?1:0,
+        (st.saltoPuntaje||0).toFixed(3),
+        (st.roturaPuntaje||0).toFixed(3),
+        (st.luchaPuntaje||0).toFixed(3),
+        (st.combatePuntaje||0).toFixed(3),
+        '"'+(st.combateTiempoFin||'')+'"'
+      ].join(',') + '\\n';
+    });
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `area-${AREA}-results.csv`; a.style.display='none';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  });
+
+  // Sync live
+  window.addEventListener('storage', (ev)=>{
+    if(ev.key === RESULT_SYNC_KEY(AREA)){
+      mergeResultadosExternos();
+      render();
+    }
+  });
+
+  if(!AREA){ alert("Falta ?area=N en la URL."); }
+  loadState();
+  render();
+})();
+</script>
+
+</body>
+</html>
