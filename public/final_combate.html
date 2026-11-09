@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Combate Total — NEON GRID v4.1 | Arena Pro</title>
+  <title>Combate Total</title>
   <style>
 	body {
 	  margin: 0;
@@ -836,12 +836,59 @@ body:after{content:"";position:fixed;inset:3.5vh 2vw;pointer-events:none;border:
   background:#081b2be8!important;color:#fff!important;border-color:#ffffff80!important;
 }
 
+/* v3 — Nombres y asignación automática con la misma lógica de Rotura v10. */
+.juez-box .juez-icono {white-space:normal!important;overflow-wrap:anywhere!important;text-overflow:clip!important;line-height:1.1!important;letter-spacing:.02em!important;font-size:clamp(10px,1.05vw,16px)!important;}
+/* Identidad de cada joystick: verde, amarillo, fucsia, naranja. */
+.juez-box:has(.juez-icono.fondo-joystick1),.juez-box:has(.juez-icono.seleccionando-verde){--juez-neon:#39ff14;--juez-glow:#39ff1466}
+.juez-box:has(.juez-icono.fondo-joystick2),.juez-box:has(.juez-icono.seleccionando-rojo){--juez-neon:#ffff00;--juez-glow:#ffff0066}
+.juez-box:has(.juez-icono.fondo-joystick3),.juez-box:has(.juez-icono.seleccionando-azul){--juez-neon:#ff00ff;--juez-glow:#ff00ff66}
+.juez-box:has(.juez-icono.fondo-joystick4),.juez-box:has(.juez-icono.seleccionando-amarillo){--juez-neon:#ff8c00;--juez-glow:#ff8c0066}
+/* Durante selección solo parpadea el CONTORNO EXTERIOR; el interior queda oscuro. */
+.juez-box:has(.juez-icono[class*="seleccionando-"]){background:linear-gradient(150deg,#17314c,#101e36)!important;border:3px solid var(--juez-neon)!important;box-shadow:0 0 15px var(--juez-glow),0 0 30px var(--juez-glow)!important;animation:panel-juez-pulso 1s ease-in-out infinite}
+.juez-box:has(.juez-icono[class*="seleccionando-"]) .juez-icono{background:linear-gradient(90deg,#234a68,#172e4a)!important;color:#e8f6ff!important;border:1px solid #71bfe37a!important;box-shadow:none!important}
+.juez-box:has(.juez-icono[class*="seleccionando-"]) .punto{background:#06172d!important;color:#fff!important;border-color:#35617c!important}
+.juez-box .juez-icono[class*="seleccionando-"]::before,.juez-box .juez-icono[class*="seleccionando-"]::after{display:none!important}
+/* Al confirmar, el panel completo se rellena del color de ese joystick. */
+.juez-box:has(.juez-icono[class*="fondo-joystick"]){background:var(--juez-neon)!important;border:3px solid var(--juez-neon)!important;box-shadow:0 0 15px var(--juez-glow),0 0 34px var(--juez-glow)!important;animation:none!important}
+.juez-box:has(.juez-icono[class*="fondo-joystick"]) .juez-icono{background:transparent!important;color:#061020!important;border-color:#06102077!important;box-shadow:none!important}
+.juez-box:has(.juez-icono[class*="fondo-joystick"]) .punto{background:#ffffff33!important;color:#061020!important;border-color:#061020aa!important;text-shadow:none!important}
+.juez-box .juez-icono[class*="fondo-joystick"]::before,.juez-box .juez-icono[class*="fondo-joystick"]::after{display:none!important}
+/* v5: los dos marcadores conservan SIEMPRE su identidad por competidor. */
+.juez-box .puntos .punto.azul,
+.juez-box:has(.juez-icono[class*="seleccionando-"]) .puntos .punto.azul,
+.juez-box:has(.juez-icono[class*="fondo-joystick"]) .puntos .punto.azul{
+  background:linear-gradient(150deg,#1689ec,#0757b7)!important;
+  border:2px solid #65d7ff!important;
+  color:#fff!important;
+  text-shadow:0 0 8px #001c4b!important;
+}
+.juez-box .puntos .punto.rojo,
+.juez-box:has(.juez-icono[class*="seleccionando-"]) .puntos .punto.rojo,
+.juez-box:has(.juez-icono[class*="fondo-joystick"]) .puntos .punto.rojo{
+  background:linear-gradient(150deg,#f03c67,#aa1240)!important;
+  border:2px solid #ff8ca6!important;
+  color:#fff!important;
+  text-shadow:0 0 8px #4b0822!important;
+}
+
+
+/* macOS: estado de la caja en el elemento contenedor, independiente de :has(). */
+.juez-box[data-pad-estado="seleccionando"]{background:linear-gradient(150deg,#17314c,#101e36)!important;border:3px solid var(--pad-color)!important;box-shadow:0 0 14px var(--pad-color)!important;animation:mac-borde-pulso .85s ease-in-out infinite alternate!important;filter:none!important}
+.juez-box[data-pad-estado="confirmado"]{background:var(--pad-color)!important;border:3px solid var(--pad-color)!important;box-shadow:0 0 22px var(--pad-color)!important;animation:none!important;filter:none!important;color:#061020!important}
+.juez-box[data-pad-estado="confirmado"] .juez-icono{background:transparent!important;color:#061020!important;text-shadow:none!important;box-shadow:none!important;animation:none!important}
+.juez-box[data-pad-estado="seleccionando"] .juez-icono{background:transparent!important;color:#e8f6ff!important;box-shadow:none!important;animation:none!important}
+.juez-box[data-pad-estado="confirmado"] .punto:not(.azul):not(.rojo){background:#ffffff33!important;color:#061020!important;text-shadow:none!important}
+.juez-box[data-pad-estado="seleccionando"] .punto:not(.azul):not(.rojo){background:#06172d!important;color:#fff!important}
+.juez-box[data-pad-estado="confirmado"] .punto.azul,.juez-box[data-pad-estado="seleccionando"] .punto.azul{background:linear-gradient(150deg,#1689ec,#0757b7)!important;color:white!important}
+.juez-box[data-pad-estado="confirmado"] .punto.rojo,.juez-box[data-pad-estado="seleccionando"] .punto.rojo{background:linear-gradient(150deg,#f03c67,#aa1240)!important;color:white!important}
+@keyframes mac-borde-pulso{from{box-shadow:0 0 3px var(--pad-color)}to{box-shadow:0 0 22px var(--pad-color)}}
+
 </style>
 </head>
 <body>
 <div class="brand-header"><div class="brand-mark"><span>◆</span></div> TAEKWON-DO TOTAL <span style="color:#586981">/</span> ARENA PRO</div>
 <div class="match-kicker">MARCADOR OFICIAL · COMBATE TOTAL</div>
-<div class="footer-guide">MODE ENCENDIDO · START SELECCIONAR JUEZ · SELECT CONFIRMAR · L2 DESHACER · R2 REHACER</div>
+<div class="footer-guide">JOYSTICKS AUTOMÁTICOS · SELECT CAMBIAR JUEZ · STICK ← → MOVER · SELECT CONFIRMAR · L2 DESHACER · R2 REHACER</div>
   <!-- Menú de configuración oculto -->
   <div id="menu-config" class="menu-config oculto">
     <p class="campo activo" id="campo-0">Rounds: <span id="rounds">2</span></p>
@@ -924,8 +971,9 @@ body:after{content:"";position:fixed;inset:3.5vh 2vw;pointer-events:none;border:
 <div id="victoryMenu" class="overlay hidden">
   <div class="menu">
     <h3 id="victoryTitle">Victoria</h3>
-    <button class="menu-btn" data-action="jueces">Decisión de los Jueces</button>
-    <button class="menu-btn" data-action="medicos">Decisión de los Médicos</button>
+    <button class="menu-btn" data-action="ko">K.O</button>
+    <button class="menu-btn" data-action="tko">T.K.O</button>
+    <button class="menu-btn" data-action="submission">Sumisión</button>
     <button class="menu-btn" data-action="back">← Volver</button>
   </div>
 </div>
@@ -944,9 +992,9 @@ body:after{content:"";position:fixed;inset:3.5vh 2vw;pointer-events:none;border:
 <script id="variables">
 // Variables y sonidos
 let ultimoSegundoBipeado = null;
-let rounds = 1;
-let descanso = 0;
-let duracion = 2;
+let rounds = new URLSearchParams(location.search).get('rounds') === '1' ? 1 : 2;
+let descanso = 1.5;
+let duracion = 3;
 let tiempoRestante = duracion * 60 * 1000;
 let tiempoAcumulado = tiempoRestante;
 let tiempoInicio = 0;
@@ -969,7 +1017,7 @@ let intervalo;
 let historial = [];
 let cursorHistorial = -1;
 const params = new URLSearchParams(location.search);
-const area = params.get("area");
+const area = params.get("area") || "FINAL";
 document.getElementById("area-number").textContent = area;
 const aId = Number(params.get("a"));
 const bId = Number(params.get("b"));
@@ -989,8 +1037,8 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Usar la función leerCompetidores del scope global (definida más abajo)
   const competidores = leerCompetidores();
-  const A = competidores.find(c => c.id === aId);
-  const B = competidores.find(c => c.id === bId);
+  const A = competidores.find(c => String(c.id) === String(aId));
+  const B = competidores.find(c => String(c.id) === String(bId));
   
   const nameA = document.getElementById("nameA");
   const nameB = document.getElementById("nameB");
@@ -1085,19 +1133,18 @@ function fmtMMSS(ms){
 
 
 // Guarda resultados por competidor (permite tiempos distintos)
-// Guarda resultados de LUCHA POR PUNTOS por competidor (merge profundo)
-function pushResultadosLuchaPorLuchador({ area, data }) {
+function pushResultadosCombatePorLuchador({ area, data }) {
   try {
     const key = `ct_results_sync_v1_${area || '?'}`;
     const raw = localStorage.getItem(key);
     const prev = raw ? JSON.parse(raw) : {};
 
-    // merge por competidor para no perder rotura/salto/combate
+    // 🔴 MERGE PROFUNDO POR COMPETIDOR
     const merged = { ...prev };
     for (const [id, parcial] of Object.entries(data)) {
       merged[id] = {
         ...(prev[id] || {}),
-        ...parcial      // ← acá viene luchaPuntaje
+        ...parcial
       };
     }
 
@@ -1107,14 +1154,15 @@ function pushResultadosLuchaPorLuchador({ area, data }) {
       window.dispatchEvent(
         new StorageEvent("storage", {
           key,
-          newValue: JSON.stringify(merged),
+          newValue: JSON.stringify(merged)
         })
       );
     } catch (_) {}
   } catch (e) {
-    console.error("pushResultadosLuchaPorLuchador error", e);
+    console.error("pushResultadosCombatePorLuchador error", e);
   }
 }
+
 
 
 
@@ -1478,7 +1526,7 @@ victoryMenu.addEventListener("click", (e) => {
     return;
   }
 
-  if (action === "jueces" || action === "medicos") {
+  if (action === "ko" || action === "tko" || action === "submission") {
     // Calcular tiempo transcurrido
     const tiempoTotal = (duracion * 60 * 1000) - tiempoRestante;
     const segundos = Math.floor(tiempoTotal / 1000);
@@ -1533,26 +1581,31 @@ victoryMenu.addEventListener("click", (e) => {
     
 
 
-      // tiempo transcurrido al declarar la victoria
-      const elapsed = (duracion * 60 * 1000) - tiempoRestante; // ms
-      const tiempoGanador  = fmtMMSS(elapsed);
-      const tiempoRound    = fmtMMSS(duracion * 60 * 1000);
+       // tiempo transcurrido al declarar la victoria (en ms)
+      const elapsedMs = (duracion * 60 * 1000) - tiempoRestante;
+
+      // 👉 tiempos en SEGUNDOS con 3 decimales
+      const tiempoGanadorSeg = (elapsedMs / 1000).toFixed(3);      // ej: "11.605"
+      const tiempoRoundSeg   = (duracion * 60).toFixed(3);         // ej: "60.000" si duracion=1
 
       // Armamos estructura per-luchador (tiempos distintos)
       window.__combateResultadoPendiente = {
-        tipo: 'victoriaLucha',
+        tipo: 'victoria',
         area,
         aId, bId,
         perLuchador: {
           [aId]: {
-            luchaPuntaje: puntajeFinalAzul
+            combatePuntaje: puntajeFinalAzul,
+            // Azul ganador -> tiempo real, si no -> tiempo completo
+            combateTiempoFin: esVictoriaAzul ? tiempoGanadorSeg : tiempoRoundSeg
           },
           [bId]: {
-            luchaPuntaje: puntajeFinalRojo
+            combatePuntaje: puntajeFinalRojo,
+            // Rojo ganador -> tiempo real, si no -> tiempo completo
+            combateTiempoFin: esVictoriaAzul ? tiempoRoundSeg : tiempoGanadorSeg
           }
         }
       };
-
 
 
     // Mostrar menú de resultados y ocultar los demás
@@ -1596,8 +1649,8 @@ function mostrarResultadoFinalPorTiempo() {
 
   // tiempo total del round (por defecto usás 1 round)
   const durMs = duracion * 60 * 1000;
-  const durTexto = fmtMMSS(durMs);
-
+  const durTexto = fmtMMSS(durMs); // para mostrar (MM:SS)
+  const durSegundos = (durMs / 1000).toFixed(3); // para guardar (sss.sss)
   // Pintamos menú
   resultTitle.textContent = "RESULTADO FINAL";
   resultDetails.innerHTML = `
@@ -1613,7 +1666,7 @@ function mostrarResultadoFinalPorTiempo() {
     </div>
     <div style="text-align:center; margin-top:15px;">
       <p><strong>Método:</strong> Tiempo cumplido</p>
-      <p><strong>Duración:</strong> ${durTexto}</p>
+      <p><strong>Duración:</strong> ${(durMs / 1000).toFixed(3)} segundos</p>
       <p><strong>Bonus por tiempo:</strong> 0 puntos</p>
       <p><strong>Ganador por puntos:</strong> ${ganador}</p>
     </div>
@@ -1621,15 +1674,14 @@ function mostrarResultadoFinalPorTiempo() {
 
   // Guardamos en una variable global lo que vamos a persistir al tocar FINALIZAR
       window.__combateResultadoPendiente = {
-        tipo: 'tiempoLucha',
+        tipo: 'tiempo',
         area,
         aId, bId,
         perLuchador: {
-          [aId]: { luchaPuntaje: puntajeAzul },
-          [bId]: { luchaPuntaje: puntajeRojo }
+          [aId]: { combatePuntaje: puntajeAzul, combateTiempoFin: durSegundos },
+          [bId]: { combatePuntaje: puntajeRojo, combateTiempoFin: durSegundos }
         }
       };
-
 
   // Mostrar overlay
   document.getElementById("victoryMenu")?.classList.add("hidden");
@@ -1654,16 +1706,41 @@ if (resultMenuEl) {
     if (!btn) return;
 
     const pending = window.__combateResultadoPendiente;
-    if (pending?.perLuchador) {
-      // Guardado de LUCHA al punto
-      pushResultadosLuchaPorLuchador({
-        area: pending.area,
-        data: pending.perLuchador
-      });
+    if(!pending?.perLuchador){alert('No hay resultado para guardar.');return;}
+    const key=new URLSearchParams(location.search).get('final');
+    const match=new URLSearchParams(location.search).get('match');
+    if(!/^combate_w[1-6]$/.test(key)||! /^(q[0-3]|s[01]|b0|f0)$/.test(match)){
+      alert('No se identificó un enfrentamiento válido de Finales.');return;
     }
-    window.location.href = `start-games.html?area=${encodeURIComponent(area)}`;
-
-})}
+    const data=pending.perLuchador;
+    const scoreA=Number(data[aId]?.combatePuntaje||0),scoreB=Number(data[bId]?.combatePuntaje||0);
+    const timeA=Number(data[aId]?.combateTiempoFin||Infinity),timeB=Number(data[bId]?.combateTiempoFin||Infinity);
+    // En finalización anticipada el vencedor es el que declaró la victoria,
+    // no necesariamente quien acumuló más puntos.
+    let winner=null;
+    if(pending.tipo==='victoria'){
+      const title=document.getElementById('resultDetails')?.textContent||'';
+      // La estructura original registra al ganador con menor tiempo.
+      winner=timeA<timeB?String(aId):timeB<timeA?String(bId):null;
+    }else{
+      winner=scoreA>scoreB?String(aId):scoreB>scoreA?String(bId):null;
+    }
+    if(!winner){alert('El combate está empatado. Definí el ganador manualmente en la llave de Finales.');window.close();return;}
+    const storageKey='ct_finales_v1';
+    const st=JSON.parse(localStorage.getItem(storageKey)||'{}');
+    st[key]??={};st[key].matches??={};st[key].notes??={};
+    const old=st[key].matches[match];
+    if(old!==winner){
+      if(match.startsWith('q')){delete st[key].matches['s'+(Number(match.slice(1))<2?0:1)];delete st[key].matches.b0;delete st[key].matches.f0;}
+      else if(match.startsWith('s')){delete st[key].matches.b0;delete st[key].matches.f0;}
+    }
+    st[key].matches[match]=winner;
+    st[key].notes[match]=`AZUL ${scoreA.toFixed(3)} · ROJO ${scoreB.toFixed(3)}`;
+    localStorage.setItem(storageKey,JSON.stringify(st));
+    window.close();
+    if(!window.closed)alert('Resultado guardado. Podés cerrar esta pestaña manualmente.');
+  });
+}
 
 
 
@@ -1679,140 +1756,163 @@ if (resultMenuEl) {
 
 
 <script id="joystick-seleccion">
-const joystickState = Array(4).fill().map(() => ({
-  modo: "inactivo", // inactivo | seleccionando | confirmado
-  juez: null,
-  lastPressed: {}
+// Lucha al Punto — asignación automática y nombres por joystick, como Rotura v10.
+const joystickState = Array.from({length:4}, () => ({
+  modo:'inactivo', juez:null, lastPressed:{}, puntosLastFrame:{}, lastMoveTime:0
 }));
-
-const colores = ["verde", "rojo", "azul", "amarillo"];
-const clasesParpadeo = [
-  "seleccionando-verde",
-  "seleccionando-rojo",
-  "seleccionando-azul",
-  "seleccionando-amarillo"
-];
-const clasesFondo = [
-  "fondo-joystick1",
-  "fondo-joystick2",
-  "fondo-joystick3",
-  "fondo-joystick4"
-];
-
-function loopJoysticks() {
-  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-
-  pads.forEach((pad, index) => {
-    if (!pad || index >= joystickState.length) return;
-
-    const state = joystickState[index];
-    const botones = pad.buttons;
-    const ejes = pad.axes;
-    const pressed = (i) => (botones[i]?.value ?? 0) >= 0.15;
-    const justPressed = (i) => pressed(i) && !state.lastPressed[i];
-    const updatePressed = (i) => (state.lastPressed[i] = pressed(i));
-
-    // START → entrar a selección
-    if (justPressed(9) && state.modo === "inactivo") {
-      const libre = primerJuezLibre();
-      if (libre !== null) {
-        state.modo = "seleccionando";
-        state.juez = libre;
-        aplicarParpadeo(index, libre);
-      }
-    }
-
-    // SELECT → confirmar o cancelar
-    if (justPressed(8)) {
-      if (state.modo === "seleccionando") {
-        state.modo = "confirmado";
-        aplicarFondo(index, state.juez);
-      } else if (state.modo === "confirmado") {
-        removerFondo(index, state.juez);
-        state.modo = "seleccionando";
-        aplicarParpadeo(index, state.juez);
-      }
-    }
-
-    // Movimiento entre jueces: Firefox PS3 usa A1; standard usa A0
-    if (state.modo === "seleccionando") {
-      const now = Date.now();
-      const moveCooldown = 250; // milisegundos
-      state.lastMoveTime ??= 0;
-
-      // Selección con el stick IZQUIERDO: eje horizontal A0.
-      // No usar A5: en algunos mandos corresponde al stick derecho.
-      const xIzquierdo = Number(ejes[0] ?? 0);
-      if (now - state.lastMoveTime > moveCooldown) {
-        if (xIzquierdo < -0.55) {
-          mover(index, -1);
-          state.lastMoveTime = now;
-        } else if (xIzquierdo > 0.55) {
-          mover(index, 1);
-          state.lastMoveTime = now;
-        }
-      }
-    }
-
-    // Actualizar botones
-    for (let i = 0; i < botones.length; i++) updatePressed(i);
-  });
-
-  requestAnimationFrame(loopJoysticks);
+const colores = ['verde','rojo','azul','amarillo'];
+const clasesParpadeo = ['seleccionando-verde','seleccionando-rojo','seleccionando-azul','seleccionando-amarillo'];
+const clasesFondo = ['fondo-joystick1','fondo-joystick2','fondo-joystick3','fondo-joystick4'];
+const JUDGES_KEY = a => `ct_jueces_nombres_v1_${a || '?'}`;
+let nombresJueces = ['','','',''];
+function cargarNombresJueces() {
+  try {
+    const guardados = JSON.parse(localStorage.getItem(JUDGES_KEY(area)) || '[]');
+    if (Array.isArray(guardados)) nombresJueces = Array.from({length:4},(_,i)=>
+      typeof guardados[i] === 'string' ? guardados[i].trim() : '');
+  } catch(err) { console.warn('No se pudieron leer los nombres de jueces',err); }
+  actualizarNombresJueces();
 }
-
-requestAnimationFrame(loopJoysticks);
-
-// === FUNCIONES AUXILIARES ===
-
-function primerJuezLibre() {
-  const usados = joystickState
-    .filter(js => js.modo === "confirmado")
-    .map(js => js.juez);
-  for (let i = 0; i < 4; i++) {
-    if (!usados.includes(i)) return i;
+function actualizarNombresJueces() {
+  for(let j=0;j<4;j++) {
+    const el=document.getElementById(`juez-${j}`);
+    if(!el) continue;
+    const joy=joystickState.findIndex(st=>st.modo==='confirmado' && st.juez===j);
+    const nombre=joy>=0 ? (nombresJueces[joy] || `JUEZ ${joy+1}`) : `JUEZ ${j+1}`;
+    if(el.textContent!==nombre) el.textContent=nombre;
   }
+}
+function juezOcupado(juez,exceptoJoystick=-1) {
+  return joystickState.some((st,i)=>i!==exceptoJoystick && st.modo!=='inactivo' && st.juez===juez);
+}
+function primerJuezLibre() {
+  for(let j=0;j<4;j++) if(!juezOcupado(j)) return j;
   return null;
 }
-
-function mover(joy, direccion) {
-  const state = joystickState[joy];
-  const usados = joystickState
-    .filter(js => js.modo === "confirmado")
-    .map(js => js.juez);
-  let nuevo = state.juez;
-  for (let i = 0; i < 4; i++) {
-    nuevo = (nuevo + direccion + 4) % 4;
-    if (!usados.includes(nuevo)) {
-      removerParpadeo(joy, state.juez);
-      state.juez = nuevo;
-      aplicarParpadeo(joy, nuevo);
-      break;
-    }
+function aplicarParpadeo(joy,juez) {
+  const el=document.getElementById(`juez-${juez}`);
+  if(el) {el.classList.remove(clasesFondo[joy]);el.classList.add(clasesParpadeo[joy]);}
+}
+function removerParpadeo(joy,juez) {
+  document.getElementById(`juez-${juez}`)?.classList.remove(clasesParpadeo[joy]);
+}
+function aplicarFondo(joy,juez) {
+  const el=document.getElementById(`juez-${juez}`);
+  if(el) {el.classList.remove(clasesParpadeo[joy]);el.classList.add(clasesFondo[joy]);}
+}
+function removerFondo(joy,juez) {
+  document.getElementById(`juez-${juez}`)?.classList.remove(clasesFondo[joy]);
+}
+function mover(joy,direccion){
+  const st=joystickState[joy];
+  if(st.juez===null)return;
+  const anterior=st.juez;
+  // Recorrer posiciones sin desplazar ni intercambiar jueces ya asignados.
+  // Si todas están ocupadas, mantener la posición actual.
+  let nuevo=null;
+  for(let paso=1;paso<=3;paso++){
+    const candidato=(anterior+direccion*paso+16)%4;
+    if(!juezOcupado(candidato,joy)){nuevo=candidato;break;}
   }
+  if(nuevo===null)return;
+  removerParpadeo(joy,anterior);
+  st.juez=nuevo;
+  aplicarParpadeo(joy,nuevo);
+  actualizarNombresJueces();
+  refrescarPanelesMac();
 }
 
-function aplicarParpadeo(joy, juez) {
-  const el = document.getElementById(`juez-${juez}`);
-  el.classList.add(clasesParpadeo[joy]);
-  el.classList.remove(clasesFondo[joy]);
+// Lectura robusta de controles: algunos navegadores de Mac exponen la cruceta como eje A9.
+const COLORES_MAC=['#39FF14','#FFFF00','#FF00FF','#FF8C00'];
+function controlesConectados(){return Array.from(navigator.getGamepads?.()||[]).filter(p=>p && p.connected!==false).slice(0,4)}
+function indiceControl(pad){return controlesConectados().findIndex(p=>p.index===pad.index)}
+function direccionCruceta(pad){
+  const b=i=>Number(pad.buttons?.[i]?.value||0)>.5;
+  if(b(14))return 'izq';if(b(15))return 'der';if(b(12))return 'arriba';if(b(13))return 'abajo';
+  const axis=window.calibracionCruceta?.[indiceControl(pad)]?.axis??9;
+  const values=window.calibracionCruceta?.[indiceControl(pad)]?.valores;
+  const a=pad.axes?.[axis];
+  if(!Number.isFinite(a))return null;
+  const dict=values?{'izq':values['azul-izq'],'der':values['azul-der'],'arriba':values['azul-arriba'],'abajo':values['azul-abajo']}:{izq:1,der:-.429,arriba:-1,abajo:.143};
+  for(const [key,value] of Object.entries(dict))if(Number.isFinite(value)&&Math.abs(a-value)<.18)return key;
+  return null;
+}
+function direccionMoverMac(pad){
+  // Analógico izquierdo horizontal, según perfil de macOS/Firefox o estándar.
+  const perfil=perfilPad(pad);
+  const valor=Number(pad.axes?.[perfil.horizontal]??0);
+  return Math.abs(valor)>=0.42 ? (valor<0?-1:1) : 0;
 }
 
-function removerParpadeo(joy, juez) {
-  const el = document.getElementById(`juez-${juez}`);
-  el.classList.remove(clasesParpadeo[joy]);
+function refrescarPanelesMac(){
+  document.querySelectorAll('.juez-box').forEach((box,j)=>{
+    const joy=joystickState.findIndex(st=>st.modo!=='inactivo'&&st.juez===j);
+    const estado=joy<0?'':joystickState[joy].modo;
+    if(estado)box.dataset.padEstado=estado;else delete box.dataset.padEstado;
+    if(joy>=0)box.style.setProperty('--pad-color',COLORES_MAC[joy]);else box.style.removeProperty('--pad-color');
+    if(estado==='confirmado'){
+      box.style.setProperty('background',COLORES_MAC[joy],'important');
+      box.style.setProperty('border-color',COLORES_MAC[joy],'important');
+      box.style.setProperty('animation','none','important');
+    } else if(estado==='seleccionando'){
+      box.style.setProperty('background','linear-gradient(150deg,#17314c,#101e36)','important');
+      box.style.setProperty('border-color',COLORES_MAC[joy],'important');
+      box.style.removeProperty('animation');
+    } else {
+      box.style.removeProperty('background');
+      box.style.removeProperty('border-color');
+      box.style.removeProperty('animation');
+    }
+  });
 }
 
-function aplicarFondo(joy, juez) {
-  const el = document.getElementById(`juez-${juez}`);
-  el.classList.remove(clasesParpadeo[joy]);
-  el.classList.add(clasesFondo[joy]);
+function sincronizarJoysticks() {
+  const pads=controlesConectados();
+  for(let i=0;i<4;i++) {
+    const pad=pads[i],st=joystickState[i];
+    if(!pad || pad.connected===false) {
+      if(st.modo!=='inactivo') {
+        if(st.juez!==null) {removerParpadeo(i,st.juez);removerFondo(i,st.juez);}
+        st.modo='inactivo';st.juez=null;st.lastPressed={};st.puntosLastFrame={};
+      }
+      continue;
+    }
+    if(st.modo==='inactivo') {
+      const libre=!juezOcupado(i,i) ? i : primerJuezLibre();
+      if(libre!==null) {st.juez=libre;st.modo='confirmado';aplicarFondo(i,libre);}
+      st.lastPressed={};st.puntosLastFrame={};st.bloquearPuntosHastaSoltarSelect=true;st.neutralHat9=pad.axes?.[9];st.neutralHat5=pad.axes?.[5];
+      // El primer botón que activa Gamepad API puede ser leído como cruceta.
+      // Esperar liberación y estabilización antes de permitir el primer punto.
+      st.inicioProteccion=performance.now();st.ultimoEjeInicio=pad.axes?.[9];st.ejeEstableDesde=performance.now();st.inicializadoParaPuntos=false;
+    }
+    const botones=pad.buttons||[];
+    const pressed=n=>(botones[n]?.value ?? 0)>=0.15;
+    const justPressed=n=>pressed(n)&&!st.lastPressed[n];
+    // SELECT: pasar a selección, mover con stick izquierdo y confirmar con SELECT.
+    if(justPressed(8)&&!pressed(9)) {
+      if(st.modo==='confirmado') {
+        st.bloquearPuntosHastaSoltarSelect=true;st.neutralHat9=pad.axes?.[9];st.neutralHat5=pad.axes?.[5];
+        removerFondo(i,st.juez);st.modo='seleccionando';aplicarParpadeo(i,st.juez);
+      } else if(st.modo==='seleccionando') {
+        removerParpadeo(i,st.juez);st.modo='confirmado';aplicarFondo(i,st.juez);
+        st.puntosLastFrame={};st.crucetaBloqueada=false;st.crucetaReposoDesde=null;st.ultimaDireccionCruceta=null;st.bloquearPuntosHastaSoltarSelect=true;st.neutralHat9=pad.axes?.[9];st.neutralHat5=pad.axes?.[5];
+      }
+    }
+    if(st.modo==='seleccionando') {
+      const direccion=direccionMoverMac(pad),ahora=performance.now();
+      if(!direccion)st.ultimaDireccion=0;
+      else if(direccion!==st.ultimaDireccion && ahora-st.lastMoveTime>95){
+        mover(i,direccion);st.lastMoveTime=ahora;st.ultimaDireccion=direccion;
+      }
+    }
+    for(let b=0;b<botones.length;b++) st.lastPressed[b]=pressed(b);
+  }
+  actualizarNombresJueces();refrescarPanelesMac();
 }
-
-function removerFondo(joy, juez) {
-  const el = document.getElementById(`juez-${juez}`);
-  el.classList.remove(clasesFondo[joy]);
-}
+function loopJoysticks() {sincronizarJoysticks();requestAnimationFrame(loopJoysticks);}
+cargarNombresJueces();
+window.addEventListener('storage',e=>{if(e.key===JUDGES_KEY(area)) cargarNombresJueces();});
+requestAnimationFrame(loopJoysticks);
 </script>
 
 <!-- SCRIPT DE JOYSTICKS SELECCION DE JUEZ END   -->
@@ -1829,12 +1929,12 @@ function perfilPad(pad) {
   return firefoxPS3 ? { horizontal: 1, vertical: 2, dpadButtons: false }
                     : { horizontal: 0, vertical: 1, dpadButtons: pad.buttons.length >= 16 };
 }
-const PRESION = 0.12;
+const PRESION = 0.08;
 const EJE_ON = 0.25;
 const EJE_OFF = 0.10;
 const historialesPuntos = Array.from({length:4}, () => ({acciones:[], cursor:0}));
 function valorBoton(pad, i) { return pad.buttons[i]?.value ?? 0; }
-function pulso(state, clave, valor, activar=PRESION, liberar=0.06) {
+function pulso(state, clave, valor, activar=PRESION, liberar=0.035) {
   state.puntosLastFrame ??= {};
   const previo = !!state.puntosLastFrame[clave];
   if (!previo && valor >= activar) {
@@ -1848,21 +1948,55 @@ function pulsoEje(state, clave, valor) {
   return pulso(state, clave, valor, EJE_ON, EJE_OFF);
 }
 function procesarPuntosJoysticks() {
-  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const pads = controlesConectados();
   pads.forEach((pad, index) => {
     if (!pad || index >= joystickState.length) return;
     const state = joystickState[index];
     if (state.modo !== "confirmado") return;
+    // SELECT es exclusivamente para asignar jueces. No se permite puntuar
+    // mientras esté presionado ni hasta que se haya soltado completamente.
+    if (valorBoton(pad,8)>0.08 || valorBoton(pad,9)>0.08) {
+      state.bloquearPuntosHastaSoltarSelect=true;
+      state.ultimaDireccionCruceta=null;
+      state.puntosLastFrame={};
+      return;
+    }
+    if (state.bloquearPuntosHastaSoltarSelect) {
+      state.bloquearPuntosHastaSoltarSelect=false;
+      state.ultimaDireccionCruceta=null;
+      state.puntosLastFrame={};
+      return;
+    }
+    // Protección de arranque: el primer movimiento activa el control en macOS.
+    // No se registra como golpe. Primero debe estabilizarse la cruceta.
+    if (state.inicializadoParaPuntos===false) {
+      const ahora=performance.now();
+      const eje=pad.axes?.[9];
+      if (Number.isFinite(eje)) {
+        if (!Number.isFinite(state.ultimoEjeInicio) || Math.abs(eje-state.ultimoEjeInicio)>0.06) {
+          state.ultimoEjeInicio=eje;
+          state.ejeEstableDesde=ahora;
+        }
+      }
+      if (ahora-state.inicioProteccion<350 || ahora-state.ejeEstableDesde<160) return;
+      state.neutralHat9=eje;
+      state.neutralHat5=pad.axes?.[5];
+      state.ultimaDireccionCruceta=null;
+      state.puntosLastFrame={};
+      state.inicializadoParaPuntos=true;
+      return;
+    }
     const juez = state.juez;
     const perfil = perfilPad(pad);
     const horizontal = pad.axes[perfil.horizontal] ?? 0;
     const vertical = pad.axes[perfil.vertical] ?? 0;
-    const mult = (valorBoton(pad,4) >= PRESION || valorBoton(pad,5) >= PRESION) ? 10 : 1;
+    const multAzul = valorBoton(pad,4) >= PRESION ? 10 : 1; // L1 solo azul
+    const multRojo = valorBoton(pad,5) >= PRESION ? 10 : 1; // R1 solo rojo
     // Cruceta física exclusivamente. Nunca interpretar el stick derecho como puntos.
     // Se detecta primero como botones 12-15 y, si no están, por el eje
     // elegido mediante la calibración integrada (tecla F8).
     let azulActivo = null;
-    const botonesCruceta = [[12,"azul-arriba"],[14,"azul-izq"],[15,"azul-der"]];
+    const botonesCruceta = [[12,"azul-arriba"],[14,"azul-izq"],[15,"azul-der"],[13,"azul-abajo"]];
     const botonCruceta = botonesCruceta.find(([id]) => valorBoton(pad,id) > 0.12);
     if (botonCruceta) azulActivo = botonCruceta[1];
     if (!azulActivo) {
@@ -1886,7 +2020,11 @@ function procesarPuntosJoysticks() {
           .sort((a,b) => a.distancia-b.distancia);
         const mejor = candidatos[0];
         const tolerancia = mejor?.clave === "azul-izq" ? 0.30 : 0.22;
-        azulActivo = mejor && mejor.distancia <= tolerancia ? mejor.clave : null;
+        // No confundir el valor de reposo capturado al seleccionar juez
+        // con una pulsación de la cruceta (en Mac puede ser 0.143 = abajo).
+        const neutral = state.neutralHat9;
+        const enReposo = Number.isFinite(neutral) && Math.abs(actual-neutral)<0.10;
+        azulActivo = !enReposo && mejor && mejor.distancia <= tolerancia ? mejor.clave : null;
       } else {
         // Compatibilidad automática A5 únicamente si su reposo es 3.286,
         // característico del D-pad digital en MODE (no del stick derecho).
@@ -1894,33 +2032,23 @@ function procesarPuntosJoysticks() {
         if (Number.isFinite(hat) && Math.abs(hat-3.286)<0.3) state.hatDigitalConfirmado=true;
         if (state.hatDigitalConfirmado && Number.isFinite(hat)) {
           const opciones = [["azul-arriba",-1],["azul-izq",1],["azul-der",-0.429],["azul-abajo",0.143]];
-          azulActivo = opciones.find(([,v]) => Math.abs(hat-v)<0.10)?.[0] ?? null;
+          const neutral=state.neutralHat5;
+          azulActivo = Number.isFinite(neutral) && Math.abs(hat-neutral)<0.10 ? null : (opciones.find(([,v]) => Math.abs(hat-v)<0.10)?.[0] ?? null);
         }
       }
     }
-    const valoresAzul = {"azul-arriba":0.1,"azul-izq":0.2,"azul-der":0.3};
-    // Antirrebote: contar una sola vez al PRESIONAR.
-    // Al soltar, algunos mandos envían brevemente otra dirección: no se cuenta.
-    // Rearmar solo tras 110 ms continuos de reposo.
-    const ahora = performance.now();
-    state.crucetaBloqueada ??= false;
-    if (azulActivo) {
-      state.crucetaReposoDesde = null;
-      if (!state.crucetaBloqueada) {
-        if (valoresAzul[azulActivo] !== undefined) sumarPunto("azul", valoresAzul[azulActivo]*mult, juez);
-        state.crucetaBloqueada = true;
-      }
-    } else if (state.crucetaBloqueada) {
-      state.crucetaReposoDesde ??= ahora;
-      if (ahora - state.crucetaReposoDesde >= 110) {
-        state.crucetaBloqueada = false;
-        state.crucetaReposoDesde = null;
-      }
+    const valoresAzul = {"azul-arriba":0.1,"azul-izq":0.2,"azul-der":0.3,"azul-abajo":0.4};
+    // Contar al detectar una dirección nueva, sin tiempo artificial de rearme.
+    const direccionAnterior=state.ultimaDireccionCruceta||null;
+    if(azulActivo!==direccionAnterior){
+      if(azulActivo && valoresAzul[azulActivo]!==undefined)
+        sumarPunto('azul',valoresAzul[azulActivo]*multAzul,juez);
+      state.ultimaDireccionCruceta=azulActivo;
     }
     for (const [id, valor, clave] of [
       [0,0.1,"rojo-triangulo"],[3,0.2,"rojo-cuadrado"],
-      [1,0.3,"rojo-circulo"]
-    ]) if (pulso(state,clave,valorBoton(pad,id))) sumarPunto("rojo",valor*mult,juez);
+      [1,0.3,"rojo-circulo"],[2,0.4,"rojo-equis"]
+    ]) if (pulso(state,clave,valorBoton(pad,id))) sumarPunto("rojo",valor*multRojo,juez);
     if (pulso(state,"deshacer",valorBoton(pad,6))) deshacerPunto(juez);
     if (pulso(state,"rehacer",valorBoton(pad,7))) rehacerPunto(juez);
   });
@@ -2046,6 +2174,10 @@ window.calibracionCruceta = JSON.parse(localStorage.getItem("ct_cal_cruceta_v1")
    document.getElementById("cal-next").textContent="COMENZAR";paso=-1;
  };
 })();
+</script>
+<script>
+window.addEventListener('gamepadconnected',()=>{try{sincronizarJoysticks()}catch(e){console.warn(e)}});
+window.addEventListener('gamepaddisconnected',()=>{try{sincronizarJoysticks()}catch(e){console.warn(e)}});
 </script>
 </body>
 </html>

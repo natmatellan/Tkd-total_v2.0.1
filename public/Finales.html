@@ -1,0 +1,663 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Finales · TaeKwon-Do Total</title><style>
+:root{color-scheme:dark;--cyan:#36e9ff;--green:#39ff14;--yellow:#ffe16c;--red:#ff476d;--blue:#559bff;--bg:#06101f;--panel:#0b1e34}*{box-sizing:border-box}body{margin:0;color:#eaf7ff;font-family:system-ui,Arial,sans-serif;background:radial-gradient(ellipse at 50% -20%,#154466 0%,#071629 50%,#030b17 100%);min-height:100vh}body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(#3fe9ff16 1px,transparent 1px),linear-gradient(90deg,#3fe9ff16 1px,transparent 1px);background-size:43px 43px;mask-image:linear-gradient(#000b,#0002 90%)}body:after{content:"";position:fixed;left:-30%;right:-30%;bottom:-40%;height:65%;transform:perspective(400px) rotateX(65deg);transform-origin:bottom;background-image:linear-gradient(#2ee8ff24 1px,transparent 1px),linear-gradient(90deg,#2ee8ff24 1px,transparent 1px);background-size:70px 70px;pointer-events:none}header,main{position:relative;z-index:1}header{padding:19px 3vw;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:1px solid #3cdfff65;background:#07172bd9;box-shadow:0 8px 30px #0005}h1{margin:0;font-size:clamp(1.6rem,3vw,2.8rem);letter-spacing:.15em;text-shadow:0 0 20px #28dfff77}.eyebrow{color:#79b8d0;font-size:.7rem;letter-spacing:.2em;font-weight:800}.actions,.tabs,.subtabs,.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap}button,select,input{font:inherit}button{border:1px solid #3a8cad;background:#0e2a42;color:#e9fbff;border-radius:8px;padding:9px 13px;cursor:pointer;font-weight:800;transition:.15s}button:hover{border-color:var(--cyan);box-shadow:0 0 15px #22dfff55}button:disabled{opacity:.35;cursor:not-allowed}button.active{background:#14506a;border-color:var(--cyan);box-shadow:inset 0 0 16px #36e9ff33,0 0 15px #36e9ff33}.danger{border-color:#aa3950;color:#ffb8c5}.ok{border-color:#2f9d62;color:#a6ffd3}.small{padding:5px 8px;font-size:.8rem}main{padding:22px 3vw 70px;max-width:1600px;margin:auto}.tabs{margin:0 0 17px}.tabs button{flex:1;min-width:155px;padding:15px 8px;font-size:1rem}.tabs button[data-tab="salto"]{--accent:var(--yellow)}.tabs button[data-tab="rotura"]{--accent:var(--green)}.tabs button[data-tab="lucha"]{--accent:var(--blue)}.tabs button[data-tab="combate"]{--accent:var(--red)}.tabs button.active{border-color:var(--accent);color:var(--accent);box-shadow:0 0 22px color-mix(in srgb,var(--accent) 25%,transparent)}.panel{background:#081c32e8;border:1px solid #337594;border-radius:13px;padding:17px;box-shadow:0 0 26px #2ddfff18,inset 0 0 30px #36e9ff09;margin-bottom:17px}.heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:15px}h2{margin:0;font-size:clamp(1.3rem,2.6vw,2.2rem);letter-spacing:.06em}h3{margin:0 0 12px;font-size:1.1rem;color:#b6edff}.hint{font-size:.81rem;color:#9cbcd1}.pill{display:inline-block;border:1px solid #3e8ca9;padding:6px 10px;border-radius:999px;color:#9feeff;font-weight:800;font-size:.8rem}.subtabs{margin-bottom:16px}.subtabs button.active{border-color:var(--red);color:#ffc2cf}.table-wrap{overflow-x:auto;border:1px solid #294b69;border-radius:9px}table{border-collapse:collapse;width:100%;min-width:750px}th{background:#102b46;color:#8ee9ff;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;text-align:left;padding:12px;white-space:nowrap}td{padding:11px 12px;border-top:1px solid #24435e;background:#091b2e}tr:nth-child(even) td{background:#0d2339}td.num{font-weight:900;color:#85eaff;font-variant-numeric:tabular-nums}.name{font-weight:800}input,select{background:#071629;border:1px solid #3c6685;border-radius:7px;color:white;padding:8px;min-width:0}input[type=number]{width:86px}input[type=text]{width:145px}select{max-width:100%}input:focus,select:focus{outline:1px solid var(--cyan)}.muted{color:#8ba9bf}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:13px}.match{border:1px solid #2c6688;background:linear-gradient(135deg,#102b46,#081a30);border-radius:12px;padding:13px;box-shadow:inset 0 0 18px #28dfff09}.match .tag{font-size:.72rem;letter-spacing:.15em;color:#79cbe7;font-weight:900;margin-bottom:9px}.fighter{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px;border:1px solid #2c4961;border-radius:8px;margin:5px 0;background:#091b2d}.fighter.win{border-color:var(--green);background:#123e2c;box-shadow:0 0 10px #39ff1433}.fighter span{overflow-wrap:anywhere}.fighter strong{color:#77e7ff;white-space:nowrap}.match select{width:100%;margin:8px 0}.match .controls{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.match .controls input{width:100%;flex:1}.match button{width:100%;margin-top:8px}.round-title{color:#fff;border-left:4px solid var(--cyan);padding:7px 12px;background:#14334d;margin:22px 0 12px}.medals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.medal{border-radius:12px;padding:15px;background:#f2faff;color:#10253b;text-align:center;box-shadow:0 0 18px #e9f9ff70}.medal:nth-child(1){border:3px solid #f5cb45}.medal:nth-child(2){border:3px solid #b7c8d5}.medal:nth-child(3){border:3px solid #bd8c69}.medal .symbol{font-size:1.8rem}.medal strong{display:block;overflow-wrap:anywhere}.status{font-size:.78rem;color:#9bc6da}.notice{border-left:4px solid var(--yellow);padding:12px;background:#332c163b;color:#ffeba4;margin-bottom:15px}.success{border-left-color:var(--green);background:#12351d55;color:#aaffbd}.empty{padding:45px;text-align:center;color:#8db2c9}.footer{color:#7d9ab0;text-align:center;font-size:.75rem;margin-top:30px}@media(max-width:650px){.tabs button{min-width:125px}.medals{grid-template-columns:1fr}header{padding:15px}main{padding:15px 10px 50px}.panel{padding:12px}}
+
+/* Salto: indicadores protagonistas y registro de participantes por ronda */
+.jump-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:17px}
+.jump-metric{position:relative;overflow:hidden;text-align:center;padding:22px 12px 20px;border:2px solid #e6c755;border-radius:15px;background:linear-gradient(155deg,#27304a,#101e34 70%);box-shadow:0 0 24px #ffe16c30,inset 0 0 24px #ffe16c0b}
+.jump-metric:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 25%,#ffffff0e 50%,transparent 75%);pointer-events:none}
+.jump-metric .metric-label{display:block;color:#d3e2f2;font-size:clamp(.78rem,1.1vw,1rem);font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.jump-metric .metric-value{display:block;color:#fff3b2;font-size:clamp(2.5rem,5vw,5.3rem);font-weight:1000;line-height:1.15;margin-top:8px;font-variant-numeric:tabular-nums;text-shadow:0 0 18px #ffe16c80}
+.jump-metric.current{border-color:#39ff14;box-shadow:0 0 32px #39ff1440,inset 0 0 22px #39ff1418}
+.jump-metric.current .metric-value{color:#baffab;text-shadow:0 0 22px #39ff1488}
+.jump-metric.round{border-color:#36e9ff;box-shadow:0 0 26px #36e9ff38}
+.jump-metric.round .metric-value{color:#b7f7ff;text-shadow:0 0 20px #36e9ff80}
+.jump-history{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.jump-history-card{border:1px solid #376f8b;background:linear-gradient(135deg,#0e2a43,#08192e);padding:14px;border-radius:11px}
+.jump-history-card.active{border-color:#39ff14;box-shadow:0 0 18px #39ff1426}
+.jump-history-card strong{color:#fff0a4;font-size:1.1rem}.jump-history-card .jump-entrant{padding:6px 0;border-bottom:1px solid #ffffff15;font-size:.86rem}
+.jump-history-card .jump-entrant:last-child{border:0}.jump-history-card .jump-entrant span{color:#9cbcd1}
+@media(max-width:650px){.jump-metrics{grid-template-columns:1fr;gap:9px}.jump-metric{padding:12px}.jump-metric .metric-value{font-size:2.6rem}}
+
+.jump-height-control{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}.jump-height-control input{width:125px;font-size:1.25rem;font-weight:900;color:var(--yellow)}.jump-rank-table th:first-child,.jump-rank-table td:first-child{font-size:1.2rem;font-weight:900;color:var(--yellow)}.jump-rank-table .medal-row td{border-left:3px solid var(--yellow)}
+.jump-rank-table tr.podium-rank td{background:#f8fbff!important;color:#18283c!important;border-top:2px solid #dce7f2;font-weight:800}.jump-rank-table tr.podium-rank td.num{color:#18283c!important}.jump-rank-table tr.podium-1 td:first-child{border-left:8px solid #d4a617;color:#a17800!important}.jump-rank-table tr.podium-2 td:first-child{border-left:8px solid #9ba9bb;color:#637487!important}.jump-rank-table tr.podium-3 td:first-child{border-left:8px solid #b87942;color:#99552d!important}.jump-rank-table tr.podium-1 td{box-shadow:inset 0 1px #f5d87a}.jump-rank-table tr.podium-2 td{box-shadow:inset 0 1px #c4d0dc}.jump-rank-table tr.podium-3 td{box-shadow:inset 0 1px #d7ad8d}
+
+/* Podio: acabado de medallas con relieve, reflejos y profundidad */
+.jump-rank-table{border-collapse:separate;border-spacing:0 7px}
+.jump-rank-table tr.podium-rank td{position:relative;background:linear-gradient(115deg,#ffffff 0%,#f4f8fc 34%,#e7edf4 56%,#ffffff 78%,#edf2f7 100%)!important;border-top:1px solid #ffffff!important;border-bottom:2px solid #bac9d7!important;box-shadow:inset 0 2px 1px #ffffff, inset 0 -2px 3px #a3b2c044,0 5px 10px #0005!important;text-shadow:0 1px 0 #fff}
+.jump-rank-table tr.podium-rank td:first-child{border-radius:11px 0 0 11px;border-left-width:9px!important;font-size:1.4rem;white-space:nowrap}
+.jump-rank-table tr.podium-rank td:last-child{border-radius:0 11px 11px 0}
+.jump-rank-table tr.podium-1 td{border-bottom-color:#bb8b24!important;background:linear-gradient(115deg,#fff 0%,#fff9e8 33%,#e9d39c 55%,#fffdf5 79%,#fff 100%)!important}
+.jump-rank-table tr.podium-2 td{border-bottom-color:#8799ab!important;background:linear-gradient(115deg,#fff 0%,#f7faff 33%,#d4dfe9 55%,#fff 79%,#f5f8fc 100%)!important}
+.jump-rank-table tr.podium-3 td{border-bottom-color:#a66a3d!important;background:linear-gradient(115deg,#fff 0%,#fff6ee 33%,#e5c3a7 55%,#fffaf6 79%,#fff 100%)!important}
+.podium-emblem{display:inline-grid;place-items:center;width:33px;height:33px;margin-right:9px;border-radius:50%;vertical-align:middle;color:#fff;font-size:1.1rem;font-weight:1000;text-shadow:0 1px 2px #0008;box-shadow:inset 0 2px 2px #fff9,inset 0 -3px 4px #0004,0 2px 5px #0005}
+.podium-1 .podium-emblem{background:radial-gradient(circle at 30% 20%,#fff2a3,#e7b828 45%,#9c6c08 90%);border:2px solid #c99b23}
+.podium-2 .podium-emblem{background:radial-gradient(circle at 30% 20%,#fff,#c0cedb 45%,#718598 90%);border:2px solid #a6b4c3}
+.podium-3 .podium-emblem{background:radial-gradient(circle at 30% 20%,#ffdbb4,#c48a58 45%,#7c4526 90%);border:2px solid #ae784d}
+.jump-rank-table .podium-rank .name{font-weight:1000;letter-spacing:.025em}
+
+/* Lucha: llave horizontal Neon Grid */
+.lucha-bracket{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:30px;align-items:stretch;margin:16px 0 22px;overflow-x:auto;padding:12px 5px 22px}
+.lucha-stage{display:flex;flex-direction:column;justify-content:space-around;gap:17px;min-width:240px;position:relative}
+.lucha-stage h3{text-align:center;color:#a7bbff;letter-spacing:.14em;font-size:.86rem;margin:0 0 10px}
+.lucha-match{border:1px solid #5473b4;border-radius:14px;padding:13px;background:linear-gradient(140deg,#132b4d,#07172e);box-shadow:0 0 18px #346dff20;position:relative}
+.lucha-match.decided{border-color:#39ff1488}
+.lucha-match-head{font-size:.7rem;letter-spacing:.12em;color:#91b4ef;font-weight:900;margin-bottom:10px}
+.lucha-athlete{display:flex;gap:8px;align-items:center;background:#06162b;border:1px solid #345078;border-radius:8px;padding:11px 8px;margin-bottom:6px;min-height:48px;font-weight:800;overflow-wrap:anywhere}
+.lucha-athlete.victor{background:#143929;border-color:#39ff14}.lucha-athlete b{margin-left:auto;color:#39ff14}
+.lucha-corner{width:6px;min-width:6px;height:29px;border-radius:4px}.lucha-corner.blue{background:#3e96ff;box-shadow:0 0 12px #3e96ff}.lucha-corner.red{background:#ff4e68;box-shadow:0 0 12px #ff4e68}
+.lucha-vs{width:100%;margin:8px 0;background:linear-gradient(100deg,#173a75,#335ac0);border-color:#84a7ff;color:white;font-size:.9rem;padding:12px}
+.lucha-match select{width:100%;font-size:.77rem}
+@media(max-width:900px){.lucha-bracket{grid-template-columns:repeat(3,minmax(250px,1fr));gap:15px}}
+
+/* Lucha v11: compacto, estados neutros y clasificación previa */
+.lucha-bracket{gap:12px;grid-template-columns:1.15fr 1fr 1fr;margin:8px 0 14px;padding:5px 0 10px}
+.lucha-stage{gap:8px;min-width:200px}.lucha-stage h3{font-size:.76rem;margin-bottom:4px}
+.lucha-match{padding:8px;border-radius:9px;box-shadow:none}.lucha-match.decided{border-color:#39ff1488}
+.lucha-match-head{margin-bottom:5px;font-size:.65rem}.lucha-athlete{padding:6px 7px;min-height:33px;margin:3px 0;font-size:.78rem;gap:6px;border-radius:5px}
+.lucha-athlete.pending{background:#222b39;border-color:#667181;color:#aab5c3}.lucha-athlete.pending .lucha-corner{background:#667181;box-shadow:none}
+/* Combate Total: rival pendiente gris, participante confirmado en llave con contorno verde */
+.lucha-athlete.waiting{border:2px solid #39ff14;background:#0a2230;box-shadow:inset 0 0 0 1px #39ff1433,0 0 8px #39ff1422}
+
+.lucha-corner{height:20px;width:4px;min-width:4px}.lucha-vs{margin:5px 0;padding:7px;font-size:.76rem}
+.lucha-match select{padding:5px;font-size:.72rem;margin:3px 0}.lucha-rank-table{min-width:0}.lucha-rank-table th,.lucha-rank-table td{padding:9px 12px}
+.lucha-start{background:linear-gradient(100deg,#1c458d,#315cba);border:1px solid #8baeff;padding:13px 22px;font-size:1rem}
+@media(max-width:900px){.lucha-bracket{grid-template-columns:repeat(3,minmax(205px,1fr));gap:9px}}
+
+/* Panel de resultados: medallas con profundidad y acabado metalizado */
+.lucha-results{margin-top:18px}
+.lucha-medal-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.lucha-podium-card{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;gap:13px;min-height:122px;padding:17px 15px;border-radius:14px;color:#283144;border:2px solid var(--medal-edge);background:linear-gradient(120deg,#fff 0%,var(--medal-light) 30%,var(--medal-mid) 58%,#fff 77%,var(--medal-light) 100%);box-shadow:inset 0 2px 2px #ffffffdd,inset 0 -5px 8px #00000012,0 9px 22px #0007,0 0 19px var(--medal-glow)}
+.lucha-podium-card:before{content:'';position:absolute;inset:-80% auto -80% 36%;width:32%;transform:rotate(25deg);background:linear-gradient(90deg,transparent,#ffffff8a,transparent);pointer-events:none}
+.lucha-podium-1{--medal-edge:#c79a21;--medal-light:#fff4c7;--medal-mid:#e5bf59;--medal-glow:#e5b93355}
+.lucha-podium-2{--medal-edge:#8799a8;--medal-light:#f0f5f9;--medal-mid:#b5c3d0;--medal-glow:#b9c7d455}
+.lucha-podium-3{--medal-edge:#a76b40;--medal-light:#fce4d2;--medal-mid:#c9946f;--medal-glow:#bd795455}
+.lucha-medal-icon{display:grid;place-items:center;flex:none;width:59px;height:59px;border-radius:50%;font-family:Georgia,serif;font-size:31px;font-weight:900;color:#fff;background:radial-gradient(circle at 30% 25%,#ffffff99,transparent 40%),linear-gradient(135deg,var(--medal-light),var(--medal-edge) 60%,#77572e);border:4px double #fff9;box-shadow:0 3px 7px #0005,inset 0 2px 3px #fff9;text-shadow:0 2px 3px #0008}
+.lucha-medal-detail{min-width:0;flex:1;position:relative;z-index:1}
+.lucha-medal-title{font-size:.76rem;font-weight:900;letter-spacing:.08em;color:#584b3b}
+.lucha-medal-name{font-size:1.06rem;font-weight:950;line-height:1.25;margin:8px 0 5px;overflow-wrap:anywhere}
+.lucha-medal-id{font-size:.74rem;font-weight:750;color:#5b6371}
+.lucha-medal-crest{position:absolute;right:10px;top:4px;color:var(--medal-edge);font-size:30px;opacity:.55}
+.lucha-podium-card.undecided{filter:saturate(.45);opacity:.7}
+.lucha-result-table{margin-top:8px}.lucha-pending-row{color:#9cabbc}
+@media(max-width:900px){.lucha-medal-board{grid-template-columns:1fr}.lucha-podium-card{min-height:95px}}
+
+/* Rotura: tres acciones independientes, navegación fluida y clasificación */
+.rotura-table{min-width:1150px}
+.rotura-table td{vertical-align:top}
+.rotura-station{display:grid;grid-template-columns:minmax(115px,1fr) 95px;gap:7px;min-width:235px}
+.rotura-station .rotura-field{width:100%;min-width:0}
+.rotura-choices{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.rotura-choice{padding:7px 3px;font-size:.68rem;border:1px solid #526c82;background:#142a3d;color:#a9bfce;border-radius:6px;white-space:nowrap}
+.rotura-choice.chosen{background:#164a31;border-color:#39ff14;color:#dcffe1;box-shadow:0 0 10px #39ff1444}
+.rotura-choice[data-score="0"].chosen{background:#492333;border-color:#ff5478;color:#ffd9e1}
+.rotura-choice[data-score="3"].chosen{background:#4a3816;border-color:#ffca50;color:#fff0bd}
+.rotura-field:focus-visible,.rotura-choice:focus-visible{outline:2px solid #36e9ff;outline-offset:2px}
+.rotura-rank-medal td{color:#17263b;background:linear-gradient(110deg,#fff,#f0f5fa,#fff)!important}
+.rotura-rank-1 td:first-child{border-left:5px solid #e3b535;color:#a17a05}
+.rotura-rank-2 td:first-child{border-left:5px solid #a4b6c5;color:#667c8d}
+.rotura-rank-3 td:first-child{border-left:5px solid #bd865a;color:#98623c}
+
+/* Ranking de Rotura v21: tarjetas neon, podio reservado para resultados completos */
+.rotura-leaderboard{margin-top:18px;padding:20px;border:1px solid #357b9c;border-radius:15px;background:linear-gradient(145deg,#0a2035,#0a182a 80%);box-shadow:0 12px 30px #0004}
+.rotura-leaderboard-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}
+.rotura-leaderboard-kicker{font-size:.66rem;letter-spacing:.16em;font-weight:800;color:#59d9ed;margin-bottom:5px}
+.rotura-leaderboard-head h3{margin:0;color:#eaf7ff;font-size:1.08rem}
+.rotura-live{font-size:.7rem;color:#70dbe4;border:1px solid #28667b;background:#0c3340;padding:8px 11px;border-radius:30px;white-space:nowrap}
+.rotura-leaderboard-list{display:grid;gap:8px}
+.rotura-board-row{display:grid;grid-template-columns:65px minmax(0,1fr) 130px 125px;gap:12px;align-items:center;padding:12px 15px;background:linear-gradient(100deg,#112d46,#0d2237);border:1px solid #29465e;border-radius:10px;min-height:66px}
+.rotura-board-place{font-size:1.5rem;font-weight:950;color:#67dff5;text-align:center}
+.rotura-board-athlete{display:grid;gap:5px;min-width:0}
+.rotura-board-athlete strong{font-size:.96rem;color:#f0f7ff;overflow-wrap:anywhere}
+.rotura-board-athlete small,.rotura-board-score small{font-size:.65rem;letter-spacing:.09em;color:#90a9bd;font-weight:750}
+.rotura-board-score{display:grid;gap:4px;text-align:right}
+.rotura-board-score strong{font-size:1.27rem;color:#f2f8ff;font-variant-numeric:tabular-nums}
+.rotura-board-state{justify-self:end;text-align:center;font-size:.66rem;font-weight:850;color:#a5b7c8;border:1px solid #4a6075;background:#23354a;padding:7px 9px;border-radius:20px}
+.rotura-board-state.is-complete{color:#90f0b5;background:#143c33;border-color:#34876a}
+.rotura-board-medal{border-width:2px;box-shadow:inset 0 2px 2px #ffffff88,0 5px 18px #0005}
+.rotura-board-medal .rotura-board-athlete strong,.rotura-board-medal .rotura-board-score strong{color:#203044}
+.rotura-board-medal .rotura-board-athlete small,.rotura-board-medal .rotura-board-score small{color:#576b7d}
+.rotura-board-medal .rotura-board-place{font-size:1.9rem}
+.rotura-board-1{border-color:#e0b343;background:linear-gradient(110deg,#fffdf3,#f2d88a,#fffaf0)}
+.rotura-board-2{border-color:#a3b3c2;background:linear-gradient(110deg,#fff,#cfdbe4,#f8fbff)}
+.rotura-board-3{border-color:#b98258;background:linear-gradient(110deg,#fffaf6,#e2ba9c,#fff7f0)}
+.rotura-board-foot{margin-top:13px;font-size:.75rem;color:#99b9cc;line-height:1.5}
+@media(max-width:650px){.rotura-leaderboard{padding:12px}.rotura-board-row{grid-template-columns:43px minmax(0,1fr) 75px;gap:7px;padding:10px}.rotura-board-state{grid-column:2/4;justify-self:start}.rotura-board-score strong{font-size:1rem}.rotura-board-place{font-size:1.15rem}}
+
+.podiums-button{border:1px solid #d9ae45!important;background:linear-gradient(120deg,#463617,#a07b2b,#4e3816)!important;color:#fff6d7!important;font-weight:900;box-shadow:0 0 15px #d7a33344}
+.podiums-button:hover{filter:brightness(1.2)}
+
+/* Podios: panel interno, sin ventanas emergentes ni navegación */
+.podium-overlay[hidden]{display:none!important}
+.podium-overlay{position:fixed;inset:0;z-index:10000;background:#020914dd;backdrop-filter:blur(9px);display:flex;align-items:center;justify-content:center;padding:22px}
+.podium-dialog{width:min(1160px,100%);max-height:min(92vh,1000px);display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse at 50% -10%,#123a5c,#071324 70%);border:1px solid #4b93b8;border-radius:18px;box-shadow:0 25px 100px #000c;color:#e9f6ff}
+.podium-dialog-head{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #326781;background:#09243a;flex-shrink:0}
+.podium-dialog-head h2{margin:3px 0 0;font-size:clamp(22px,3vw,30px);color:#f2fbff}.podium-dialog-head small{color:#60e2f5;letter-spacing:.13em;font-weight:800}
+.podium-close{font-size:14px;font-weight:850;border:1px solid #618eae;background:#183b5b;color:#fff;padding:10px 16px;border-radius:9px;cursor:pointer}
+.podium-scroll{overflow-y:auto;overscroll-behavior:contain;padding:20px 24px;min-height:0}
+.podium-event{padding:18px;margin-bottom:18px;border:1px solid #34728f;border-radius:14px;background:linear-gradient(145deg,#0d2841,#081b2f);box-shadow:0 10px 22px #0004}
+.podium-event-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:15px}.podium-event-head h3{margin:0;color:#9de6ff;font-size:18px}.podium-event-head span{font-size:12px;color:#aac5d7}
+.podium-medals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.podium-award{--edge:#bb8d28;--light:#fff6d5;--mid:#e5c66c;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;min-height:105px;padding:14px;border:2px solid var(--edge);border-radius:13px;color:#253246;background:linear-gradient(120deg,#fff,var(--light) 32%,var(--mid) 60%,#fff 86%);box-shadow:inset 0 2px 3px #fff,inset 0 -5px 7px #0002,0 7px 18px #0006}
+.podium-award.silver{--edge:#879aaf;--light:#f1f6fb;--mid:#c4d1df}.podium-award.bronze{--edge:#ad7549;--light:#fff0e2;--mid:#d5a584}.podium-award.pending{filter:saturate(.45);opacity:.68}
+.podium-medal-icon{flex:0 0 43px;height:43px;display:grid;place-items:center;border-radius:50%;font-size:23px;font-weight:900;color:#fff;background:radial-gradient(circle at 30% 20%,#fff8,var(--edge) 50%,#49321b);border:2px solid #fff9;box-shadow:inset 0 2px 3px #fff9,0 3px 7px #0005}
+.podium-medal-text{min-width:0}.podium-place{font-size:10px;letter-spacing:.05em;font-weight:900;color:#604c29}.podium-person{font-size:15px;font-weight:950;margin:7px 0;overflow-wrap:anywhere}.podium-number{font-size:10px;color:#526477;font-weight:750}.podium-note{color:#96b5c9;font-size:12px;text-align:center;margin:8px 0}
+@media(max-width:800px){.podium-medals{grid-template-columns:1fr}.podium-award{min-height:75px}.podium-overlay{padding:8px}.podium-scroll{padding:12px}.podium-dialog-head{padding:13px}}
+
+/* Rotura de Oro: estación autónoma entre la pasada y el tablero de resultados */
+.rotura-gold-panel{position:relative;overflow:hidden;margin:24px 0 22px;padding:25px 28px;border:1px solid #c5a654;background:radial-gradient(ellipse at 95% 0%,#9b763027,transparent 42%),linear-gradient(135deg,#17263a,#0c1b2c 65%,#102b32);box-shadow:0 0 0 1px #ffe6a015,inset 0 1px #ffe5a02b,0 16px 42px #0006}
+.rotura-gold-panel:before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#b48737,#ffe4a0,#c6a351,#2bdcba)}
+.rotura-gold-header{align-items:center;margin-bottom:12px}.rotura-gold-header h2{font-size:clamp(1.45rem,2.3vw,2.1rem);color:#ffe5a6;letter-spacing:.065em;text-shadow:0 0 22px #ffce6530}
+.rotura-gold-kicker{font-size:.68rem;letter-spacing:.2em;font-weight:900;color:#a7d3cf;margin-bottom:7px}.rotura-gold-count{border-color:#cba75e;color:#ffe0a0;background:#b88b261a}
+.rotura-gold-description{margin:0 0 20px;line-height:1.6;max-width:950px;color:#b9cad7}
+.rotura-gold-settings{display:grid;grid-template-columns:minmax(220px,2fr) minmax(170px,1fr);gap:14px;margin:16px 0 20px}
+.rotura-gold-settings .jump-height-control{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:0;padding:15px;background:#081828a8;border:1px solid #4d6670;border-radius:11px}
+.rotura-gold-settings label,.rotura-gold-winner label{color:#d3e9e8;font-weight:900;font-size:.77rem;letter-spacing:.09em}
+.rotura-gold-settings input{width:100%;font-size:1rem;color:#ffe5a6;min-height:43px}
+.rotura-gold-table{border-color:#5c645a;margin-bottom:18px}.rotura-gold-table th{background:#263641;color:#f5d799}.rotura-gold-table td{padding:14px 12px}
+.rotura-gold-table .rotura-choice{margin:3px 5px 3px 0;border-color:#60707a;background:#142d3b}.rotura-gold-table .rotura-choice.chosen{border-color:#f6d37c;color:#ffe7a6;background:#655021;box-shadow:0 0 12px #ffd77b35}
+.rotura-gold-winner{padding:17px 19px;margin-bottom:17px;border:1px solid #8e784d;border-radius:11px;background:linear-gradient(90deg,#493b203d,#102839)}
+.rotura-gold-winner select{display:block;width:100%;max-width:650px;margin:10px 0 6px;min-height:44px;border-color:#aa8e54;font-weight:800}
+.rotura-gold-winner .hint{margin:7px 0 0}.rotura-gold-primary{background:linear-gradient(125deg,#9b792c,#d2ae59);border:1px solid #f6d890;color:#10202b;padding:13px 22px;letter-spacing:.055em;font-weight:950;box-shadow:0 8px 20px #0004}
+.rotura-gold-primary:hover{background:#f4d484;border-color:#fff2ba;box-shadow:0 0 22px #f4d48445}.rotura-gold-primary:disabled{opacity:.4}
+.rotura-gold-done{border-color:#53c89c;color:#c5ffdf}
+@media(max-width:650px){.rotura-gold-panel{padding:18px 14px}.rotura-gold-settings{grid-template-columns:1fr}.rotura-gold-primary{width:100%}}
+.master-slots{margin-top:9px;padding:10px;border:1px solid #7fcf83;border-radius:9px;background:#12352255;display:grid;gap:7px}.master-slots-title{color:#a6ffc1;font-size:.69rem;font-weight:950;letter-spacing:.07em}.master-slots label{display:grid;gap:4px;font-size:.68rem;color:#d4fbe1;font-weight:800}.master-slots select{width:100%;font-size:.76rem}.master-slots button{margin-top:3px;background:#173c2c;border-color:#64b88b}
+</style><style id="ttt-master-global-style">
+#ttt-master-global{position:fixed;right:18px;bottom:18px;z-index:99990;display:flex;align-items:center;gap:9px;background:#071b2e;border:1px solid #3a91ad;border-radius:12px;padding:10px 12px;box-shadow:0 0 22px #00dfff44;color:#e8faff;font:700 13px system-ui,sans-serif}
+#ttt-master-global.active{border-color:#39ff14;box-shadow:0 0 20px #39ff1455}
+#ttt-master-global button{cursor:pointer;border:1px solid #39ff14;border-radius:7px;background:#173c2c;color:#baffc0;padding:9px;font-weight:800}
+#ttt-master-global .ttt-master-dot{height:10px;width:10px;border-radius:50%;background:#536a77}
+#ttt-master-global.active .ttt-master-dot{background:#39ff14;box-shadow:0 0 10px #39ff14}
+</style></head><body><header><div><div class="eyebrow">TAEKWON-DO TOTAL · CONTROL DE COMPETENCIA</div><h1>FINALES</h1></div><div class="actions"><span class="pill" id="globalCount">—</span><button id="viewPodiums" class="podiums-button">🏆 VER PODIO</button><button onclick="location.href='acreditaciones.html'">← ACREDITACIONES</button><button id="refresh">↻ ACTUALIZAR</button></div></header><main><nav class="tabs" id="tabs"><button data-tab="salto" class="active">SALTO</button><button data-tab="rotura">ROTURA</button><button data-tab="lucha">LUCHA</button><button data-tab="combate">COMBATE TOTAL</button></nav><div id="content"></div><div class="podium-overlay" id="podiumOverlay" hidden><section class="podium-dialog" role="dialog" aria-modal="true" aria-labelledby="podiumDialogTitle"><div class="podium-dialog-head"><div><small>TAEKWON-DO TOTAL · FINALES</small><h2 id="podiumDialogTitle">🏆 PODIOS DEL TORNEO</h2></div><button type="button" id="closePodiums" class="podium-close">✕ CERRAR</button></div><div class="podium-scroll" id="podiumContent"></div></section></div><div class="footer">FINALES · Los resultados de esta etapa no alteran el All Around de clasificatorias.</div></main><script>
+(()=>{'use strict';
+const AC='ct_acreditaciones_v1',PREFIX='ct_results_sync_v1_',FINAL='ct_finales_v1',AREAS=Array.from({length:8},(_,i)=>String(i+1));
+const W=[{id:'w1',label:'≤ 58 KG',min:-Infinity,max:58},{id:'w2',label:'58–65 KG',min:58,max:65},{id:'w3',label:'65–72 KG',min:65,max:72},{id:'w4',label:'72–80 KG',min:72,max:80},{id:'w5',label:'80–90 KG',min:80,max:90},{id:'w6',label:'> 90 KG',min:90,max:Infinity}];
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const parse=(s,f)=>{try{return JSON.parse(s)||f}catch{return f}}, num=v=>{const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:0};
+const time=v=>{if(v===null||v===undefined||v==='')return Infinity;if(typeof v==='number')return Number.isFinite(v)?v:Infinity;const s=String(v).replace(',','.');if(s.includes(':')){const [m,sec]=s.split(':');const n=Number(m)*60+Number(sec);return Number.isFinite(n)?n:Infinity}const n=Number(s);return Number.isFinite(n)?n:Infinity};
+const state=parse(localStorage.getItem(FINAL),{});state.salto??={};state.rotura??={};state.lucha??={};state.combate??={};const save=()=>localStorage.setItem(FINAL,JSON.stringify(state));
+let tab='salto',weight='w1',people=[],results={},lists={};
+function load(){people=parse(localStorage.getItem(AC),[]);if(!Array.isArray(people))people=[];results={};for(const a of AREAS){const o=parse(localStorage.getItem(PREFIX+a),{});for(const [id,r] of Object.entries(o||{})){if(!results[id])results[id]={};const old=results[id];for(const [k,v] of Object.entries(r||{})){if(v!==null&&v!=='')old[k]=v}}}compute();$('#globalCount').textContent=people.filter(x=>x.acreditado).length+' ACREDITADOS'}
+function compute(){const all=people.filter(p=>p.acreditado&&p.id!=null).map(p=>({...p,id:String(p.id),r:results[String(p.id)]||{}}));const salto=all.filter(p=>num(p.r.saltoPuntaje)>0&&num(p.hds)>0).sort((a,b)=>num(b.hds)-num(a.hds)||num(b.r.saltoPuntaje)-num(a.r.saltoPuntaje));const rotura=all.filter(p=>num(p.r.roturaPuntaje)>0).sort((a,b)=>num(b.r.roturaPuntaje)-num(a.r.roturaPuntaje));const lucha=all.filter(p=>num(p.r.luchaPuntaje)>0).sort((a,b)=>num(b.r.luchaPuntaje)-num(a.r.luchaPuntaje));lists={salto:salto.slice(0,8),rotura:rotura.slice(0,8),lucha:lucha.slice(0,8),combate:{}};for(const w of W){lists.combate[w.id]=all.filter(p=>num(p.peso)>w.min&&num(p.peso)<=w.max&&num(p.r.combatePuntaje)>0).sort((a,b)=>time(a.r.combateTiempoFin)-time(b.r.combateTiempoFin)||num(b.r.combatePuntaje)-num(a.r.combatePuntaje)).slice(0,8)}}
+const athlete=id=>people.find(p=>String(p.id)===String(id));const label=id=>{const p=athlete(id);return p?`#${esc(p.id)} · ${esc(p.nombre||'SIN NOMBRE')}`:'—'};
+function badgeList(list){return `<span class="pill">${list.length} FINALISTAS</span>`}function intro(title,list,extra=''){return `<div class="panel"><div class="heading"><h2>${title}</h2>${badgeList(list)}</div>${extra}</div>`}
+function notice(msg){return `<div class="notice">${msg}</div>`}function fmt(n){return Number(n).toFixed(2)}
+function jumpSnapshot(round,list){
+  const st=state.salto;
+  st.roundEntries??={};
+  const key=String(round);
+  const eligible=list.filter(p=>!Object.entries((st[p.id]||{}).logs||{}).some(([k,v])=>Number(k)<round&&v==='fail'));
+  const gold=st.goldRounds?.[key];const fresh=(gold?list.filter(p=>gold.ids.includes(String(p.id))):eligible).map(p=>({id:String(p.id),nombre:p.nombre||'',hds:num(p.hds)}));
+  const previous=st.roundEntries[key];
+  // Una ronda que se abrió sin participantes no debe quedar bloqueada en cero.
+  // Mientras no haya intentos registrados, sincronizamos con los clasificados actuales.
+  const hasAttempts=(previous||[]).some(p=>Object.prototype.hasOwnProperty.call((st[p.id]||{}).logs||{},key));
+  if(!Array.isArray(previous)||!hasAttempts){
+    const changed=JSON.stringify(previous)!==JSON.stringify(fresh);
+    if(changed){st.roundEntries[key]=fresh;save()}
+  }
+  return st.roundEntries[key]||[];
+}
+function jumpGoldReference(people, beforeRound){
+ const st=state.salto, achieved=[];
+ for(const p of people)for(const [key,val] of Object.entries(st[p.id]?.logs||{})){
+  const r=Number(key);
+  if(val==='ok'&&r<beforeRound&&!st.goldRounds?.[key])achieved.push(jumpHeight(r));
+ }
+ return achieved.length?Math.max(...achieved):jumpHeight(beforeRound);
+}
+function jumpHeight(n){const st=state.salto;const manual=st.roundHeights?.[String(n)];if(manual!==undefined&&Number.isFinite(Number(manual)))return Number(manual);return Math.round((Number(st.startHeight||0)+n*.05)*100)/100}
+function jumpBaseGroups(list){
+ const st=state.salto,groups=new Map(),alive=[];
+ for(const p of list){const logs=st[p.id]?.logs||{};const failures=Object.keys(logs).filter(k=>logs[k]==='fail'&&!st.goldRounds?.[k]).map(Number);if(!failures.length){alive.push(p);continue}const r=Math.min(...failures);if(!groups.has(r))groups.set(r,[]);groups.get(r).push(p)}
+ const sorted=[...groups.entries()].sort((a,b)=>b[0]-a[0]);let pos=alive.length+1;
+ return {alive,groups:sorted.map(([round,people])=>{const o={round,people,rank:pos};pos+=people.length;return o})};
+}
+function jumpMedalTie(list){
+ const st=state.salto,base=jumpBaseGroups(list);
+ return base.groups.find(g=>g.people.length>1&&g.rank<=3&&!g.people.every(p=>st.goldResolved?.[p.id]!=null))||null;
+}
+function jumpGoldRound(st,round,people,rank,height){
+ st.goldRounds??={};st.roundHeights??={};st.roundEntries??={};
+ st.goldRounds[String(round)]={ids:people.map(p=>String(p.id)),rank,reference:height};
+ st.goldResolvedAtRound??={};st.goldResolvedAtRound[String(round)]={...(st.goldResolved||{})};
+ st.roundHeights[String(round)]=Math.round(height*100)/100;
+ st.roundEntries[String(round)]=people.map(p=>({id:String(p.id),nombre:p.nombre||'',hds:num(p.hds)}));
+}
+function jumpStatus(list,round){
+ const st=state.salto,entries=st.roundEntries?.[String(round)]||[];
+ const done=entries.map(p=>({id:String(p.id),v:st[p.id]?.logs?.[round]}));
+ const pending=done.some(x=>x.v!=='ok'&&x.v!=='fail');
+ const success=done.filter(x=>x.v==='ok'),failed=done.filter(x=>x.v==='fail');
+ const gold=st.goldRounds?.[String(round)];
+ const base=jumpBaseGroups(list);
+ const tie=jumpMedalTie(list);
+ const allFailed=done.length>0&&failed.length===done.length;
+ const complete=base.alive.length===0&&!tie&&!gold&&list.length>=3;
+ // En salto de oro se repite hasta resolver los puestos, incluso si todos fallan.
+ const advance=!pending&&done.length>0&&!complete&&(gold?true:success.length>0||Boolean(tie));
+ let reason='';
+ if(complete)reason='El podio ya está definido.';
+ else if(pending)reason='Primero registrá todos los intentos.';
+ else if(!done.length)reason='No hay participantes.';
+ else if(!gold&&!success.length&&!tie)reason='Nadie logró el salto y no existe un empate por medallas.';
+ return {advance,reason,gold,tie,success,failed,allFailed,base,complete};
+}
+function jumpRanking(list){
+ const st=state.salto,base=jumpBaseGroups(list),ranking=new Map();
+ for(const g of base.groups)for(const p of g.people)ranking.set(p.id,g.rank);
+ for(const [id,rank] of Object.entries(st.goldResolved||{}))ranking.set(String(id),Number(rank));
+ const rows=list.map(p=>{const logs=st[p.id]?.logs||{},normal=Object.entries(logs).filter(([k,v])=>!st.goldRounds?.[k]&&(v==='ok'||v==='fail'));const best=normal.filter(([k,v])=>v==='ok').map(([k])=>jumpHeight(Number(k)));const rank=ranking.get(p.id);return {p,rank,best:best.length?Math.max(...best):null,active:rank==null}});
+ rows.sort((a,b)=>(a.rank==null?1:0)-(b.rank==null?1:0)||(a.rank??999)-(b.rank??999)||a.p.id.localeCompare(b.p.id));
+ const medals=['ORO','PLATA','BRONCE'];
+ const medalCards=medals.map((m,i)=>{
+   const candidates=rows.filter(r=>r.rank===i+1);
+   const r=candidates.length===1?candidates[0]:null;
+   return `<div class="lucha-podium-card lucha-podium-${i+1} ${r?'':'undecided'}"><div class="lucha-medal-icon">${['Ⅰ','Ⅱ','Ⅲ'][i]}</div><div class="lucha-medal-detail"><div class="lucha-medal-title">${i+1}° PUESTO · ${m}</div><div class="lucha-medal-name">${r?esc(r.p.nombre):'POR DEFINIR'}</div><div class="lucha-medal-id">${r?'COMPETIDOR N° '+esc(r.p.id):'Pendiente de resultado'}</div></div><div class="lucha-medal-crest">✦</div></div>`;
+ }).join('');
+ return `<div class="panel lucha-results"><div class="heading"><h2>RESULTADOS · FINAL DE SALTO</h2><span class="pill">${rows.length} FINALISTAS</span></div><div class="lucha-medal-board">${medalCards}</div><div class="table-wrap"><table class="lucha-result-table"><thead><tr><th>Puesto</th><th>N°</th><th>Competidor</th><th>Mejor salto</th><th>Estado</th></tr></thead><tbody>`+rows.map(r=>`<tr class="${r.rank==null?'lucha-pending-row':''}"><td class="num">${r.rank==null?'—':r.rank+'°'}</td><td>${esc(r.p.id)}</td><td class="name">${esc(r.p.nombre)}</td><td>${r.best===null?'—':fmt(r.best)+' m'}</td><td>${r.active?'EN COMPETENCIA / DESEMPATE':'PUESTO REGISTRADO'}</td></tr>`).join('')+`</tbody></table></div><p class="hint">Los puestos se registran al quedar definidos. Los empates por medalla se resuelven mediante Salto de Oro.</p></div>`;
+}
+function salto(){
+  const list=lists.salto,st=state.salto;
+  const avg=list.length?list.reduce((a,p)=>a+num(p.hds),0)/list.length:0;
+  // Congelamos la altura de inicio al abrir por primera vez la final, para preservar el historial.
+  if(list.length&&!Number.isFinite(Number(st.startHeight))){st.startHeight=Math.round(avg*100)/100;save()}
+  const start=list.length?Number(st.startHeight):0;
+  const round=Math.max(0,Number(st.round)||0);
+  const height=jumpHeight(round);
+  let html=intro('SALTO EN ALTO',list,`<div class="jump-metrics"><div class="jump-metric"><span class="metric-label">ALTURA INICIAL</span><span class="metric-value">${list.length?fmt(start)+' m':'—'}</span></div><div class="jump-metric round"><span class="metric-label">RONDA</span><span class="metric-value">${round+1}</span></div><div class="jump-metric current"><span class="metric-label">ALTURA ACTUAL</span><span class="metric-value">${list.length?fmt(height)+' m':'—'}</span></div></div>`);
+  if(!list.length)return html+`<div class="panel empty">SIN SALTOS CLASIFICATORIOS VÁLIDOS.<br><span class="hint">Comprobá que el competidor esté acreditado y que Start Games haya guardado un salto logrado. Ambas páginas deben abrirse desde el mismo sitio y origen.</span></div>`;
+  const entrants=jumpSnapshot(round,list);
+  const status=jumpStatus(list,round);
+  html+=`<div class="panel"><div class="toolbar"><button data-act="prevJump" ${round===0?'disabled':''}>← ALTURA ANTERIOR</button><button data-act="nextJump" ${!status.advance?'disabled':''}>${status.gold?(status.success.length>0&&status.failed.length>0&&status.gold.ids.length===2?'CERRAR PODIO ✓':'SIGUIENTE SALTO DE ORO →'):status.tie&&status.allFailed?'INICIAR SALTO DE ORO →':'SIGUIENTE RONDA →'}</button><span class="pill">${entrants.length} INICIARON ESTA RONDA</span><button class="danger" data-act="resetJumpRound">↺ REINICIAR ESTA RONDA</button></div><div class="jump-height-control"><label for="manualJumpHeight">ALTURA DE ESTA RONDA</label><input id="manualJumpHeight" type="number" min="0.01" max="20" step="0.01" data-jump-height="${round}" value="${fmt(height)}"> <span class="hint">En metros · editable y guardada por ronda</span></div><div class="jump-height-control"><label for="jumpDelta">VARIACIÓN PARA LA SIGUIENTE RONDA</label><input id="jumpDelta" type="number" step="0.01" min="-2" max="2" data-jump-delta value="${fmt(Number(st.jumpDelta ?? .05))}"> <span class="hint">Metros · +0.05 sube 5 cm · 0 repite · -0.05 baja 5 cm</span></div></div>`;
+  html+='<div class="panel"><div class="table-wrap"><table><thead><tr><th>#</th><th>Finalista</th><th>Altura clasificatoria</th><th>Última altura lograda</th><th>Estado</th><th>Intento</th></tr></thead><tbody>';
+  for(const p of entrants){
+    const a=st[p.id]||{},logs=a.logs||{};
+    const priorFailed=!st.goldRounds?.[String(round)]&&Object.entries(logs).some(([k,v])=>Number(k)<round&&v==='fail');
+    const done=logs[round];
+    const best=Object.entries(logs).filter(([k,v])=>v==='ok').map(([k])=>jumpHeight(Number(k)));
+    html+=`<tr><td class="num">${esc(p.id)}</td><td class="name">${esc(p.nombre)}</td><td>${fmt(num(p.hds))} m</td><td>${best.length?fmt(Math.max(...best))+' m':'—'}</td><td>${priorFailed?'ELIMINADO':done==='ok'?'LOGRÓ':done==='fail'?'FALLÓ':'PENDIENTE'}</td><td><button class="small ok" data-act="jump" data-id="${esc(p.id)}" data-val="ok" ${priorFailed||done?'disabled':''}>LOGRÓ</button> <button class="small danger" data-act="jump" data-id="${esc(p.id)}" data-val="fail" ${priorFailed||done?'disabled':''}>FALLÓ</button></td></tr>`;
+  }
+  html+='</tbody></table></div></div>';
+  html+=jumpRanking(list);
+  const history=Object.entries(st.roundEntries||{}).filter(([k])=>Number.isInteger(Number(k))&&Number(k)>=0).sort((a,b)=>Number(a[0])-Number(b[0]));
+  html+='<div class="panel"><h3>HISTORIAL DE RONDAS · COMPETIDORES QUE INICIARON</h3><div class="jump-history">';
+  for(const [k,entries] of history){
+    const n=Number(k),h=jumpHeight(n);
+    html+=`<div class="jump-history-card ${n===round?'active':''}"><strong>${st.goldRounds?.[k]?'SALTO DE ORO':'RONDA '+(n+1)} · ${fmt(h)} m</strong><div class="hint">${entries.length} participantes al inicio</div>`;
+    for(const p of entries){const outcome=(st[p.id]||{}).logs?.[n];html+=`<div class="jump-entrant">#${esc(p.id)} · ${esc(p.nombre)} <span>· ${outcome==='ok'?'LOGRÓ':outcome==='fail'?'FALLÓ':'PENDIENTE'}</span></div>`}
+    html+='</div>';
+  }
+  html+='</div></div>';
+  html+=notice('Los empates por medallas requieren Salto de Oro. El sistema no asigna medallas automáticamente cuando persisten empates.');
+
+  return html;
+}
+
+// Desempate de rotura: cada ronda comparte técnica y dificultad entre participantes.
+function roturaStandings(){
+ const list=lists.rotura||[];
+ const rows=list.map((p,index)=>{const stations=[0,1,2].map(i=>(state.rotura[p.id]||{})['s'+i]||{});return {p,index,total:stations.reduce((a,x)=>a+num(x.d)+(x.b==null?0:num(x.b)),0),completed:stations.every(x=>x.b!=null)};}).sort((a,b)=>b.total-a.total||a.index-b.index);
+ const gold=state.roturaGold||{};
+ const rounds=gold.rounds||[];
+ let ordered=[];
+ for(let i=0;i<rows.length;){let j=i+1;while(j<rows.length&&rows[j].total===rows[i].total)j++;
+  const group=rows.slice(i,j);
+  if(group.length>1){const history=rounds.filter(r=>r.closed&&r.ids?.length===group.length&&group.every(x=>r.ids.includes(String(x.p.id))));
+   // Las rondas anteriores tienen prioridad: se comparan resultados de la primera a la última.
+   group.sort((a,b)=>{for(const r of history){const av=r.winner?(String(a.p.id)===r.winner?5:0):r.scores?.[String(a.p.id)],bv=r.winner?(String(b.p.id)===r.winner?5:0):r.scores?.[String(b.p.id)];if(av!=null&&bv!=null&&av!==bv)return bv-av;}return a.index-b.index});
+   for(let k=0;k<group.length;k++){group[k].goldKey=history.map(r=>r.winner?(String(group[k].p.id)===r.winner?'5':'0'):(r.scores?.[String(group[k].p.id)]??'')).join('|');}
+  }
+  ordered.push(...group);i=j;
+ }
+ let previous=null,rank=0;
+ return ordered.map((x,i)=>{const key=x.total+'|'+(x.goldKey||'');if(previous!==key)rank=i+1;previous=key;return {...x,rank}});
+}
+function roturaGoldPending(ranked){
+ if(!ranked.length||!ranked.every(x=>x.completed))return null;
+ for(let i=0;i<ranked.length;){let j=i+1;while(j<ranked.length&&ranked[j].rank===ranked[i].rank)j++;
+  if(j-i>1&&ranked[i].rank<=3)return ranked.slice(i,j).map(x=>String(x.p.id));i=j;
+ }
+ return null;
+}
+function rotura(){
+ const list=lists.rotura;
+ let html=intro('TRIPLE ROTURA CONTINUA',list,'<span class="hint">3 estaciones · Técnica, dificultad y resultado por separado.</span>');
+ if(!list.length)return html+empty();
+ html+='<div class="panel"><div class="table-wrap"><table class="rotura-table"><thead><tr><th>#</th><th>Finalista</th><th>Estación 1</th><th>Estación 2</th><th>Estación 3</th><th>Total</th></tr></thead><tbody>';
+ for(const p of list){
+   const r=state.rotura[p.id]||{};let sum=0,cells='';
+   for(let i=0;i<3;i++){
+     const x=r['s'+i]||{};
+     const b=x.b==null?null:num(x.b);
+     sum+=num(x.d)+(b??0);
+     cells+=`<td><div class="rotura-station">
+       <input class="rotura-field" type="text" placeholder="Técnica" aria-label="Técnica ${i+1} de ${esc(p.nombre)}" data-tech="${esc(p.id)}:${i}" value="${esc(x.tech||'')}">
+       <input class="rotura-field" type="number" step="0.1" min="0" placeholder="Puntaje" title="Dificultad" aria-label="Puntaje ${i+1} de ${esc(p.nombre)}" data-d="${esc(p.id)}:${i}" value="${esc(x.d??'')}">
+       <div class="rotura-choices" role="group" aria-label="Resultado estación ${i+1}">
+       ${[[0,'NULA'],[3,'DOBLADA'],[5,'ROTA']].map(([n,t])=>`<button type="button" class="rotura-choice ${b===n?'chosen':''}" data-break="${esc(p.id)}:${i}" data-score="${n}" aria-pressed="${b===n}">${t}</button>`).join('')}
+       </div></div></td>`;
+   }
+   html+=`<tr><td class="num">${esc(p.id)}</td><td class="name">${esc(p.nombre)}</td>${cells}<td><strong>${fmt(sum)}</strong></td></tr>`;
+ }
+ html+='</tbody></table></div></div>';
+ const standings=list.map((p,index)=>{
+   const r=state.rotura[p.id]||{};
+   const stations=[0,1,2].map(i=>r['s'+i]||{});
+   const total=stations.reduce((a,x)=>a+num(x.d)+(x.b==null?0:num(x.b)),0);
+   // La técnica es descriptiva; un resultado se considera registrado al elegir NULA/DOBLADA/ROTA.
+   const completed=stations.every(x=>x.b!==null&&x.b!==undefined);
+   const begun=stations.some(x=>x.tech||x.d!==null&&x.d!==undefined&&x.d!==''||x.b!==null&&x.b!==undefined);
+   return {p,index,total,completed,begun};
+ }).sort((a,b)=>b.total-a.total||a.index-b.index);
+ const allDone=standings.every(x=>x.completed);
+ const ranked=roturaStandings();
+ const pending=roturaGoldPending(ranked);
+ const medals=['ORO','PLATA','BRONCE'];
+ const medalCards=medals.map((m,i)=>{
+   const candidates=ranked.filter(x=>x.rank===i+1);
+   const x=candidates.length===1?candidates[0]:null;
+   return `<div class="lucha-podium-card lucha-podium-${i+1} ${x?'':'undecided'}"><div class="lucha-medal-icon">${['Ⅰ','Ⅱ','Ⅲ'][i]}</div><div class="lucha-medal-detail"><div class="lucha-medal-title">${i+1}° PUESTO · ${m}${allDone?'':' · PROVISORIO'}</div><div class="lucha-medal-name">${x?esc(x.p.nombre):'POR DEFINIR'}</div><div class="lucha-medal-id">${x?'COMPETIDOR N° '+esc(x.p.id):'Pendiente de resultado'}</div></div><div class="lucha-medal-crest">✦</div></div>`;
+ }).join('');
+ let goldSection='';
+ const gold=state.roturaGold||{},rounds=gold.rounds||[];
+ if(pending){
+   const current=rounds[rounds.length-1];
+   const same=current&&current.ids.length===pending.length&&pending.every(id=>current.ids.includes(id));
+   const active=same&&!current.closed?current:null;
+   goldSection+=`<section class="panel rotura-gold-panel"><div class="heading rotura-gold-header"><div><div class="rotura-gold-kicker">DESEMPATE OFICIAL · JUEZ DE MESA</div><h2>✦ ROTURA DE ORO</h2></div><span class="pill rotura-gold-count">${pending.length} EMPATADOS</span></div><p class="hint rotura-gold-description">El juez de mesa opera este desempate sin Master Mode. Todos realizan la misma técnica y dificultad. La clasificación original se conserva.</p>`;
+   if(!active){goldSection+=`<button class="rotura-gold-primary" data-act="startRoturaGold">INICIAR ${rounds.length?'SIGUIENTE RONDA DE':' '} ROTURA DE ORO →</button>`;}
+   else{
+     goldSection+=`<div class="rotura-gold-settings"><div class="jump-height-control"><label>TÉCNICA COMÚN</label><input type="text" data-gold-tech value="${esc(active.tech||'')}" placeholder="Describí la rotura"></div><div class="jump-height-control"><label>DIFICULTAD COMÚN</label><input type="number" data-gold-d step="0.1" min="0" value="${esc(active.d??'')}" placeholder="Puntaje"></div></div><div class="table-wrap rotura-gold-table"><table><thead><tr><th>Competidor</th><th>Resultado</th></tr></thead><tbody>`;
+     for(const id of active.ids){const p=athlete(id);goldSection+=`<tr><td>${esc(p?.nombre||id)}</td><td>${[[0,'NULA'],[3,'DOBLADA'],[5,'ROTA']].map(([v,t])=>`<button type="button" class="rotura-choice ${active.scores?.[id]===v?'chosen':''}" data-gold-score="${esc(id)}" data-score="${v}">${t}</button>`).join(' ')}</td></tr>`;}
+     goldSection+=`</tbody></table></div><div class="rotura-gold-winner"><label>GANADOR DE ESTA RONDA (JUEZ DE MESA)</label><select data-gold-winner><option value="">— SELECCIONAR GANADOR —</option>${active.ids.map(id=>`<option value="${esc(id)}" ${active.winner===id?'selected':''}>${esc(athlete(id)?.nombre||id)}</option>`).join('')}</select><p class="hint">Podés seleccionar al ganador directamente y cerrar la ronda. Si quedan otros empatados por una medalla, el sistema habilita otra ronda.</p></div><button class="rotura-gold-primary" data-act="finishRoturaGold" ${!active.winner&&(!active.tech?.trim()||active.d==null||active.ids.some(id=>active.scores?.[id]==null))?'disabled':''}>CERRAR RONDA DE ORO ✓</button>`;
+   }
+   goldSection+='</section>';
+ }else if(rounds.length){goldSection+='<div class="panel rotura-gold-panel rotura-gold-done"><strong>✓ ROTURA DE ORO RESUELTA</strong><p class="hint">Desempate registrado. Las puntuaciones originales no fueron modificadas.</p></div>';}
+ html+=goldSection;
+ html+=`<div class="panel lucha-results"><div class="heading"><h2>RESULTADOS · FINAL DE ROTURA</h2><span class="pill">${allDone?'CLASIFICACIÓN COMPLETA':'RANKING EN VIVO'}</span></div><div class="lucha-medal-board">${medalCards}</div><div class="table-wrap"><table class="lucha-result-table"><thead><tr><th>Puesto</th><th>N°</th><th>Competidor</th><th>Puntaje total</th><th>Estado</th></tr></thead><tbody>`;
+ for(const x of ranked){
+   html+=`<tr class="${x.completed?'':'lucha-pending-row'}"><td class="num">${x.rank}°</td><td>${esc(x.p.id)}</td><td class="name">${esc(x.p.nombre)}</td><td><strong>${fmt(x.total)}</strong></td><td>${x.completed?'3/3 ESTACIONES':x.begun?'EN PROGRESO':'SIN INICIAR'}</td></tr>`;
+ }
+ html+='</tbody></table></div><p class="hint">Las posiciones y las tarjetas del podio se actualizan inmediatamente con los puntos cargados, aunque haya estaciones pendientes. Hasta completar las tres estaciones, los puestos son provisorios. Los empates comparten posición.</p></div>';
+ return html;
+}
+const PAIRS=[[0,7],[3,4],[1,6],[2,5]];
+function matchesFor(ids){const q=PAIRS.map(([a,b])=>[ids[a]||null,ids[b]||null]);return {q,s:[[null,null],[null,null]],b:[[null,null]],f:[[null,null]]}}
+function bracketOriginal(key,list,title){const ids=list.map(p=>p.id),s=state[key]??={};const stored=s.matches??={};const expected=matchesFor(ids);const q=expected.q;const winner=(k,pair)=>{const v=stored[k];return v&&pair.includes(v)?v:null};const sw=[winner('q0',q[0]),winner('q1',q[1]),winner('q2',q[2]),winner('q3',q[3])];const semis=[[sw[0],sw[1]],[sw[2],sw[3]]];const fw=[winner('s0',semis[0]),winner('s1',semis[1])];const losers=semis.map((pair,i)=>{const w=fw[i];return w?pair.find(x=>x&&x!==w)||null:null});const bronze=[losers[0],losers[1]],gold=[fw[0],fw[1]];const finalW=winner('f0',gold),bronzeW=winner('b0',bronze);let html=intro(title,list,'<span class="hint">Cuartos → Semifinales → Bronce / Oro · Seleccioná al ganador para avanzar.</span>');if(!list.length)return html+empty();if(list.length<8)html+=notice('Hay menos de 8 finalistas. La autoridad deportiva debe definir la adaptación de la llave; no se generan pases automáticos.');function card(k,pair,i){const win=winner(k,pair);return `<article class="match"><div class="tag">COMBATE ${i+1}</div>${pair.map(id=>`<div class="fighter ${win===id?'win':''}"><span>${id?label(id):'POR DEFINIR'}</span>${win===id?'<strong>✓</strong>':''}</div>`).join('')}<select data-winner="${esc(key)}:${k}" ${!pair[0]||!pair[1]?'disabled':''}><option value="">— RESULTADO —</option>${pair.filter(Boolean).map(id=>`<option value="${esc(id)}" ${win===id?'selected':''}>${label(id)}</option>`).join('')}</select><div class="controls"><input type="text" placeholder="Acta / resultado" aria-label="Acta" data-note="${esc(key)}:${k}" value="${esc((s.notes||{})[k]||'')}"></div><button class="small" data-act="openMatch" data-match="${esc(key)}:${k}" ${!pair[0]||!pair[1]?'disabled':''}>ABRIR PLANILLA ↗</button></article>`}const sections=[['CUARTOS DE FINAL',q,'q'],['SEMIFINALES',semis,'s'],['DISPUTA POR BRONCE',[bronze],'b'],['FINAL POR ORO',[gold],'f']];for(const [name,pairs,prefix] of sections){html+=`<div class="round-title">${name}</div><div class="grid">${pairs.map((pair,i)=>card(prefix+i,pair,i)).join('')}</div>`}const silver=finalW?gold.find(x=>x&&x!==finalW):null;const third=bronzeW;html+=`<div class="panel" style="margin-top:20px"><h3>PODIO · ${title}</h3>${podiumDisplay([finalW,silver,third])}<p class="hint">Se completa a partir de los resultados registrados de la llave.</p></div>`;return html}
+function masterEnabled(){return localStorage.getItem('ct_master_mode_v1')==='true'}
+function matchPair(key,k,auto){const custom=state[key]?.manualPairs?.[k];return Array.isArray(custom)&&custom.length===2?custom.map(id=>id||null):auto}
+function masterSlots(key,k,pair,list){if(!masterEnabled())return '';return `<div class="master-slots"><div class="master-slots-title">✦ MASTER · EDITAR ENFRENTAMIENTO</div>${pair.map((id,i)=>`<label>${i===0?'AZUL':'ROJO'}<select data-manual-pair="${esc(key)}:${k}:${i}"><option value="">— POR DEFINIR —</option>${list.map(p=>`<option value="${esc(p.id)}" ${String(p.id)===String(id)?'selected':''}>${label(p.id)}</option>`).join('')}</select></label>`).join('')}<button type="button" class="small" data-act="restorePair" data-match="${esc(key)}:${k}">↺ AUTOMÁTICO</button></div>`}
+function luchaBracket(){
+ const list=lists.lucha,ids=list.map(p=>p.id),s=state.lucha??={},stored=s.matches??={};
+ const q=PAIRS.map(([a,b],i)=>matchPair('lucha','q'+i,[ids[a]||null,ids[b]||null]));
+ const winner=(k,pair)=>{const v=stored[k];return v&&pair.includes(v)?v:null};
+ const sw=q.map((pair,i)=>winner('q'+i,pair));
+ const semis=[[sw[0],sw[1]],[sw[2],sw[3]]].map((p,i)=>matchPair('lucha','s'+i,p));
+ const fw=semis.map((pair,i)=>winner('s'+i,pair));
+ const bronze=matchPair('lucha','b0',semis.map((pair,i)=>fw[i]?pair.find(x=>x&&x!==fw[i])||null:null));
+ const gold=matchPair('lucha','f0',[fw[0],fw[1]]);
+ const card=(k,pair,title)=>{const win=winner(k,pair),ready=!!(pair[0]&&pair[1]),hasOne=pair.some(Boolean);return `<div class="lucha-match ${win?'decided':''}"><div class="lucha-match-head">${title}</div>${pair.map((id,i)=>`<div class="lucha-athlete ${!id?'pending':win&&win===id?'victor':!win&&!ready?'waiting':''}"><span class="lucha-corner ${!id?'':' '+(i===0?'blue':'red')}"></span><span>${id?label(id):'POR DEFINIR'}</span>${id&&win===id?'<b>✓</b>':''}</div>`).join('')}<button class="lucha-vs" data-act="openMatch" data-match="lucha:${k}" ${!ready?'disabled':''}>VS · INICIAR COMBATE</button><select data-winner="lucha:${k}" ${!hasOne?'disabled':''}><option value="">— PUESTO POR DEFINIR —</option>${pair.filter(Boolean).map(id=>`<option value="${esc(id)}" ${win===id?'selected':''}>${label(id)}</option>`).join('')}</select>${!ready&&hasOne?'<div class="hint">Podés asignar ganador por ausencia del rival.</div>':''}${masterSlots('lucha',k,pair,list)}</div>`};
+ let html=`<div class="panel"><div class="heading"><h2>LUCHA · LLAVE DE FINALES</h2><span class="pill">${list.length} FINALISTAS</span><button class="danger small" data-act="resetBracket" data-key="lucha">↺ REINICIAR FINAL DE LUCHA</button></div><div class="hint">Cuartos, semifinales y bronce: 1 × 2 min · Oro: 2 × 2 min. Podés seleccionar al ganador manualmente si el rival no se presenta.</div></div>`;
+ if(list.length<8)html+=notice('Hay menos de 8 finalistas: los lugares sin competidor se muestran en gris. La asignación de un ganador por ausencia debe confirmarla la autoridad deportiva.');
+ html+=`<div class="lucha-bracket"><section class="lucha-stage"><h3>CUARTOS</h3>${q.map((p,i)=>card('q'+i,p,'CUARTOS '+(i+1))).join('')}</section><section class="lucha-stage"><h3>SEMIFINALES</h3>${semis.map((p,i)=>card('s'+i,p,'SEMIFINAL '+(i+1))).join('')}</section><section class="lucha-stage"><h3>MEDALLAS</h3>${card('b0',bronze,'BRONCE')}${card('f0',gold,'ORO')}</section></div>`;
+ const finalW=winner('f0',gold),bronzeW=winner('b0',bronze),silver=finalW?gold.find(x=>x&&x!==finalW):null;
+ html+=luchaResults(q,sw,semis,fw,gold,finalW,silver,bronze,bronzeW);
+ return html;
+}
+
+function luchaResults(q,sw,semis,fw,gold,finalW,silver,bronze,bronzeW){
+ const loser=(pair,w)=>w?pair.find(x=>x&&x!==w)||null:null;
+ const fourth=bronzeW?loser(bronze,bronzeW):null;
+ const semiLosers=semis.map((pair,i)=>loser(pair,fw[i]));
+ const quarterLosers=q.map((pair,i)=>loser(pair,sw[i]));
+ const decided=[finalW,silver,bronzeW,fourth];
+ const used=new Set(decided.filter(Boolean));
+ const rankRows=[...decided.map((id,i)=>({rank:i+1,id})),...quarterLosers.filter(id=>id&&!used.has(id)).map(id=>({rank:5,id}))];
+ const ranked=new Set(rankRows.map(r=>r.id).filter(Boolean));
+ const remaining=lists.lucha.filter(p=>!ranked.has(p.id));
+ const medalNames=['ORO','PLATA','BRONCE'];
+ let html=`<div class="panel lucha-results"><div class="heading"><h2>RESULTADOS · FINAL DE LUCHA</h2><span class="pill">${ranked.size} / ${lists.lucha.length} PUESTOS DEFINIDOS</span></div><div class="lucha-medal-board">`;
+ for(let i=0;i<3;i++){
+  const id=decided[i],p=lists.lucha.find(x=>x.id===id);
+  html+=`<div class="lucha-podium-card lucha-podium-${i+1} ${id?'':'undecided'}"><div class="lucha-medal-icon">${['Ⅰ','Ⅱ','Ⅲ'][i]}</div><div class="lucha-medal-detail"><div class="lucha-medal-title">${i+1}° PUESTO · ${medalNames[i]}</div><div class="lucha-medal-name">${p?esc(p.nombre):'POR DEFINIR'}</div><div class="lucha-medal-id">${p?'COMPETIDOR N° '+esc(p.id):'Pendiente de resultado'}</div></div><div class="lucha-medal-crest">✦</div></div>`;
+ }
+ html+=`</div><div class="table-wrap"><table class="lucha-result-table"><thead><tr><th>Puesto</th><th>N°</th><th>Competidor</th><th>Estado</th></tr></thead><tbody>`;
+ for(const row of rankRows){if(!row.id)continue;const p=lists.lucha.find(x=>x.id===row.id);if(!p)continue;html+=`<tr><td class="num">${row.rank}°</td><td>${esc(p.id)}</td><td class="name">${esc(p.nombre)}</td><td>DEFINIDO</td></tr>`}
+ for(const p of remaining)html+=`<tr class="lucha-pending-row"><td>—</td><td>${esc(p.id)}</td><td class="name">${esc(p.nombre)}</td><td>EN COMPETENCIA / POR DEFINIR</td></tr>`;
+ html+=`</tbody></table></div><p class="hint">El 5° puesto es compartido por los eliminados en cuartos de final. Los puestos sin resultado confirmado permanecen pendientes.</p></div>`;
+ return html;
+}
+
+function combateBracket(){
+ const combatKey="combate_"+weight;
+ const list=(lists.combate[weight]||[]),ids=list.map(p=>p.id),s=state[combatKey]??={},stored=s.matches??={};
+ const q=PAIRS.map(([a,b],i)=>matchPair(combatKey,'q'+i,[ids[a]||null,ids[b]||null]));
+ const winner=(k,pair)=>{const v=stored[k];return v&&pair.includes(v)?v:null};
+ const sw=q.map((pair,i)=>winner('q'+i,pair));
+ const semis=[[sw[0],sw[1]],[sw[2],sw[3]]].map((p,i)=>matchPair(combatKey,'s'+i,p));
+ const fw=semis.map((pair,i)=>winner('s'+i,pair));
+ const bronze=matchPair(combatKey,'b0',semis.map((pair,i)=>fw[i]?pair.find(x=>x&&x!==fw[i])||null:null));
+ const gold=matchPair(combatKey,'f0',[fw[0],fw[1]]);
+ const card=(k,pair,title)=>{const win=winner(k,pair),ready=!!(pair[0]&&pair[1]),hasOne=pair.some(Boolean);return `<div class="lucha-match ${win?'decided':''}"><div class="lucha-match-head">${title}</div>${pair.map((id,i)=>`<div class="lucha-athlete ${!id?'pending':win&&win===id?'victor':!win&&!ready?'waiting':''}"><span class="lucha-corner ${!id?'':' '+(i===0?'blue':'red')}"></span><span>${id?label(id):'POR DEFINIR'}</span>${id&&win===id?'<b>✓</b>':''}</div>`).join('')}<button class="lucha-vs" data-act="openMatch" data-match="${combatKey}:${k}" ${!ready?'disabled':''}>VS · INICIAR COMBATE</button><select data-winner="${combatKey}:${k}" ${!hasOne?'disabled':''}><option value="">— PUESTO POR DEFINIR —</option>${pair.filter(Boolean).map(id=>`<option value="${esc(id)}" ${win===id?'selected':''}>${label(id)}</option>`).join('')}</select>${!ready&&hasOne?'<div class="hint">Podés asignar ganador por ausencia del rival.</div>':''}${masterSlots(combatKey,k,pair,list)}</div>`};
+ let html=`<div class="panel"><div class="heading"><h2>COMBATE TOTAL · LLAVE DE FINALES</h2><span class="pill">${list.length} FINALISTAS</span><button class="danger small" data-act="resetBracket" data-key="${combatKey}">↺ REINICIAR ESTA CATEGORÍA</button></div><div class="hint">Cuartos, semifinales y bronce: 1 × 3 min · final por oro: 2 × 3 min · descanso 1:30 min. Podés seleccionar al ganador manualmente si el rival no se presenta.</div></div>`;
+ if(list.length<8)html+=notice('Hay menos de 8 finalistas: los lugares sin competidor se muestran en gris. La asignación de un ganador por ausencia debe confirmarla la autoridad deportiva.');
+ html+=`<div class="lucha-bracket"><section class="lucha-stage"><h3>CUARTOS</h3>${q.map((p,i)=>card('q'+i,p,'CUARTOS '+(i+1))).join('')}</section><section class="lucha-stage"><h3>SEMIFINALES</h3>${semis.map((p,i)=>card('s'+i,p,'SEMIFINAL '+(i+1))).join('')}</section><section class="lucha-stage"><h3>MEDALLAS</h3>${card('b0',bronze,'BRONCE')}${card('f0',gold,'ORO')}</section></div>`;
+ const finalW=winner('f0',gold),bronzeW=winner('b0',bronze),silver=finalW?gold.find(x=>x&&x!==finalW):null;
+ html+=combateResults(q,sw,semis,fw,gold,finalW,silver,bronze,bronzeW);
+ return html;
+}
+
+function combateResults(q,sw,semis,fw,gold,finalW,silver,bronze,bronzeW){
+ const loser=(pair,w)=>w?pair.find(x=>x&&x!==w)||null:null;
+ const fourth=bronzeW?loser(bronze,bronzeW):null;
+ const semiLosers=semis.map((pair,i)=>loser(pair,fw[i]));
+ const quarterLosers=q.map((pair,i)=>loser(pair,sw[i]));
+ const decided=[finalW,silver,bronzeW,fourth];
+ const used=new Set(decided.filter(Boolean));
+ const rankRows=[...decided.map((id,i)=>({rank:i+1,id})),...quarterLosers.filter(id=>id&&!used.has(id)).map(id=>({rank:5,id}))];
+ const ranked=new Set(rankRows.map(r=>r.id).filter(Boolean));
+ const remaining=(lists.combate[weight]||[]).filter(p=>!ranked.has(p.id));
+ const medalNames=['ORO','PLATA','BRONCE'];
+ let html=`<div class="panel lucha-results"><div class="heading"><h2>RESULTADOS · FINAL DE COMBATE TOTAL</h2><span class="pill">${ranked.size} / ${(lists.combate[weight]||[]).length} PUESTOS DEFINIDOS</span></div><div class="lucha-medal-board">`;
+ for(let i=0;i<3;i++){
+  const id=decided[i],p=(lists.combate[weight]||[]).find(x=>x.id===id);
+  html+=`<div class="lucha-podium-card lucha-podium-${i+1} ${id?'':'undecided'}"><div class="lucha-medal-icon">${['Ⅰ','Ⅱ','Ⅲ'][i]}</div><div class="lucha-medal-detail"><div class="lucha-medal-title">${i+1}° PUESTO · ${medalNames[i]}</div><div class="lucha-medal-name">${p?esc(p.nombre):'POR DEFINIR'}</div><div class="lucha-medal-id">${p?'COMPETIDOR N° '+esc(p.id):'Pendiente de resultado'}</div></div><div class="lucha-medal-crest">✦</div></div>`;
+ }
+ html+=`</div><div class="table-wrap"><table class="lucha-result-table"><thead><tr><th>Puesto</th><th>N°</th><th>Competidor</th><th>Estado</th></tr></thead><tbody>`;
+ for(const row of rankRows){if(!row.id)continue;const p=(lists.combate[weight]||[]).find(x=>x.id===row.id);if(!p)continue;html+=`<tr><td class="num">${row.rank}°</td><td>${esc(p.id)}</td><td class="name">${esc(p.nombre)}</td><td>DEFINIDO</td></tr>`}
+ for(const p of remaining)html+=`<tr class="lucha-pending-row"><td>—</td><td>${esc(p.id)}</td><td class="name">${esc(p.nombre)}</td><td>EN COMPETENCIA / POR DEFINIR</td></tr>`;
+ html+=`</tbody></table></div><p class="hint">El 5° puesto es compartido por los eliminados en cuartos de final. Los puestos sin resultado confirmado permanecen pendientes.</p></div>`;
+ return html;
+}
+function podiumDisplay(ids){return `<div class="medals">${['🥇 ORO','🥈 PLATA','🥉 BRONCE'].map((t,i)=>`<div class="medal"><div class="symbol">${t.split(' ')[0]}</div><strong>${ids[i]?label(ids[i]):'—'}</strong><span>${t.slice(3)}</span></div>`).join('')}</div>`}
+function podiumEditor(kind,list){const obj=state[kind].podium??={};return `<div class="grid">${['ORO','PLATA','BRONCE'].map((t,i)=>`<label>${t}<select style="display:block;width:100%;margin-top:6px" data-podium="${kind}:${i}"><option value="">— SIN DEFINIR —</option>${list.map(p=>`<option value="${esc(p.id)}" ${obj[i]===p.id?'selected':''}>${label(p.id)}</option>`).join('')}</select></label>`).join('')}</div><p class="hint">El Juez de Área/Mesa registra el podio una vez resueltos los desempates reglamentarios.</p>`}
+function empty(){return '<div class="panel empty">SIN RESULTADOS CLASIFICATORIOS PARA ESTA FINAL</div>'}
+function render(){
+ const content=$('#content');
+ // Cada disciplina se dibuja desde cero: nunca conservar tablas de otra pestaña.
+ content.replaceChildren();
+ document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+ let html='';
+ try {
+  switch(tab){
+   case 'salto': html=salto();break;
+   case 'rotura': html=rotura();break;
+   case 'lucha': html=luchaBracket();break;
+   case 'combate':
+    html='<div class="subtabs">'+W.map(w=>`<button class="${weight===w.id?'active':''}" data-weight="${w.id}">${w.label}</button>`).join('')+'</div>';
+    html+=combateBracket();break;
+   default: tab='salto';html=salto();
+  }
+  content.innerHTML=html;
+ }catch(err){
+  console.error('Error al mostrar '+tab,err);
+  content.innerHTML='<div class="panel notice">No se pudo mostrar esta disciplina. Revisá la consola del navegador: '+esc(err.message||String(err))+'</div>';
+ }
+}
+function clearDescendants(key,k){const m=state[key].matches||{};if(k.startsWith('q')){delete m['s'+(Number(k.slice(1))<2?0:1)];delete m.b0;delete m.f0}else if(k.startsWith('s')){delete m.b0;delete m.f0}}
+
+// Resumen de medallas: lee los mismos resultados que las cuatro disciplinas.
+function podiumEntries(){
+ const jumpList=lists.salto||[],jumpState=state.salto,base=jumpBaseGroups(jumpList),positions=new Map();
+ for(const g of base.groups)for(const p of g.people)positions.set(String(p.id),g.rank);
+ for(const [id,r] of Object.entries(jumpState.goldResolved||{}))positions.set(String(id),Number(r));
+ const jump=Array.from({length:3},(_,i)=>{
+   const found=jumpList.filter(p=>positions.get(String(p.id))===i+1);
+   return found.length===1?found[0]:null;
+ });
+ const roturaRanks=roturaStandings();
+ const rotura=Array.from({length:3},(_,i)=>{
+   const found=roturaRanks.filter(x=>x.rank===i+1);
+   return found.length===1?found[0].p:null;
+ });
+ const brackets=(list,key)=>{
+   const ids=list.map(p=>p.id),matches=state[key]?.matches||{};
+   const q=PAIRS.map(([a,b])=>[ids[a]||null,ids[b]||null]);
+   const winner=(k,pair)=>pair.includes(matches[k])?matches[k]:null;
+   const sw=q.map((pair,i)=>winner('q'+i,pair));
+   const semi=[[sw[0],sw[1]],[sw[2],sw[3]]];
+   const fw=semi.map((pair,i)=>winner('s'+i,pair));
+   const gold=[fw[0],fw[1]];
+   const bronze=semi.map((pair,i)=>fw[i]?pair.find(id=>id&&id!==fw[i])||null:null);
+   const first=winner('f0',gold);
+   const second=first?gold.find(id=>id&&id!==first)||null:null;
+   const third=winner('b0',bronze);
+   return [first,second,third].map(id=>list.find(p=>p.id===id)||null);
+ };
+ const entries=[{title:'SALTO EN ALTO',detail:'Podio de la final',winners:jump},
+   {title:'ROTURA DE HABILIDAD',detail:'Clasificación en vivo · posiciones provisorias hasta finalizar',winners:rotura},
+   {title:'LUCHA POR PUNTOS',detail:'Resultados de la llave',winners:brackets(lists.lucha||[],'lucha')}];
+ for(const w of W)entries.push({title:'COMBATE TOTAL',detail:w.label,winners:brackets(lists.combate[w.id]||[],'combate_'+w.id)});
+ return entries;
+}
+function openPodiums(){
+ const groups=podiumEntries();
+ const cards=groups.map(group=>`<section class="podium-event"><div class="podium-event-head"><h3>${esc(group.title)}</h3><span>${esc(group.detail)}</span></div><div class="podium-medals">${group.winners.map((p,i)=>`<article class="podium-award ${['gold','silver','bronze'][i]} ${p?'':'pending'}"><div class="podium-medal-icon">${['Ⅰ','Ⅱ','Ⅲ'][i]}</div><div class="podium-medal-text"><div class="podium-place">${i+1}° PUESTO · ${['ORO','PLATA','BRONCE'][i]}</div><div class="podium-person">${p?esc(p.nombre):'POR DEFINIR'}</div><div class="podium-number">${p?'COMPETIDOR N° '+esc(p.id):'Sin resultado confirmado'}</div></div></article>`).join('')}</div></section>`).join('');
+ $('#podiumContent').innerHTML=cards+'<p class="podium-note">Los puestos pendientes se completan con los resultados registrados en Finales. Rotura muestra posiciones provisorias.</p>';
+ $('#podiumOverlay').hidden=false;
+ $('#podiumContent').scrollTop=0;
+ $('#closePodiums').focus();
+}
+function closePodiums(){ $('#podiumOverlay').hidden=true;$('#viewPodiums').focus() }
+$('#viewPodiums').addEventListener('click',()=>{load();openPodiums()});
+$('#closePodiums').addEventListener('click',closePodiums);
+$('#podiumOverlay').addEventListener('click',e=>{if(e.target.id==='podiumOverlay')closePodiums()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#podiumOverlay').hidden){e.preventDefault();closePodiums()}});
+
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;tab=b.dataset.tab;render()});$('#content').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.weight){weight=b.dataset.weight;render();return}const a=b.dataset.act;if(a==='startRoturaGold'){
+ const ids=roturaGoldPending(roturaStandings());if(!ids)return;
+ const g=state.roturaGold??={rounds:[]};g.rounds.push({ids,tech:'',d:null,scores:{},closed:false});save();render();return;
+ }if(b.dataset.goldScore!==undefined){const g=state.roturaGold?.rounds?.at(-1);if(!g||g.closed||!g.ids.includes(b.dataset.goldScore))return;
+ const v=Number(b.dataset.score);g.scores[b.dataset.goldScore]=g.scores[b.dataset.goldScore]===v?null:v;save();render();return;
+ }if(a==='finishRoturaGold'){
+ const g=state.roturaGold?.rounds?.at(-1);if(!g||g.closed||(!g.winner&&(!g.tech?.trim()||g.d==null||g.ids.some(id=>g.scores?.[id]==null))))return;
+ g.closed=true;save();render();return;
+ }if(b.dataset.break!==undefined){const [id,i]=b.dataset.break.split(':');const row=state.rotura[id]??={};const station=row['s'+i]??={};const chosen=Number(b.dataset.score);station.b=station.b===chosen?null:chosen;save();render();return}if(a==='restorePair'){if(!masterEnabled())return;const [key,k]=b.dataset.match.split(':');const obj=state[key];if(!obj?.manualPairs?.[k])return;if(Object.keys(obj.matches||{}).length&& !confirm('Restaurar este enfrentamiento eliminará los resultados registrados de la llave. ¿Continuar?'))return;delete obj.manualPairs[k];obj.matches={};obj.notes={};save();render();return;}if(a==='resetBracket'){const key=b.dataset.key;if(key!=='lucha'&&!/^combate_w[1-6]$/.test(key))return;if(!confirm('¿Reiniciar las finales de '+(key==='lucha'?'LUCHA':'COMBATE TOTAL · '+W.find(w=>'combate_'+w.id===key)?.label)+'? Se borrarán TODOS los resultados de la llave, las medallas y las notas de esta disciplina/categoría. No se modifican las clasificatorias.'))return;delete state[key];state[key]={};save();render();return}if(a==='startLucha'){if(!lists.lucha.length)return;state.lucha.started=true;save();render();return}if(a==='nextJump'||a==='prevJump'){
+ const st=state.salto,r=Math.max(0,Number(st.round)||0);
+ if(a==='nextJump'){
+   const status=jumpStatus(lists.salto,r);
+   if(!status.advance){alert(status.reason||'No se puede avanzar todavía.');render();return}
+   const next=r+1;
+   if(status.gold){
+     const gold=status.gold,ids=gold.ids.map(String),wins=status.success.map(x=>x.id),fails=status.failed.map(x=>x.id);
+     st.goldResolved??={};
+     let pool=ids,rank=Number(gold.rank),height=jumpHeight(r);
+     if(wins.length&&fails.length){
+       // Quienes lograron continúan disputando los puestos más altos.
+       // Si uno solo logró, gana el puesto disputado; los demás siguen por la medalla siguiente.
+       if(wins.length===1){st.goldResolved[wins[0]]=rank;rank++;pool=fails;}
+       else {pool=wins;for(const id of fails)st.goldResolved[id]=rank+wins.length;}
+     }
+     if(pool.length<=1){if(pool.length===1)st.goldResolved[pool[0]]=rank;pool=[];}
+     if(pool.length){height=Math.round((height+(wins.length===0?-.05:.05))*100)/100;if(height<=0)height=jumpHeight(r);jumpGoldRound(st,next,lists.salto.filter(p=>pool.includes(p.id)),rank,height)}
+     else{
+       const nextTie=jumpMedalTie(lists.salto);
+       if(nextTie){jumpGoldRound(st,next,nextTie.people,nextTie.rank,jumpGoldReference(nextTie.people,r));}
+       else {alert('Desempate resuelto. El podio quedó registrado.');save();render();return;}
+     }
+   }else if(status.tie&&status.allFailed){
+     jumpGoldRound(st,next,status.tie.people,status.tie.rank,jumpGoldReference(status.tie.people,r));
+   }else{
+     st.roundHeights??={};st.roundHeights[String(next)]=Math.round((jumpHeight(r)+Number(st.jumpDelta ?? .05))*100)/100;
+   }
+   st.round=next;
+ }else st.round=Math.max(0,r-1);
+ save();render();return;
+ }if(a==='resetJumpRound'){
+ const st=state.salto,r=Math.max(0,Number(st.round)||0),key=String(r);
+ const isGold=Boolean(st.goldRounds?.[key]);
+ const label=isGold?'SALTO DE ORO':'RONDA '+(r+1);
+ if(!confirm(`¿REINICIAR ${label}? Se borrarán los intentos de esta ronda y todas las siguientes, junto con su historial. Se conservarán los participantes y la altura de ${label}, además de las rondas anteriores.`))return;
+ // Guardamos la configuración de la ronda que se reinicia ANTES de borrar las posteriores.
+ const preservedGold=isGold?structuredClone(st.goldRounds[key]):null;
+ const preservedHeight=st.roundHeights?.[key];
+ const preservedEntries=Array.isArray(st.roundEntries?.[key])?structuredClone(st.roundEntries[key]):null;
+ const previousGoldResolved=st.goldResolvedAtRound?.[key];
+ for(const val of Object.values(st)){
+   if(val&&typeof val==='object'&&!Array.isArray(val)&&val.logs){
+     for(const n of Object.keys(val.logs))if(Number.isInteger(Number(n))&&Number(n)>=r)delete val.logs[n];
+   }
+ }
+ for(const field of ['roundEntries','roundHeights','goldRounds','goldResolvedAtRound']){
+   if(st[field])for(const n of Object.keys(st[field]))if(Number.isInteger(Number(n))&&Number(n)>=r)delete st[field][n];
+ }
+ // Una ronda de oro sigue siendo de oro al reiniciarse: mismos participantes y altura.
+ if(preservedGold){(st.goldRounds??={})[key]=preservedGold;}
+ if(preservedHeight!==undefined)(st.roundHeights??={})[key]=preservedHeight;
+ if(preservedEntries)(st.roundEntries??={})[key]=preservedEntries;
+ if(isGold){
+   // En versiones nuevas existe una instantánea de los puestos antes del desempate.
+   // Para datos anteriores, se conservan solo los puestos superiores al disputado.
+   st.goldResolved=previousGoldResolved?{...previousGoldResolved}:Object.fromEntries(Object.entries(st.goldResolved||{}).filter(([,rank])=>Number(rank)<Number(preservedGold.rank)));
+   (st.goldResolvedAtRound??={})[key]={...st.goldResolved};
+ }else{delete st.goldResolved;}
+ delete st.podium;
+ st.round=r;save();render();return;
+}if(a==='jump'){const id=b.dataset.id;const obj=state.salto[id]??={logs:{}};obj.logs??={};obj.logs[Number(state.salto.round)||0]=b.dataset.val;save();render()}if(a==='openMatch'){
+ const [key,k]=b.dataset.match.split(':');const list=key==='lucha'?lists.lucha:lists.combate[key.replace('combate_','')]||[];
+ const ids=list.map(p=>p.id),q=PAIRS.map(([a,b],i)=>matchPair(key,'q'+i,[ids[a]||null,ids[b]||null])),m=state[key]?.matches||{};
+ const win=(id,p)=>p.includes(m[id])?m[id]:null,sw=q.map((p,i)=>win('q'+i,p)),semi=[[sw[0],sw[1]],[sw[2],sw[3]]].map((p,i)=>matchPair(key,'s'+i,p)),fw=semi.map((p,i)=>win('s'+i,p)),bronze=matchPair(key,'b0',semi.map((p,i)=>fw[i]?p.find(x=>x&&x!==fw[i]):null)),gold=matchPair(key,'f0',[fw[0],fw[1]]);
+ const pair=k[0]==='q'?q[Number(k.slice(1))]:k[0]==='s'?semi[Number(k.slice(1))]:k==='b0'?bronze:gold;
+ if(!pair?.[0]||!pair?.[1]){alert('Todavía no están definidos los dos competidores.');return}
+ const page=key==='lucha'?'final_lucha.html':'final_combate.html';
+ let url=page+'?final='+encodeURIComponent(key)+'&match='+encodeURIComponent(k)+'&a='+encodeURIComponent(pair[0])+'&b='+encodeURIComponent(pair[1])+'&rounds='+(k==='f0'?2:1);
+ const p=athlete(pair[0]);if(p?.area)url+='&area='+encodeURIComponent(p.area);
+ window.open(url,'_blank');}});
+window.addEventListener('ttt-master-change',()=>render());
+$('#content').addEventListener('change',e=>{const el=e.target;if(el.dataset.goldWinner!==undefined){const g=state.roturaGold?.rounds?.at(-1);if(!g||g.closed)return;g.winner=g.ids.includes(el.value)?el.value:null;save();render();return;}if(el.dataset.goldTech!==undefined||el.dataset.goldD!==undefined){const g=state.roturaGold?.rounds?.at(-1);if(!g||g.closed)return;
+ if(el.dataset.goldTech!==undefined)g.tech=el.value;else {if(el.value===''||!Number.isFinite(Number(el.value))||Number(el.value)<0){alert('Ingresá una dificultad válida.');return}g.d=Number(el.value)}save();render();return;
+ }if(el.dataset.jumpDelta!==undefined){const v=Number(el.value);if(!Number.isFinite(v)||v< -2||v>2){alert('La variación debe estar entre -2 y +2 metros.');render();return}state.salto.jumpDelta=Math.round(v*100)/100;save();render();return}if(el.dataset.jumpHeight!==undefined){const v=Number(el.value);if(!Number.isFinite(v)||v<=0||v>20){alert('Ingresá una altura válida en metros.');render();return}const r=Number(el.dataset.jumpHeight);(state.salto.roundHeights??={})[String(r)]=Math.round(v*100)/100;if(r===0)state.salto.startHeight=Math.round(v*100)/100;save();render();return}if(el.dataset.tech||el.dataset.d||el.dataset.b){const attr=el.dataset.tech?'tech':el.dataset.d?'d':'b';const [id,i]=el.dataset[attr].split(':');const row=state.rotura[id]??={};const s=row['s'+i]??={};s[attr]=attr==='tech'?el.value:el.value===''?null:num(el.value);save();if(tab==='rotura'){const focusKey=el.dataset[attr];render();Array.from($('#content').querySelectorAll('[data-'+attr+']')).find(x=>x.dataset[attr]===focusKey)?.focus()}else render();return}if(el.dataset.podium){const [key,i]=el.dataset.podium.split(':');(state[key].podium??={})[i]=el.value;save();render();return}if(el.dataset.manualPair!==undefined){const [key,k,slot]=el.dataset.manualPair.split(':');if(!masterEnabled()||(key!=='lucha'&&!/^combate_w[1-6]$/.test(key)))return;const list=key==='lucha'?lists.lucha:lists.combate[key.slice(8)]||[];if(el.value&&!list.some(p=>String(p.id)===el.value)){alert('Competidor fuera de esta lista de finalistas.');render();return;}const current=Array.from(el.closest('.lucha-match').querySelectorAll('[data-manual-pair]')).map(x=>x.value||null);if(current[0]&&current[0]===current[1]){alert('No podés enfrentar al mismo competidor consigo mismo.');render();return;}const obj=state[key]??={};const hasResults=Object.keys(obj.matches||{}).length>0||Object.keys(obj.notes||{}).length>0;if(hasResults&&!confirm('Esta modificación puede invalidar resultados de la llave. ¿Confirmás el cambio? Se limpiarán los ganadores y notas de esta llave para evitar podios incorrectos.')){render();return;}obj.manualPairs??={};obj.manualPairs[k]=current;obj.matches={};obj.notes={};save();render();return;}if(el.dataset.winner){const [key,k]=el.dataset.winner.split(':');const obj=state[key]??={};obj.matches??={};if(obj.matches[k]!==el.value){clearDescendants(key,k);if(el.value)obj.matches[k]=el.value;else delete obj.matches[k]}save();render();return}if(el.dataset.note){const [key,k]=el.dataset.note.split(':');const obj=state[key]??={};(obj.notes??={})[k]=el.value;save()}});
+$('#content').addEventListener('keydown',e=>{if(e.key!=='Tab'||tab!=='rotura'||!e.target.classList.contains('rotura-field'))return;const fields=Array.from($('#content').querySelectorAll('.rotura-field'));const index=fields.indexOf(e.target);if(index<0)return;const next=index+(e.shiftKey?-1:1);if(next<0||next>=fields.length)return;e.preventDefault();const el=e.target,attr=el.dataset.tech!==undefined?'tech':'d';const [id,i]=el.dataset[attr].split(':');const row=state.rotura[id]??={};const st=row['s'+i]??={};st[attr]=attr==='tech'?el.value:el.value===''?null:num(el.value);save();render();$('#content').querySelectorAll('.rotura-field')[next]?.focus()});
+$('#refresh').addEventListener('click',()=>{load();render()});window.addEventListener('storage',e=>{if(e.key===AC||e.key?.startsWith(PREFIX)||e.key===FINAL){if(e.key===FINAL){const s=parse(localStorage.getItem(FINAL),{});for(const k of Object.keys(state))delete state[k];Object.assign(state,s);state.salto??={};state.rotura??={};state.lucha??={};state.combate??={}}load();render()}});load();render();
+})();</script><script id="ttt-master-global-script">
+(function(){
+  'use strict';
+  const KEY='ct_master_mode_v1';
+  const box=document.createElement('div');box.id='ttt-master-global';
+  box.innerHTML='<span class="ttt-master-dot"></span><span id="ttt-master-global-label">MASTER INACTIVO</span><button type="button" id="ttt-master-global-toggle">ACTIVAR</button>';
+  document.body.appendChild(box);
+  function active(){return localStorage.getItem(KEY)==='true';}
+  function sync(){const on=active();box.classList.toggle('active',on);document.getElementById('ttt-master-global-label').textContent=on?'MASTER ACTIVO':'MASTER INACTIVO';document.getElementById('ttt-master-global-toggle').textContent=on?'DESACTIVAR':'ACTIVAR';document.body.classList.toggle('ttt-master-global-active',on);window.dispatchEvent(new CustomEvent('ttt-master-change',{detail:{active:on}}));}
+  document.getElementById('ttt-master-global-toggle').addEventListener('click',()=>{
+    if(active()){localStorage.setItem(KEY,'false');sync();return;}
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;z-index:100000;background:#020914df;display:flex;align-items:center;justify-content:center;padding:20px';
+    overlay.innerHTML='<form style="width:min(390px,100%);background:#0b1e34;border:1px solid #39ff14;border-radius:13px;padding:23px;box-shadow:0 15px 55px #000b"><h3 style="margin:0 0 15px;color:#baffc0">TTT · ACCESO MASTER</h3><label for="ttt-final-master-pass" style="display:block;margin-bottom:8px">Ingresá la clave Master</label><input id="ttt-final-master-pass" type="password" autocomplete="off" required style="width:100%;margin-bottom:16px"><div style="display:flex;gap:10px;justify-content:flex-end"><button type="button" data-cancel>Cancelar</button><button type="submit">Activar</button></div></form>';
+    document.body.appendChild(overlay);
+    const close=()=>overlay.remove();
+    overlay.querySelector('[data-cancel]').addEventListener('click',close);
+    overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+    overlay.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+    overlay.querySelector('form').addEventListener('submit',e=>{
+      e.preventDefault();
+      const clave=overlay.querySelector('input').value;
+      if(clave!==['hide','and','seek','4d','mansion'].join('')){alert('Clave Master incorrecta.');return;}
+      localStorage.setItem(KEY,'true');close();sync();
+    });
+    overlay.querySelector('input').focus();
+  });
+  window.addEventListener('storage',e=>{if(e.key===KEY)sync();});
+  sync();
+})();
+</script></body></html>

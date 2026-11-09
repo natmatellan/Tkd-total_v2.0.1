@@ -170,6 +170,38 @@ body{padding-top:10px;padding-bottom:12px}
 #games-table tbody td[rowspan]{height:auto!important;min-height:0!important;padding-top:0!important;padding-bottom:0!important;vertical-align:middle!important}
 #games-table tbody td.score-result{background-clip:padding-box!important;box-shadow:inset 0 0 10px #ffffff33!important}
 #games-table tbody td[id^="lucha-score-"],#games-table tbody td[id^="combate-score-"]{padding-left:5px!important;padding-right:5px!important}
+
+/* Acceso Master: modal HTML compatible con vistas previas que bloquean window.prompt */
+#games-table .master-field{width:100%;min-width:65px;max-width:190px;background:#081d32;color:#fff;border:1px solid #ffd34d;border-radius:5px;padding:6px;font:inherit}
+#games-table td:nth-child(2) .master-field{min-width:150px}
+#master-status{color:#ffd34d;font-weight:800;font-size:.75rem}
+#btn-master.active{background:#ffd34d;color:#071526}
+/* Acceso Master unificado: solo se muestra el control inferior derecho. */
+#btn-master{display:none!important}
+.master-modal[hidden]{display:none!important}
+.master-modal{position:fixed;inset:0;z-index:99999;background:#000c;display:flex;align-items:center;justify-content:center;padding:16px}
+.master-dialog{width:min(420px,100%);background:#101e33;border:2px solid #ffd34d;border-radius:15px;padding:24px;box-shadow:0 18px 70px #000b;color:#fff}
+.master-dialog h3{margin:0 0 12px;color:#ffd34d;letter-spacing:.08em}
+.master-dialog p{color:#bbcee2;font-size:.9rem}
+.master-dialog input{width:100%;padding:12px;border-radius:8px;border:1px solid #6383a4;background:#071526;color:white;font-size:1rem}
+.master-dialog .master-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.master-dialog .master-error{color:#ff718c;min-height:20px;font-size:.85rem;margin-top:8px}
+/* Métricas alineadas con el selector de área, a la derecha del título. */
+.toolbar-main .right .toolbar-stats{display:flex;align-items:center;justify-content:flex-end;flex-wrap:nowrap;width:auto;gap:7px}
+.toolbar-main .right .toolbar-stats .badge{font-size:.73rem;padding:5px 7px;white-space:nowrap}
+</style>
+<style id="ttt-master-global-style">
+#ttt-master-global{position:fixed;right:18px;bottom:18px;z-index:99990;display:flex;align-items:center;gap:9px;background:#071b2e;border:1px solid #3a91ad;border-radius:12px;padding:10px 12px;box-shadow:0 0 22px #00dfff44;color:#e8faff;font:700 13px system-ui,sans-serif}
+#ttt-master-global.active{border-color:#39ff14;box-shadow:0 0 20px #39ff1455}
+#ttt-master-global button{cursor:pointer;border:1px solid #39ff14;border-radius:7px;background:#173c2c;color:#baffc0;padding:9px;font-weight:800}
+#ttt-master-global .ttt-master-dot{height:10px;width:10px;border-radius:50%;background:#536a77}
+#ttt-master-global.active .ttt-master-dot{background:#39ff14;box-shadow:0 0 10px #39ff14}
+</style><style id="ttt-extra-styles">
+.extra-match-row td{background:#102d37!important;border:2px solid #39ff9c!important;padding:13px!important}
+.extra-match-inner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-start}
+.extra-match-inner strong{color:#39ff9c;letter-spacing:.08em}
+.extra-match-inner select{background:#081b2e;color:#fff;border:1px solid #39ff9c;padding:8px;border-radius:7px}
+.extra-match-inner .hint{color:#a9c6d5}
 </style>
 </head>
 <body>
@@ -180,16 +212,18 @@ body{padding-top:10px;padding-bottom:12px}
       <button class="btn btn-amber" id="btn-volver">← Volver</button>
       <button class="btn btn-blue" id="btn-refrescar">Refrescar datos</button>
       <button class="btn btn-gray" id="btn-export">Exportar resultados</button>
+      <button class="btn btn-master" id="btn-master" type="button" aria-pressed="false">MASTER</button>
+      <span id="master-status" aria-live="polite"></span>
     </div>
     <div class="toolbar-center">
       <h2 id="title">START GAMES</h2>
+    </div>
+    <div class="right">
       <div class="toolbar-stats">
         <div class="badge" id="count">Competidores: 0</div>
         <div class="badge" id="peso-range">Peso: —</div>
         <span class="visually-hidden" id="estado-persist" aria-live="polite">Sin guardar</span>
       </div>
-    </div>
-    <div class="right">
       <span class="badge" id="area-info">Área</span>
       <input id="filtro" type="search" placeholder="Filtrar por nombre…" />
     </div>
@@ -224,6 +258,20 @@ body{padding-top:10px;padding-bottom:12px}
   <tbody id="games-tbody"></tbody>
 </table></div>
 
+<div class="master-modal" id="master-modal" hidden>
+  <div class="master-dialog" role="dialog" aria-modal="true" aria-labelledby="master-modal-title">
+    <h3 id="master-modal-title">ACCESO MASTER</h3>
+    <p>Ingresá la contraseña para habilitar la edición de los datos.</p>
+    <form id="master-form">
+      <input id="master-password" type="password" placeholder="Contraseña" autocomplete="off" required>
+      <div class="master-error" id="master-error" role="alert"></div>
+      <div class="master-actions">
+        <button type="button" class="btn btn-gray" id="master-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-green" id="master-ingresar">Ingresar</button>
+      </div>
+    </form>
+  </div>
+</div>
 <script>
 (function(){
   const STORAGE_KEY = "ct_acreditaciones_v1";
@@ -260,8 +308,122 @@ body{padding-top:10px;padding-bottom:12px}
   if (window.ResizeObserver && filaDisciplinas) new ResizeObserver(actualizarAltoDisciplinas).observe(filaDisciplinas);
   window.addEventListener('resize', actualizarAltoDisciplinas);
 
-  const gamesState = {};
   const el = (id)=>document.getElementById(id);
+  const gamesState = {};
+  let masterActivo = localStorage.getItem("ct_master_mode_v1")==="true";
+  // La contraseña en un HTML local es una barrera de interfaz, NO autenticación segura.
+  const MASTER_PASSWORD = 'hideandseek4dmansion';
+  const escapeHtml = (v)=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const masterInput = (campo, valor, id, tipo='text', extra='') =>
+    `<input class="master-field ${campo==='id'?'master-id':''}" data-master-field="${campo}" data-comp-id="${escapeHtml(id)}" type="${tipo}" value="${escapeHtml(valor)}" ${extra}>`;
+  function guardarCompetidores(arr){localStorage.setItem(STORAGE_KEY,JSON.stringify(arr));}
+  function registroMaster(id, campo, anterior, nuevo){
+    try {const key='ct_master_audit_v1';const log=JSON.parse(localStorage.getItem(key)||'[]');
+      log.push({fecha:new Date().toISOString(),area:AREA,id:String(id),campo,anterior,nuevo});
+      localStorage.setItem(key,JSON.stringify(log));
+    } catch(e){console.warn('No se pudo registrar auditoría Master',e);}
+  }
+  function activarMaster(activar){
+    masterActivo=activar;
+    localStorage.setItem("ct_master_mode_v1",String(activar));
+    document.body.classList.toggle('master-active',activar);
+    const btn=el('btn-master');btn.classList.toggle('active',activar);
+    btn.textContent=activar?'DESACTIVAR MASTER':'MASTER';btn.setAttribute('aria-pressed',String(activar));
+    el('master-status').textContent=activar?'MODO MASTER ACTIVO':'';
+    render();
+    window.dispatchEvent(new Event('ttt-master-ui-refresh'));
+  }
+  function editarMaster(id,campo,valor){
+    if(!masterActivo)return;
+    const arr=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+    const c=arr.find(x=>String(x.id)===String(id)&&String(x.area)===String(AREA));
+    if(!c)return;
+    const st=getCompState(id);
+    const camposResultado=['saltoPuntaje','roturaPuntaje','luchaPuntaje','combatePuntaje','combateTiempoFin'];
+    const camposNumericos=['hds','altura','peso','pdr','saltoPuntaje','roturaPuntaje','luchaPuntaje','combatePuntaje'];
+    if(campo==='id'){
+      const nuevoId=Number(valor);
+      if(!Number.isSafeInteger(nuevoId)||nuevoId<1){alert('El ID debe ser un entero positivo.');return render();}
+      if(arr.some(x=>String(x.id)===String(nuevoId)&&String(x.id)!==String(id))){alert('Ese ID ya está en uso.');return render();}
+      const anterior=c.id;c.id=nuevoId;
+      if(gamesState[id]){gamesState[nuevoId]={...gamesState[id]};delete gamesState[id];}
+      try{const key=RESULT_SYNC_KEY(AREA);const sync=JSON.parse(localStorage.getItem(key)||'{}');
+        if(sync[id]){sync[nuevoId]={...sync[id]};delete sync[id];localStorage.setItem(key,JSON.stringify(sync));}}
+      catch(e){console.error(e)}
+      guardarCompetidores(arr);saveState();registroMaster(id,campo,anterior,nuevoId);return render();
+    }
+    if(campo==='area'){
+      const nuevo=String(valor).trim();if(!nuevo){alert('El área no puede quedar vacía.');return render();}
+      const anterior=c.area;c.area=nuevo;guardarCompetidores(arr);
+      registroMaster(id,campo,anterior,nuevo);return render();
+    }
+    if(campo==='saltoLogrado'){
+      const anterior=!!st.saltoLogrado;st.saltoLogrado=valor==='true';
+      if(!st.saltoLogrado)st.saltoPuntaje=0;
+      saveState();mergeResultados(AREA,{[id]:{saltoLogrado:st.saltoLogrado,saltoPuntaje:st.saltoPuntaje,saltoAltura:st.saltoLogrado?Number(c.hds||0):0}});
+      registroMaster(id,campo,anterior,st.saltoLogrado);return render();
+    }
+    if(camposResultado.includes(campo)){
+      let nuevo=valor;
+      if(campo!=='combateTiempoFin'){
+        if(String(valor).trim()===''){nuevo=0;}else{nuevo=Number(String(valor).replace(',','.'));}
+        if(!Number.isFinite(nuevo)||nuevo<0){alert('Ingresá un puntaje válido (0 o mayor).');return render();}
+      }
+      const anterior=st[campo];st[campo]=nuevo;
+      const parcial={[campo]:nuevo};
+      if(campo==='saltoPuntaje'){
+        st.saltoLogrado=nuevo>0;parcial.saltoLogrado=st.saltoLogrado;
+        parcial.saltoAltura=st.saltoLogrado?Number(c.hds||0):0;
+      }
+      saveState();mergeResultados(AREA,{[id]:parcial});registroMaster(id,campo,anterior,nuevo);return render();
+    }
+    if(!['nombre','hds','altura','peso','pdr'].includes(campo))return;
+    let nuevo=valor;
+    if(camposNumericos.includes(campo)){
+      nuevo=Number(String(valor).replace(',','.'));
+      if(!Number.isFinite(nuevo)||(campo==='altura'&&nuevo<=0)||(campo!=='altura'&&nuevo<0)){
+        alert('Ingresá un número válido.');return render();}
+    } else {nuevo=String(valor).trim();if(!nuevo){alert('El nombre no puede estar vacío.');return render();}}
+    const anterior=c[campo];c[campo]=nuevo;guardarCompetidores(arr);
+    if((campo==='hds'||campo==='altura')&&st.saltoLogrado){
+      st.saltoPuntaje=Number(c.hds||0)/Number(c.altura||1)*10;
+      saveState();mergeResultados(AREA,{[id]:{saltoPuntaje:st.saltoPuntaje,saltoAltura:Number(c.hds||0),saltoLogrado:true}});
+    }
+    registroMaster(id,campo,anterior,nuevo);render();
+  }
+  const modalMaster=el('master-modal');
+  const claveMaster=el('master-password');
+  const errorMaster=el('master-error');
+  function cerrarModalMaster(){modalMaster.hidden=true;claveMaster.value='';errorMaster.textContent='';}
+  el('btn-master').addEventListener('click',()=>{
+    if(masterActivo){activarMaster(false);return;}
+    errorMaster.textContent='';claveMaster.value='';modalMaster.hidden=false;
+    claveMaster.focus();
+  });
+  el('master-cancelar').addEventListener('click',cerrarModalMaster);
+  modalMaster.addEventListener('click',e=>{if(e.target===modalMaster)cerrarModalMaster();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modalMaster.hidden)cerrarModalMaster();});
+  function comprobarClaveMaster(){
+    const clave=claveMaster.value;
+    if(clave!==MASTER_PASSWORD){
+      errorMaster.textContent='Contraseña incorrecta. Verificá los caracteres e intentá nuevamente.';
+      claveMaster.focus();claveMaster.select();return;
+    }
+    try{
+      activarMaster(true);
+      cerrarModalMaster();
+    }catch(err){
+      console.error('Error al activar Modo Master:',err);
+      errorMaster.textContent='No se pudo activar el modo Master: '+err.message;
+    }
+  }
+  el('master-ingresar').addEventListener('click',comprobarClaveMaster);
+  el('master-form').addEventListener('submit',e=>{e.preventDefault();comprobarClaveMaster();});
+  el('games-tbody').addEventListener('change',e=>{
+    const input=e.target.closest('[data-master-field]');if(!input||!masterActivo)return;
+    editarMaster(input.dataset.compId,input.dataset.masterField,input.value);
+  });
+
 
 
 // Merge hacia el storage de resultados que usa el Ranking
@@ -361,7 +523,62 @@ function mergeResultados(area, updatesById) {
     celda.classList.toggle('score-pending', !tieneResultado);
   }
 
+  // Enfrentamientos extraordinarios: se guardan dentro del estado del área,
+  // por lo que el reinicio general existente también los elimina.
+  function extras(){return gamesState.__extras || (gamesState.__extras={});}
+  function reconcileExtra(){
+    const syncKey=RESULT_SYNC_KEY(AREA);
+    let sync={};try{sync=JSON.parse(localStorage.getItem(syncKey)||'{}');}catch(e){return;}
+    let changed=false;
+    for(const [disc,ex] of Object.entries(extras())){
+      if(!ex || !ex.pending)continue;
+      const field=disc==='lucha'?'luchaPuntaje':'combatePuntaje';
+      const a=String(ex.a),b=String(ex.b);
+      const oldA=Number(ex.beforeA?.score||0),oldB=Number(ex.beforeB?.score||0);
+      const newA=Number(sync[a]?.[field]??oldA),newB=Number(sync[b]?.[field]??oldB);
+      // Si todavía no hay resultados distintos, no se considera terminada la pelea.
+      if(newA===oldA && newB===oldB)continue;
+      for(const [id,oldScore,oldTime,newScore] of [[a,oldA,ex.beforeA?.time,newA],[b,oldB,ex.beforeB?.time,newB]]){
+        const best=Math.max(oldScore,newScore);
+        const st=getCompState(id);
+        st[field]=best;
+        sync[id]={...(sync[id]||{}),[field]:best};
+        if(disc==='combate'){
+          const bestTime=newScore>oldScore?sync[id].combateTiempoFin:oldTime;
+          st.combateTiempoFin=bestTime??'';
+          sync[id].combateTiempoFin=st.combateTiempoFin;
+        }
+      }
+      ex.pending=false;ex.completed=true;ex.scores={a:newA,b:newB};changed=true;
+      registroMaster(ex.a,'pelea-extra-'+disc,'pendiente',JSON.stringify(ex.scores));
+    }
+    if(changed){localStorage.setItem(syncKey,JSON.stringify(sync));saveState();}
+  }
+  function renderExtras(list){
+    const tbody=el('games-tbody');
+    const all=leerCompetidores().sort((a,b)=>(parsePeso(a.peso)||0)-(parsePeso(b.peso)||0));
+    const odd=all.length%2?all[all.length-1]:null;
+    for(const disc of ['lucha','combate']){
+      const ex=extras()[disc];
+      if(!masterActivo&&!ex)continue;
+      const tr=document.createElement('tr');tr.className='extra-match-row';
+      const td=document.createElement('td');td.colSpan=13;
+      const title=disc==='lucha'?'LUCHA':'COMBATE';
+      if(ex){
+        const a=all.find(c=>String(c.id)===String(ex.a));
+        const b=all.find(c=>String(c.id)===String(ex.b));
+        const status=ex.pending?'EN CURSO / PENDIENTE DE RESULTADO':ex.completed?'RESULTADO PROCESADO':'PREPARADO';
+        td.innerHTML=`<div class="extra-match-inner"><strong>EXTRA ${title}</strong><span>${escapeHtml(a?.nombre||ex.a)} VS ${escapeHtml(b?.nombre||ex.b)}</span><span class="hint">${status}</span>${masterActivo?`<button class="btn btn-blue" data-action="extra-start" data-disc="${disc}" ${ex.pending?'disabled':''}>INICIAR ${title}</button>${ex.pending?`<button class="btn btn-gray" data-action="extra-unchanged" data-disc="${disc}">FINALIZAR SIN CAMBIOS</button>`:''}<button class="btn btn-red" data-action="extra-remove" data-disc="${disc}">QUITAR</button>`:''}</div>`;
+      }else if(masterActivo&&odd){
+        const options=all.filter(c=>String(c.id)!==String(odd.id)).map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.nombre)} · ID ${escapeHtml(c.id)}</option>`).join('');
+        td.innerHTML=`<div class="extra-match-inner"><strong>EXTRA ${title}</strong><span>Sin pareja: ${escapeHtml(odd.nombre)}</span><label>Rival acreditado: <select data-extra-select="${disc}"><option value="">Seleccionar...</option>${options}</select></label><button class="btn btn-green" data-action="extra-add" data-disc="${disc}">AGREGAR ENFRENTAMIENTO</button></div>`;
+      }else continue;
+      tr.appendChild(td);tbody.appendChild(tr);
+    }
+  }
+
   function render(){
+    reconcileExtra();
     mergeResultadosExternos();
     const q = (el('filtro')?.value||'').trim().toLowerCase();
 
@@ -388,11 +605,11 @@ function mergeResultados(area, updatesById) {
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${comp.id}</td>
-        <td style="text-align:left">${comp.nombre}</td>
+        <td>${masterActivo?masterInput('id',comp.id,comp.id,'number','step="1" min="1"'):escapeHtml(comp.id)}</td>
+        <td style="text-align:left">${masterActivo?masterInput('nombre',comp.nombre,comp.id):escapeHtml(comp.nombre)}</td>
 
         <!-- Salto: Acción (Fallo/Logró) y Puntaje -->
-        <td>${hds ? `${hds.toFixed(3)} m` : '<span class="cell-muted">—</span>'}</td>
+        <td>${masterActivo?masterInput('hds',comp.hds??0,comp.id,'number','step="0.001" min="0"'):(hds ? `${hds.toFixed(3)} m` : '<span class="cell-muted">—</span>')}</td>
         <td>
           <button class="btn ${st.saltoLogrado?'btn-green':'btn-red'}"
                   data-action="toggle-salto" data-id="${comp.id}">
@@ -402,7 +619,7 @@ function mergeResultados(area, updatesById) {
         <td id="salto-score-${comp.id}">${Number(st.saltoLogrado ? st.saltoPuntaje : 0).toFixed(3)}</td>
 
         <!-- Rotura (3 columnas: Puntaje de Rotura, Acción, Puntaje) -->
-        <td>${(comp.pdr ?? '<span class="cell-muted">—</span>')}</td>
+        <td>${masterActivo?masterInput('pdr',comp.pdr??0,comp.id,'number','step="any" min="0"'):escapeHtml(comp.pdr??'—')}</td>
         <td><button class="btn btn-amber" data-action="iniciar-rotura" data-id="${comp.id}">Iniciar Rotura</button></td>
         <td id="rotura-score-${comp.id}">${Number(st.roturaPuntaje||0).toFixed(3)}</td>
       `;
@@ -447,12 +664,22 @@ function mergeResultados(area, updatesById) {
       combateTime.id = `combate-tiempo-${comp.id}`;
       combateTime.innerHTML = st.combateTiempoFin ? `<span>${st.combateTiempoFin}</span>` : '<span class="cell-muted">—</span>';
       tr.appendChild(combateTime);
+      if(masterActivo){
+        const scoreCampos=[['salto-score-','saltoPuntaje'],['rotura-score-','roturaPuntaje'],['lucha-score-','luchaPuntaje'],['combate-score-','combatePuntaje']];
+        for(const [pref,campo] of scoreCampos){
+          const celda=tr.querySelector(`[id="${pref}${comp.id}"]`);
+          if(celda)celda.innerHTML=masterInput(campo,st[campo]??0,comp.id,'number','step="0.001" min="0"');
+        }
+        combateTime.innerHTML=masterInput('combateTiempoFin',st.combateTiempoFin??'',comp.id);
+      }
 
       // Marcar límites de disciplinas por celda real (rowSpan no altera la asignación).
-      pintarPuntaje(tr.querySelector(`[id="salto-score-${comp.id}"]`), st.saltoLogrado ? st.saltoPuntaje : 0);
-      pintarPuntaje(tr.querySelector(`[id="rotura-score-${comp.id}"]`), st.roturaPuntaje);
-      pintarPuntaje(luchaScore, st.luchaPuntaje);
-      pintarPuntaje(combateScore, st.combatePuntaje);
+      if(!masterActivo){
+        pintarPuntaje(tr.querySelector(`[id="salto-score-${comp.id}"]`), st.saltoLogrado ? st.saltoPuntaje : 0);
+        pintarPuntaje(tr.querySelector(`[id="rotura-score-${comp.id}"]`), st.roturaPuntaje);
+        pintarPuntaje(luchaScore, st.luchaPuntaje);
+        pintarPuntaje(combateScore, st.combatePuntaje);
+      }
 
       // Las primeras 8 celdas son ID, nombre, salto x3 y rotura x3.
       // Las restantes se agregan en orden: lucha (acción opcional), puntaje,
@@ -467,16 +694,50 @@ function mergeResultados(area, updatesById) {
       for(let c=luchaInicio;c<=luchaFin;c++) base[c].classList.add('disc-lucha');
       base[luchaInicio].classList.add('disc-start'); base[luchaFin].classList.add('disc-end');
       const combateInicio = luchaFin+1;
-      for(let c=combateInicio;c<base.length;c++) base[c].classList.add('disc-combate');
-      base[combateInicio].classList.add('disc-start'); base[base.length-1].classList.add('disc-end');
+      const combateFin = base.length-1;
+      for(let c=combateInicio;c<=combateFin;c++) base[c].classList.add('disc-combate');
+      base[combateInicio].classList.add('disc-start'); base[combateFin].classList.add('disc-end');
       tbody.appendChild(tr);
     });
+    renderExtras(list);
   }
 
   // Eventos
   el("games-tbody").addEventListener("click",(e)=>{
     const btn = e.target.closest("button[data-action]"); if(!btn) return;
     const action = btn.dataset.action;
+    if(action==='extra-add' || action==='extra-start' || action==='extra-remove' || action==='extra-unchanged'){
+      if(!masterActivo){alert('Activá Master Mode para administrar enfrentamientos extraordinarios.');return;}
+      const disc=btn.dataset.disc;
+      if(!['lucha','combate'].includes(disc))return;
+      const all=leerCompetidores().sort((a,b)=>(parsePeso(a.peso)||0)-(parsePeso(b.peso)||0));
+      if(action==='extra-add'){
+        const odd=all.length%2?all[all.length-1]:null;
+        const select=el('games-tbody').querySelector(`[data-extra-select="${disc}"]`);
+        const b=select?.value;
+        if(!odd||!b||!all.some(c=>String(c.id)===b&&String(c.id)!==String(odd.id))){alert('Seleccioná un rival acreditado válido.');return;}
+        extras()[disc]={a:String(odd.id),b:String(b),pending:false,completed:false};
+        saveState();registroMaster(odd.id,'extra-'+disc,'',b);render();return;
+      }
+      const ex=extras()[disc];if(!ex)return;
+      if(action==='extra-unchanged'){
+        if(!ex.pending)return;
+        if(!confirm('¿Confirmás que la pelea terminó sin cambios de puntuación?'))return;
+        ex.pending=false;ex.completed=true;saveState();render();return;
+      }
+      if(action==='extra-remove'){
+        if(!confirm('¿Quitar este enfrentamiento extraordinario? Los puntajes ya guardados no se modificarán.'))return;
+        delete extras()[disc];saveState();render();return;
+      }
+      if(ex.pending){alert('Ya existe una pelea pendiente de resultado.');return;}
+      const field=disc==='lucha'?'luchaPuntaje':'combatePuntaje';
+      const getBefore=id=>({score:Number(getCompState(id)[field]||0),time:getCompState(id).combateTiempoFin||''});
+      ex.beforeA=getBefore(ex.a);ex.beforeB=getBefore(ex.b);ex.pending=true;ex.completed=false;
+      saveState();
+      const page=disc==='lucha'?PAGES.lucha:PAGES.combate;
+      location.href=`${page}?area=${encodeURIComponent(AREA)}&a=${encodeURIComponent(ex.a)}&b=${encodeURIComponent(ex.b)}&extra=1`;
+      return;
+    }
 
     if(action==="toggle-salto"){
       const compId = Number(btn.dataset.id);
@@ -571,9 +832,29 @@ function mergeResultados(area, updatesById) {
 
   if(!AREA){ alert("Falta ?area=N en la URL."); }
   loadState();
-  render();
+  activarMaster(masterActivo);
+  window.addEventListener("ttt-master-change", e=>{if(masterActivo!==e.detail.active)activarMaster(e.detail.active);});
+  window.addEventListener("storage", e=>{if(e.key==="ct_master_mode_v1" && masterActivo!==(e.newValue==="true"))activarMaster(e.newValue==="true");});
 })();
 </script>
 
-</body>
+<script id="ttt-master-global-script">
+(function(){
+  'use strict';
+  const KEY='ct_master_mode_v1';
+  const box=document.createElement('div');box.id='ttt-master-global';
+  box.innerHTML='<span class="ttt-master-dot"></span><span id="ttt-master-global-label">MASTER INACTIVO</span><button type="button" id="ttt-master-global-toggle">ACTIVAR</button>';
+  document.body.appendChild(box);
+  function active(){return localStorage.getItem(KEY)==='true';}
+  function sync(){const on=active();box.classList.toggle('active',on);document.getElementById('ttt-master-global-label').textContent=on?'MASTER ACTIVO':'MASTER INACTIVO';document.getElementById('ttt-master-global-toggle').textContent=on?'DESACTIVAR':'ACTIVAR';document.body.classList.toggle('ttt-master-global-active',on);window.dispatchEvent(new CustomEvent('ttt-master-change',{detail:{active:on}}));}
+  document.getElementById('ttt-master-global-toggle').addEventListener('click',()=>{
+    // Reutiliza el formulario seguro visualmente (input type=password) de Start Games.
+    // Así no se muestran los caracteres como sucede con window.prompt().
+    document.getElementById('btn-master').click();
+  });
+  window.addEventListener('ttt-master-ui-refresh',sync);
+  window.addEventListener('storage',e=>{if(e.key===KEY)sync();});
+  sync();
+})();
+</script></body>
 </html>

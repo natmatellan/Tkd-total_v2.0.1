@@ -549,8 +549,8 @@ body::before {content:"";position:fixed;inset:0;pointer-events:none;box-shadow:i
     
     let puntosJueces = [0, 0, 0, 0];
     let pdrInicial = 0; // Puntaje de Rotura inicial
-    let historial = [];
-    let cursorHistorial = -1;
+    let historial = [[0, 0, 0, 0]];
+    let cursorHistorial = 0;
     
     // Estado de joysticks
     const joystickState = Array(4).fill().map(() => ({
@@ -626,19 +626,18 @@ body::before {content:"";position:fixed;inset:0;pointer-events:none;box-shadow:i
     // Actualizar promedio (PDR + 10 - descuentos)
     function actualizarPromedio() {
       const descuentos = puntosJueces.reduce((sum, puntos) => sum + puntos, 0) / 4;
-      const puntajeFinal = Math.max(0, pdrInicial + 10 - descuentos); // No menor a 0
+      const puntajeFinal = pdrInicial + Math.max(0, 10 - descuentos); // La dificultad no se descuenta
       document.getElementById("promedio").textContent = puntajeFinal.toFixed(3);
       return {puntajeFinal, descuentos};
     }
     
-    // Guardar historial
-    const guardarHistorial = () => {
+    // Historial de estados: cada pulsación efectiva crea una nueva entrada.
+    function guardarHistorial() {
       historial = historial.slice(0, cursorHistorial + 1);
       historial.push([...puntosJueces]);
-      cursorHistorial++;
-    };
-    
-    // Deshacer
+      cursorHistorial = historial.length - 1;
+    }
+
     const deshacer = () => {
       if (cursorHistorial > 0) {
         cursorHistorial--;
@@ -647,8 +646,7 @@ body::before {content:"";position:fixed;inset:0;pointer-events:none;box-shadow:i
         actualizarPromedio();
       }
     };
-    
-    // Rehacer
+
     const rehacer = () => {
       if (cursorHistorial < historial.length - 1) {
         cursorHistorial++;
@@ -657,28 +655,26 @@ body::before {content:"";position:fixed;inset:0;pointer-events:none;box-shadow:i
         actualizarPromedio();
       }
     };
-    
-    // Actualizar display de puntos
+
     function actualizarPuntosDisplay() {
       for (let i = 0; i < 4; i++) {
         const elemento = document.getElementById(`puntos-${i}`);
-        if (elemento) {
-          elemento.textContent = puntosJueces[i].toFixed(1);
-        }
+        if (elemento) elemento.textContent = puntosJueces[i].toFixed(1);
       }
     }
-    
-    // Sumar puntos
-    function sumarPunto(juez, cantidad) {
+
+    // La X establece 10 puntos de deducción (no suma 10 a lo anterior).
+    // El redondeo evita errores de coma flotante en incrementos de 0.1.
+    function sumarPunto(juez, cantidad, fijarDiez = false) {
+      if (juez === null || juez < 0 || juez > 3) return;
+      const nuevo = fijarDiez ? 10 : Math.max(0, Math.min(10, Math.round((puntosJueces[juez] + cantidad) * 10) / 10));
+      if (nuevo === puntosJueces[juez]) return;
+      puntosJueces[juez] = nuevo;
       guardarHistorial();
-      puntosJueces[juez] += cantidad;
-      if (puntosJueces[juez] < 0) puntosJueces[juez] = 0;
-      if (puntosJueces[juez] > 10) puntosJueces[juez] = 10;
-      
       actualizarPuntosDisplay();
       actualizarPromedio();
     }
-    
+
     // Nombre únicamente para posiciones confirmadas; si no, JUEZ X.
     let nombresJueces = ['', '', '', ''];
     function actualizarNombresJueces() {
@@ -772,28 +768,27 @@ body::before {content:"";position:fixed;inset:0;pointer-events:none;box-shadow:i
         const botones = pad.buttons;
         const axes = pad.axes;
     
-        // Multiplicador si R1 (B5) o L1 (B4) está presionado
-        const mult = (botones[4]?.pressed || botones[5]?.pressed) ? 1 : 0.1;
-    
-        // Evitar múltiples registros por mantener presionado
+        // Mapeo real comprobado en este control PS3:
+        // triángulo B0, cuadrado B3, círculo B1, equis B2 y R1 B5.
+        // Una pulsación se registra una sola vez, incluso si se mantiene apretada.
+        // R1 se lee al momento de pulsar el botón frontal.
         if (!state.puntosLastFrame) state.puntosLastFrame = {};
-    
-        // Aumentar puntos (flecha arriba)
-        if (axes[1] === -1 && !state.puntosLastFrame["aumentar"]) {
-          sumarPunto(juez, mult);
-          state.puntosLastFrame["aumentar"] = true;
-        } else if (axes[1] !== -1) {
-          state.puntosLastFrame["aumentar"] = false;
+        const r1 = !!botones[5]?.pressed;
+        const deducciones = [
+          { boton: 0, valor: r1 ? 1 : 0.1 },
+          { boton: 3, valor: r1 ? 2 : 0.2 },
+          { boton: 1, valor: r1 ? 3 : 0.3 }
+        ];
+        for (const { boton, valor } of deducciones) {
+          const tecla = `deduccion_${boton}`;
+          const presionado = !!botones[boton]?.pressed;
+          if (presionado && !state.puntosLastFrame[tecla]) sumarPunto(juez, valor);
+          state.puntosLastFrame[tecla] = presionado;
         }
-    
-        // Disminuir puntos (flecha abajo)
-        if (axes[1] === 1 && !state.puntosLastFrame["disminuir"]) {
-          sumarPunto(juez, -mult);
-          state.puntosLastFrame["disminuir"] = true;
-        } else if (axes[1] !== 1) {
-          state.puntosLastFrame["disminuir"] = false;
-        }
-    
+        const equis = !!botones[2]?.pressed;
+        if (equis && !state.puntosLastFrame["deduccion_10"]) sumarPunto(juez, 0, true);
+        state.puntosLastFrame["deduccion_10"] = equis;
+
         // Deshacer (L2 - botón 6)
         if (botones[6]?.pressed && !state.puntosLastFrame["deshacer"]) {
           deshacer();
@@ -895,7 +890,7 @@ body::before {content:"";position:fixed;inset:0;pointer-events:none;box-shadow:i
           <p><strong>PDR inicial:</strong> ${pdrInicial.toFixed(3)}</p>
           <p><strong>Puntaje base:</strong> 10.000</p>
           <p><strong>Descuentos:</strong> ${descuentos.toFixed(3)}</p>
-          <p><strong>Puntaje de Ejecución:</strong> ${puntajeFinal.toFixed(3)}</p>
+          <p><strong>Puntaje con dificultad y ejecución:</strong> ${puntajeFinal.toFixed(3)}</p>
         </div>
         <div style="text-align: center;">
           <p>Seleccione el resultado de la rotura:</p>
@@ -939,7 +934,7 @@ body::before {content:"";position:fixed;inset:0;pointer-events:none;box-shadow:i
           <p><strong>PDR inicial:</strong> ${pdrInicial.toFixed(3)}</p>
           <p><strong>Puntaje base:</strong> 10.000</p>
           <p><strong>Descuentos:</strong> ${descuentos.toFixed(3)}</p>
-          <p><strong>Puntaje de Ejecución:</strong> ${puntajeFinal.toFixed(3)}</p>
+          <p><strong>Puntaje con dificultad y ejecución:</strong> ${puntajeFinal.toFixed(3)}</p>
           <p><strong>Bonus por ${resultado.toLowerCase()}:</strong> +${bonus.toFixed(1)}</p>
           <p><strong>Puntaje final:</strong> ${puntajeConBonus.toFixed(3)}</p>
         </div>

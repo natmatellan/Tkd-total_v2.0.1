@@ -1874,7 +1874,8 @@ function procesarPuntosJoysticks() {
     const perfil = perfilPad(pad);
     const horizontal = pad.axes[perfil.horizontal] ?? 0;
     const vertical = pad.axes[perfil.vertical] ?? 0;
-    const mult = (valorBoton(pad,4) >= PRESION || valorBoton(pad,5) >= PRESION) ? 10 : 1;
+    const multAzul = valorBoton(pad,4) >= PRESION ? 10 : 1; // L1 solo azul
+    const multRojo = valorBoton(pad,5) >= PRESION ? 10 : 1; // R1 solo rojo
     // Cruceta física exclusivamente. Nunca interpretar el stick derecho como puntos.
     // Se detecta primero como botones 12-15 y, si no están, por el eje
     // elegido mediante la calibración integrada (tecla F8).
@@ -1924,7 +1925,7 @@ function procesarPuntosJoysticks() {
     if (azulActivo) {
       state.crucetaReposoDesde = null;
       if (!state.crucetaBloqueada) {
-        sumarPunto("azul", valoresAzul[azulActivo]*mult, juez);
+        sumarPunto("azul", valoresAzul[azulActivo]*multAzul, juez);
         state.crucetaBloqueada = true;
       }
     } else if (state.crucetaBloqueada) {
@@ -1937,7 +1938,7 @@ function procesarPuntosJoysticks() {
     for (const [id, valor, clave] of [
       [0,0.1,"rojo-triangulo"],[3,0.2,"rojo-cuadrado"],
       [1,0.3,"rojo-circulo"],[2,0.4,"rojo-equis"]
-    ]) if (pulso(state,clave,valorBoton(pad,id))) sumarPunto("rojo",valor*mult,juez);
+    ]) if (pulso(state,clave,valorBoton(pad,id))) sumarPunto("rojo",valor*multRojo,juez);
     if (pulso(state,"deshacer",valorBoton(pad,6))) deshacerPunto(juez);
     if (pulso(state,"rehacer",valorBoton(pad,7))) rehacerPunto(juez);
   });
